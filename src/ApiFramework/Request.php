@@ -50,7 +50,8 @@ class Request extends Core
     public static function url ()
     {
         $uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
-        return reset(explode('?', $uri));
+        $parts = explode('?', $uri);
+        return reset($parts);
     }
 
 
