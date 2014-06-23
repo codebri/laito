@@ -1,6 +1,7 @@
 <?php
 
 namespace ApiFramework;
+use PDO;
 
 /*!
  * Medoo database framework

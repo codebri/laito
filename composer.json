@@ -1,6 +1,6 @@
 {
-    "name": "nicobeta/helpers",
-    "description": "Helpers for PHP",
+    "name": "nicobeta/ApiFramework",
+    "description": "API Framework for PHP",
     "authors": [
         {
             "name": "Nico",
