@@ -1,0 +1,19 @@
+{
+    "name": "nico/helpers",
+    "description": "Helpers for PHP",
+    "authors": [
+        {
+            "name": "Nico",
+            "email": "nico1485@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Helpers": "src/"
+        }
+    }
+}
