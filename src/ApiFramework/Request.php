@@ -96,7 +96,7 @@ class Request extends Core
     public static function token ()
     {
         $inputs = self::inputs();
-        return $inputs['token']?: false;
+        return isset($inputs['token'])? $inputs['token'] : false;
     }
 
 
