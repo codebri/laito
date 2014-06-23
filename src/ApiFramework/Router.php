@@ -75,7 +75,7 @@ class Router extends Core
         $method = strtolower($method);
 
         // Try literal match
-        if ($match = self::$methods[$method][$route]) {
+        if (isset($methods[$method][$route]) && $match = self::$methods[$method][$route]) {
             return [$match, []];
         }
 
