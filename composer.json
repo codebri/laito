@@ -1,5 +1,5 @@
 {
-    "name": "nico/helpers",
+    "name": "nicobeta/helpers",
     "description": "Helpers for PHP",
     "authors": [
         {
@@ -7,6 +7,7 @@
             "email": "nico1485@gmail.com"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.0"
     },
