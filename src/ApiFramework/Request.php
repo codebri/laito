@@ -121,6 +121,7 @@ class Request extends Core
     {
         $inputs = self::inputs();
 
+        $allowed = [];
         foreach ($inputs as $input => $value) {
             if (!in_array($input, self::$reserved)) {
                 $allowed[$input] = $value;

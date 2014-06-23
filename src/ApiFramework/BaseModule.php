@@ -117,8 +117,8 @@ class BaseModule extends Core
         $where = $this->where;
         if ($this->paginate) {
             // Set pagination from parameters
-            $this->paging['limit'] = (int)($input['limit']?: $this->paging['limit']);
-            $this->paging['offset'] = (int)($input['offset']?: $this->paging['offset']);
+            $this->paging['limit'] = (int)(isset($input['limit'])? $input['limit'] : $this->paging['limit']);
+            $this->paging['offset'] = (int)(isset($input['offset'])? $input['limit'] : $this->paging['offset']);
 
             // Add pagination to query
             $where['LIMIT'] = [(int)$this->paging['offset'], (int)$this->paging['limit']];
