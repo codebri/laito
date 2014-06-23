@@ -54,11 +54,19 @@ class User extends BaseModule
      */
     public function info ($token)
     {
-        // Get session
+        // Get token
         $token = ($token)?: Request::token();
+
+        // Check session file
+        $sessionFile = self::getSessionsPath() . $token . '.json';
+        if (!file_exists($sessionFile)) {
+            self::error(401, 'Invalid token');
+        }
+
+        // Get session data
         $session = json_decode(file_get_contents(self::getSessionsPath() . $token . '.json'), true);
 
-        // Check session
+        // Check session user
         if (!$session['user']) {
             self::error(401, 'Invalid token');
         }
