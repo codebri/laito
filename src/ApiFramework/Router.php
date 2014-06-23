@@ -74,11 +74,6 @@ class Router extends Core
         $method = Request::method()?: 'GET';
         $method = strtolower($method);
 
-        // Check route
-        if (!isset($methods[$method][$route])) {
-            return self::error(404, 'Not found');
-        }
-
         // Try literal match
         if ($match = self::$methods[$method][$route]) {
             return [$match, []];
