@@ -6,7 +6,6 @@ namespace ApiFramework;
  * BaseModule
  *
  * Basic starting module
- * @author Alejandro Garcia del Rio <alejandro.garciadelrio@loogares.com>
  * @version 1.0
  * @package BaseModule
 */

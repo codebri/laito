@@ -6,7 +6,6 @@ namespace ApiFramework;
  * Language
  *
  * Translates terms
- * @author Nico Munoz <nicolas.munoz@loogares.com>
  * @version 1.0
  * @package Lang
 */

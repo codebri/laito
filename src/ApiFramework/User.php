@@ -6,7 +6,6 @@ namespace ApiFramework;
  * User
  *
  * Manages users and sessions
- * @author Nico Munoz <nicolas.munoz@loogares.com>
  * @version 1.0
  * @package User
 */

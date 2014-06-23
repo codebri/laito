@@ -5,8 +5,7 @@ namespace ApiFramework;
 /**
  * Router
  *
- * Base model 
- * @author Alejandro Garcia del Rio <alejandro.garciadelrio@loogares.com>
+ * Manages routes
  * @version 1.0
  * @package Router
 */

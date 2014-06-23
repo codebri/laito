@@ -6,7 +6,6 @@ namespace ApiFramework;
  * Core
  *
  * Core abstract class
- * @author Nico Munoz <nicolas.munoz@loogares.com>
  * @version 1.0
  * @package Core
 */

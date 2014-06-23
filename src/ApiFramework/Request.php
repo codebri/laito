@@ -6,7 +6,6 @@ namespace ApiFramework;
  * Request library
  *
  * Handles requests
- * @author Nico Munoz <nicolas.munoz@loogares.com>
  * @version 1.0
  * @package Request
 */
