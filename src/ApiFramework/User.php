@@ -31,7 +31,7 @@ class User extends BaseModule
 
         // Check credentials
         if (!self::isValid($user, $password)) {
-            self::error(401, 'Invalid user');
+            return self::error(401, 'Invalid user');
         }
 
         // Store session file
@@ -60,7 +60,7 @@ class User extends BaseModule
         // Check session file
         $sessionFile = self::getSessionsPath() . $token . '.json';
         if (!file_exists($sessionFile)) {
-            self::error(401, 'Invalid token');
+            return self::error(401, 'Invalid token');
         }
 
         // Get session data
@@ -68,7 +68,7 @@ class User extends BaseModule
 
         // Check session user
         if (!$session['user']) {
-            self::error(401, 'Invalid token');
+            return self::error(401, 'Invalid token');
         }
 
         // Return user info
@@ -89,7 +89,7 @@ class User extends BaseModule
 
         // Check session
         if (!$session['user']) {
-            self::error(401, 'Invalid token');
+            return self::error(401, 'Invalid token');
         }
 
         // Delete session file
