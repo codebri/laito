@@ -51,7 +51,7 @@ class User extends BaseModule
      * @param string $key
      * @return mixed
      */
-    public function info ($token)
+    public static function info ($token)
     {
         // Get token
         $token = ($token)?: Request::token();
@@ -121,7 +121,7 @@ class User extends BaseModule
      *
      * @return string
      */
-    private function getSessionsPath ()
+    private static function getSessionsPath ()
     {
         return CONFIG_DOCUMENT_ROOT . self::$sessionsFolder;
     }
