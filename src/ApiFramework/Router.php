@@ -1,6 +1,7 @@
 <?php
 
 namespace ApiFramework;
+use ApiFramework\Request;
 
 /**
  * Router
