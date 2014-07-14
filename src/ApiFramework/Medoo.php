@@ -172,7 +172,14 @@ class medoo
 		{
 			preg_match('/([a-zA-Z0-9_\-\.]*)\s*\(([a-zA-Z0-9_\-]*)\)/i', $value, $match);
 
-			if (isset($match[1], $match[2]))
+			// Field functions support
+			preg_match('/([A-Z0-9\_]+)\((.+?)\)\((.*?)\)/', $value, $match2);
+
+			if (isset($match2[1], $match2[2]))
+			{
+				array_push($stack, $match2[1] .'('. $match2[2] . ') AS ' . $this->column_quote( $match2[3] ));
+			}
+			else if (isset($match[1], $match[2]))
 			{
 				array_push($stack, $this->column_quote( $match[1] ) . ' AS ' . $this->column_quote( $match[2] ));
 			}
