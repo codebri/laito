@@ -1,1 +1,3 @@
-#API Framework for PHP
+#AppFramework
+
+App Framwework for PHP
