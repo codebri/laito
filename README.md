@@ -1,3 +1,7 @@
-#ApiFramework
+ApiFramework
+============
 
-Api Framwework for PHP
+Api Framework for PHP
+
+by **MangoLabs**
+
