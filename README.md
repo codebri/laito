@@ -1,3 +1,3 @@
-#AppFramework
+#ApiFramework
 
-App Framwework for PHP
+Api Framwework for PHP
