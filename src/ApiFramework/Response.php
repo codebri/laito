@@ -165,4 +165,27 @@ class Response extends Core
         return '<ul>' . $return . '</ul>';
     }
 
+    /**
+     * Converts index_key style 1 dimension collection into collection of objects
+     * 
+     * @param string $collection The collection to convert
+     * @param string $indexes Name of indexes to objectify
+     * @return array
+     */
+    public static function objectify ($collection, $indexes) {
+
+        foreach ($collection as $k => $v) {
+
+            if (is_array($v)) {
+                $collection[$k] = self::objectify($v, $indexes);
+            }
+            else if ( ($key = current(explode('_', $k))) && in_array($key, $indexes) ) {
+                $collection[$key][str_replace($key.'_', '', $k)] = $v;
+                unset($collection[$k]);
+            }
+        }
+
+        return $collection;
+    }
+
 }

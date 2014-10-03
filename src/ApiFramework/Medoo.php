@@ -6,7 +6,7 @@ use PDO;
 /*!
  * Medoo database framework
  * http://medoo.in
- * Version 0.9.5.3
+ * Version 0.9.6.2
  * 
  * Copyright 2014, Angel Lai
  * Released under the MIT license
@@ -132,16 +132,16 @@ class medoo
 
 	public function query($query)
 	{
-		$this->queryString = str_replace(['&amp;'], ['&'], $query);
+		$this->queryString = $query;
 
-		return $this->pdo->query($this->queryString);
+		return $this->pdo->query($query);
 	}
 
 	public function exec($query)
 	{
-		$this->queryString = str_replace(['&amp;'], ['&'], $query);
+		$this->queryString = $query;
 
-		return $this->pdo->exec($this->queryString);
+		return $this->pdo->exec($query);
 	}
 
 	public function quote($string)
@@ -151,7 +151,7 @@ class medoo
 
 	protected function column_quote($string)
 	{
-		return '"' . str_replace('.', '"."', $string) . '"';
+		return '"' . str_replace('.', '"."', preg_replace('/(^#|\(JSON\))/', '', $string)) . '"';
 	}
 
 	protected function column_push($columns)
@@ -172,14 +172,7 @@ class medoo
 		{
 			preg_match('/([a-zA-Z0-9_\-\.]*)\s*\(([a-zA-Z0-9_\-]*)\)/i', $value, $match);
 
-			// Field functions support
-			preg_match('/([A-Z0-9\_]+)\((.+?)\)\((.*?)\)/', $value, $match2);
-
-			if (isset($match2[1], $match2[2]))
-			{
-				array_push($stack, $match2[1] .'('. $match2[2] . ') AS ' . $this->column_quote( $match2[3] ));
-			}
-			else if (isset($match[1], $match[2]))
+			if (isset($match[1], $match[2]))
 			{
 				array_push($stack, $this->column_quote( $match[1] ) . ' AS ' . $this->column_quote( $match[2] ));
 			}
@@ -216,6 +209,15 @@ class medoo
 		return implode($outer_conjunctor . ' ', $haystack);
 	}
 
+	protected function fn_quote($column, $string)
+	{
+		return (strpos($column, '#') === 0 && preg_match('/^[A-Z0-9\_]*\([^)]*\)$/', $string)) ?
+
+			$string :
+
+			$this->quote($string);
+	}
+
 	protected function data_implode($data, $conjunctor, $outer_conjunctor = null)
 	{
 		$wheres = array();
@@ -235,16 +237,12 @@ class medoo
 			}
 			else
 			{
-				preg_match('/([\w\.]+)(\[(\>|\>\=|\<|\<\=|\!|\<\>|\>\<)\])?/i', $key, $match);
-				$column = $this->column_quote($match[1]);
+				preg_match('/(#?)([\w\.]+)(\[(\>|\>\=|\<|\<\=|\!|\<\>|\>\<)\])?/i', $key, $match);
+				$column = $this->column_quote($match[2]);
 
-				if (isset($match[3]))
+				if (isset($match[4]))
 				{
-					if ($match[3] == '')
-					{
-						$wheres[] = $column . ' ' . $match[3] . '= ' . $this->quote($value);
-					}
-					elseif ($match[3] == '!')
+					if ($match[4] == '!')
 					{
 						switch ($type)
 						{
@@ -261,18 +259,22 @@ class medoo
 								$wheres[] = $column . ' != ' . $value;
 								break;
 
+							case 'boolean':
+								$wheres[] = $column . ' != ' . ($value ? '1' : '0');
+								break;
+
 							case 'string':
-								$wheres[] = $column . ' != ' . $this->quote($value);
+								$wheres[] = $column . ' != ' . $this->fn_quote($key, $value);
 								break;
 						}
 					}
 					else
 					{
-						if ($match[3] == '<>' || $match[3] == '><')
+						if ($match[4] == '<>' || $match[4] == '><')
 						{
 							if ($type == 'array')
 							{
-								if ($match[3] == '><')
+								if ($match[4] == '><')
 								{
 									$column .= ' NOT';
 								}
@@ -291,7 +293,7 @@ class medoo
 						{
 							if (is_numeric($value))
 							{
-								$wheres[] = $column . ' ' . $match[3] . ' ' . $value;
+								$wheres[] = $column . ' ' . $match[4] . ' ' . $value;
 							}
 							else
 							{
@@ -299,7 +301,14 @@ class medoo
 
 								if ($datetime)
 								{
-									$wheres[] = $column . ' ' . $match[3] . ' ' . $this->quote(date('Y-m-d H:i:s', $datetime));
+									$wheres[] = $column . ' ' . $match[4] . ' ' . $this->quote(date('Y-m-d H:i:s', $datetime));
+								}
+								else
+								{
+									if (strpos($key, '#') === 0)
+									{
+										$wheres[] = $column . ' ' . $match[4] . ' ' . $this->fn_quote($key, $value);
+									}
 								}
 							}
 						}
@@ -333,7 +342,7 @@ class medoo
 								break;
 
 							case 'string':
-								$wheres[] = $column . ' = ' . $this->quote($value);
+								$wheres[] = $column . ' = ' . $this->fn_quote($key, $value);
 								break;
 						}
 					}
@@ -353,9 +362,6 @@ class medoo
 			$where_keys = array_keys($where);
 			$where_AND = preg_grep("/^AND\s*#?$/i", $where_keys);
 			$where_OR = preg_grep("/^OR\s*#?$/i", $where_keys);
-// echo '<pre>WHERE_KEYS: '.print_r($where_keys, true).'</pre>';
-// echo '<pre>WHERE_AND: '.print_r($where_AND, true).'</pre>';
-// echo '<pre>WHERE_OR: '.print_r($where_OR, true).'</pre>';
 
 			$single_condition = array_diff_key($where, array_flip(
 				explode(' ', 'AND OR GROUP ORDER HAVING LIMIT LIKE MATCH')
@@ -380,35 +386,41 @@ class medoo
 
 			if (isset($where['LIKE']))
 			{
-				$like_query = $where['LIKE'];
+				$LIKE = $where['LIKE'];
 
-				if (is_array($like_query))
+				if (is_array($LIKE))
 				{
-					$is_OR = isset($like_query['OR']);
+					$is_OR = isset($LIKE['OR']);
 					$clause_wrap = array();
 
-					if ($is_OR || isset($like_query['AND']))
+					if ($is_OR || isset($LIKE['AND']))
 					{
 						$connector = $is_OR ? 'OR' : 'AND';
-						$like_query = $is_OR ? $like_query['OR'] : $like_query['AND'];
+						$LIKE = $is_OR ? $LIKE['OR'] : $LIKE['AND'];
 					}
 					else
 					{
 						$connector = 'AND';
 					}
 
-					foreach ($like_query as $column => $keyword)
+					foreach ($LIKE as $column => $keyword)
 					{
-						if (is_array($keyword))
+						$keyword = is_array($keyword) ? $keyword : array($keyword);
+
+						foreach ($keyword as $key)
 						{
-							foreach ($keyword as $key)
+							preg_match('/(%?)([a-zA-Z0-9_\-\.]*)(%?)((\[!\])?)/', $column, $column_match);
+
+							if ($column_match[1] == '' && $column_match[3] == '')
 							{
-								$clause_wrap[] = $this->column_quote($column) . ' LIKE ' . $this->quote('%' . $key . '%');
+								$column_match[1] = '%';
+								$column_match[3] = '%';
 							}
-						}
-						else
-						{
-							$clause_wrap[] = $this->column_quote($column) . ' LIKE ' . $this->quote('%' . $keyword . '%');
+
+							$clause_wrap[] =
+								$this->column_quote($column_match[2]) .
+								($column_match[4] != '' ? ' NOT' : '') . ' LIKE ' .
+								$this->quote($column_match[1] . $key . $column_match[3]);
 						}
 					}
 
@@ -418,11 +430,11 @@ class medoo
 
 			if (isset($where['MATCH']))
 			{
-				$match_query = $where['MATCH'];
+				$MATCH = $where['MATCH'];
 
-				if (is_array($match_query) && isset($match_query['columns'], $match_query['keyword']))
+				if (is_array($MATCH) && isset($MATCH['columns'], $MATCH['keyword']))
 				{
-					$where_clause .= ($where_clause != '' ? ' AND ' : ' WHERE ') . ' MATCH ("' . str_replace('.', '"."', implode($match_query['columns'], '", "')) . '") AGAINST (' . $this->quote($match_query['keyword']) . ')';
+					$where_clause .= ($where_clause != '' ? ' AND ' : ' WHERE ') . ' MATCH ("' . str_replace('.', '"."', implode($MATCH['columns'], '", "')) . '") AGAINST (' . $this->quote($MATCH['keyword']) . ')';
 				}
 			}
 
@@ -433,15 +445,37 @@ class medoo
 
 			if (isset($where['ORDER']))
 			{
-				if (is_array($where['ORDER']))
+				$rsort = '/(^[a-zA-Z0-9_\-\.]*)(\s*(DESC|ASC))?/';
+				$ORDER = $where['ORDER'];
+
+				if (is_array($ORDER))
 				{
-					$where_clause .= ' ORDER BY FIELD(' . $this->column_quote($where['ORDER'][0]) . ', ' . $this->array_quote($where['ORDER'][1]) . ')';
+					if (
+						isset($ORDER[1]) &&
+						is_array($ORDER[1])
+					)
+					{
+						$where_clause .= ' ORDER BY FIELD(' . $this->column_quote($ORDER[0]) . ', ' . $this->array_quote($ORDER[1]) . ')';
+					}
+					else
+					{
+						$stack = array();
+
+						foreach ($ORDER as $column)
+						{
+							preg_match($rsort, $column, $order_match);
+
+							array_push($stack, '"' . str_replace('.', '"."', $order_match[1]) . '"' . (isset($order_match[3]) ? ' ' . $order_match[3] : ''));
+						}
+
+						$where_clause .= ' ORDER BY ' . implode($stack, ',');
+					}
 				}
 				else
 				{
-					preg_match('/(^[a-zA-Z0-9_\-\.]*)(\s*(DESC|ASC))?/', $where['ORDER'], $order_match);
+					preg_match($rsort, $ORDER, $order_match);
 
-					$where_clause .= ' ORDER BY "' . str_replace('.', '"."', $order_match[1]) . '" ' . (isset($order_match[3]) ? $order_match[3] : '');
+					$where_clause .= ' ORDER BY "' . str_replace('.', '"."', $order_match[1]) . '"' . (isset($order_match[3]) ? ' ' . $order_match[3] : '');
 				}
 
 				if (isset($where['HAVING']))
@@ -452,18 +486,20 @@ class medoo
 
 			if (isset($where['LIMIT']))
 			{
-				if (is_numeric($where['LIMIT']))
+				$LIMIT = $where['LIMIT'];
+
+				if (is_numeric($LIMIT))
 				{
-					$where_clause .= ' LIMIT ' . $where['LIMIT'];
+					$where_clause .= ' LIMIT ' . $LIMIT;
 				}
 
 				if (
-					is_array($where['LIMIT']) &&
-					is_numeric($where['LIMIT'][0]) &&
-					is_numeric($where['LIMIT'][1])
+					is_array($LIMIT) &&
+					is_numeric($LIMIT[0]) &&
+					is_numeric($LIMIT[1])
 				)
 				{
-					$where_clause .= ' LIMIT ' . $where['LIMIT'][0] . ',' . $where['LIMIT'][1];
+					$where_clause .= ' LIMIT ' . $LIMIT[0] . ',' . $LIMIT[1];
 				}
 			}
 		}
@@ -518,14 +554,7 @@ class medoo
 						// For ['column1' => 'column2']
 						else
 						{
-							if (strpos(key($relation), '.') !== false)
-							{
-								$relation = 'ON ' . key($relation) . ' = "' . $match[3] . '"."' . current($relation) . '"';
-							}
-							else
-							{
-								$relation = 'ON ' . $table . '."' . key($relation) . '" = "' . $match[3] . '"."' . current($relation) . '"';
-							}
+							$relation = 'ON ' . $table . '."' . key($relation) . '" = "' . $match[3] . '"."' . current($relation) . '"';
 						}
 					}
 
@@ -578,10 +607,6 @@ class medoo
 				{
 					$where = $columns;
 				}
-				else
-				{
-					$where == $join;
-				}
 			}
 			else
 			{
@@ -625,10 +650,12 @@ class medoo
 		{
 			$keys = array_keys($data);
 			$values = array();
-			$index = 0;
+			$columns = array();
 
 			foreach ($data as $key => $value)
 			{
+				array_push($columns, $this->column_quote($key));
+
 				switch (gettype($value))
 				{
 					case 'NULL':
@@ -640,7 +667,6 @@ class medoo
 
 						if (isset($column_match[0]))
 						{
-							$keys[ $index ] = $column_match[1];
 							$values[] = $this->quote(json_encode($value));
 						}
 						else
@@ -656,14 +682,12 @@ class medoo
 					case 'integer':
 					case 'double':
 					case 'string':
-						$values[] = $this->quote($value);
+						$values[] = $this->fn_quote($key, $value);
 						break;
 				}
-
-				$index++;
 			}
 
-			$this->exec('INSERT INTO "' . $table . '" ("' . implode('", "', $keys) . '") VALUES (' . implode($values, ', ') . ')');
+			$this->exec('INSERT INTO "' . $table . '" (' . implode(', ', $columns) . ') VALUES (' . implode($values, ', ') . ')');
 
 			$lastId[] = $this->pdo->lastInsertId();
 		}
@@ -716,7 +740,7 @@ class medoo
 					case 'integer':
 					case 'double':
 					case 'string':
-						$fields[] = $column . ' = ' . $this->quote($value);
+						$fields[] = $column . ' = ' . $this->fn_quote($key, $value);
 						break;
 				}
 			}
@@ -740,7 +764,7 @@ class medoo
 			{
 				foreach ($replacements as $replace_search => $replace_replacement)
 				{
-					$replace_query[] = $column . ' = REPLACE("' . $column . '", ' . $this->quote($replace_search) . ', ' . $this->quote($replace_replacement) . ')';
+					$replace_query[] = $column . ' = REPLACE(' . $this->column_quote($column) . ', ' . $this->quote($replace_search) . ', ' . $this->quote($replace_replacement) . ')';
 				}
 			}
 
@@ -755,7 +779,7 @@ class medoo
 
 				foreach ($search as $replace_search => $replace_replacement)
 				{
-					$replace_query[] = $columns . ' = REPLACE("' . $columns . '", ' . $this->quote($replace_search) . ', ' . $this->quote($replace_replacement) . ')';
+					$replace_query[] = $columns . ' = REPLACE(' . $this->column_quote($columns) . ', ' . $this->quote($replace_search) . ', ' . $this->quote($replace_replacement) . ')';
 				}
 
 				$replace_query = implode(', ', $replace_query);
@@ -763,7 +787,7 @@ class medoo
 			}
 			else
 			{
-				$replace_query = $columns . ' = REPLACE("' . $columns . '", ' . $this->quote($search) . ', ' . $this->quote($replace) . ')';
+				$replace_query = $columns . ' = REPLACE(' . $this->column_quote($columns) . ', ' . $this->quote($search) . ', ' . $this->quote($replace) . ')';
 			}
 		}
 
@@ -827,7 +851,7 @@ class medoo
 
 	public function last_query()
 	{
-		return str_replace('"', '', $this->queryString);
+		return $this->queryString;
 	}
 
 	public function info()

@@ -37,6 +37,7 @@ class Request extends Core
      */
     public static function method ()
     {
+return $_SERVER['REQUEST_METHOD'];
         return filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING);
     }
 
@@ -50,6 +51,8 @@ class Request extends Core
     public static function url ()
     {
         $uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
+$uri = $_SERVER['REQUEST_URI'];
+
         $parts = explode('?', $uri);
         return reset($parts);
     }

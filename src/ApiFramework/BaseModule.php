@@ -275,12 +275,14 @@ class BaseModule extends Core
                 if ($valids[$field]) {
                     $field = $valids[$field];
                 }
-                $field = preg_replace('/^\*/is', '[LIKE]', $field);
 
-// if (!$this->filters[$field]) // Remove this line after App Module
-//                 $this->filters[$field] = $value;
-                // $store[$field] = $value;
-                $store['AND'][$field] = $value;
+                // Full text search
+                if (preg_match('/^\*|\*$/is', $field)) {
+                    $store['LIKE'][preg_replace('/\*/is', '%', $field)] = $value;
+                    // $field = preg_replace('/^\*/is', '[LIKE]', $field);
+                }
+                else
+                    $store['AND'][$field] = $value;
             }
         }
 
