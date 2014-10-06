@@ -45,7 +45,7 @@ class BaseModule extends Core
     function __construct ()
     {
         // Database connection
-        $this->db = new medoo([
+        $this->db = new \medoo([
             'database_type' => 'mysql',
             'database_name' => CONFIG_DB_NAME,
             'server' => CONFIG_DB_HOST,
