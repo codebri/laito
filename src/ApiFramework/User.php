@@ -11,10 +11,11 @@ namespace ApiFramework;
 */
 class User extends BaseModule
 {
-
-    private static $user = 'guest';
-    private static $password = '1a1dc91c907325c69271ddf0c944bc72';
-    private static $sessionsFolder = 'storage/sessions/';
+    protected $table = 'users';
+    protected $validFilters = ['email' => 'users.email'];
+    private $sessionsFolder = 'storage/sessions/';
+    private $usernameColumn = 'email';
+    private $passwordColumn = 'password';
 
     /**
      * Login a user.
@@ -29,13 +30,13 @@ class User extends BaseModule
         $password = Request::input('password');
 
         // Check credentials
-        if (!self::isValid($user, $password)) {
-            return self::error(401, 'Invalid user');
+        if (!$this->isValid($user, $password)) {
+            return $this->error(401, 'Invalid user');
         }
 
         // Store session file
         $token = md5(time());
-        file_put_contents(self::getSessionsPath() . $token . '.json', json_encode(['user' => $user]));
+        file_put_contents($this->getSessionsPath() . $token . '.json', json_encode(['user' => $user]));
 
         // Set session cookies
         setcookie('user', $user, time() + 3600, '/');
@@ -51,23 +52,23 @@ class User extends BaseModule
      * @param string $key
      * @return mixed
      */
-    public static function info ($token)
+    public function info ($token)
     {
         // Get token
         $token = ($token)?: Request::token();
 
         // Check session file
-        $sessionFile = self::getSessionsPath() . $token . '.json';
+        $sessionFile = $this->getSessionsPath() . $token . '.json';
         if (!file_exists($sessionFile)) {
-            return self::error(401, 'Invalid token');
+            return $this->error(401, 'Invalid token');
         }
 
         // Get session data
-        $session = json_decode(file_get_contents(self::getSessionsPath() . $token . '.json'), true);
+        $session = json_decode(file_get_contents($this->getSessionsPath() . $token . '.json'), true);
 
         // Check session user
         if (!$session['user']) {
-            return self::error(401, 'Invalid token');
+            return $this->error(401, 'Invalid token');
         }
 
         // Return user info
@@ -84,15 +85,15 @@ class User extends BaseModule
     {
         // Get session
         $token = ($token)?: Request::token();
-        $session = json_decode(file_get_contents(self::getSessionsPath() . $token . '.json'), true);
+        $session = json_decode(file_get_contents($this->getSessionsPath() . $token . '.json'), true);
 
         // Check session
         if (!$session['user']) {
-            return self::error(401, 'Invalid token');
+            return $this->error(401, 'Invalid token');
         }
 
         // Delete session file
-        unlink(self::getSessionsPath() . $token . '.json');
+        unlink($this->getSessionsPath() . $token . '.json');
 
         // Delete session cookies
         setcookie('user', '', time() - 3600, '/');
@@ -110,10 +111,11 @@ class User extends BaseModule
      */
     public function isValid ($user, $password)
     {
-        if (($user !== self::$user) || (md5($password) !== self::$password)) {
+        $userData = $this->where($this->usernameColumn, $user)->first();
+        if (!$userData) {
             return false;
         }
-        return true;
+        return password_verify($password, $userData[$this->passwordColumn]);
     }
 
     /**
@@ -121,9 +123,9 @@ class User extends BaseModule
      *
      * @return string
      */
-    private static function getSessionsPath ()
+    public function getSessionsPath ()
     {
-        return CONFIG_DOCUMENT_ROOT . self::$sessionsFolder;
+        return CONFIG_DOCUMENT_ROOT . $this->sessionsFolder;
     }
 
 }
