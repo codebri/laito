@@ -282,7 +282,7 @@ class BaseModule extends Core
      */
     private function filter (&$store, $valids, $field, $value=null)
     {
-        $_valids = [$this->primary_key, $this->table.'.'.$this->primaryKey];
+        $_valids = [$this->primaryKey, $this->table.'.'.$this->primaryKey];
 
         $valids = array_merge($valids, $_valids);
 
