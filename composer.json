@@ -10,7 +10,8 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.0",
-        "catfan/medoo": "*"
+        "catfan/medoo": "*",
+        "ircmaxell/password-compat": "dev-master"
     },
     "autoload": {
         "psr-0": {
