@@ -117,10 +117,6 @@ class BaseModule extends Core
 
         $where = $this->where;
         if ($this->paginate) {
-            // Set pagination from parameters
-            $this->paging['limit'] = (int)(isset($input['limit'])? $input['limit'] : $this->paging['limit']);
-            $this->paging['offset'] = (int)(isset($input['offset'])? $input['limit'] : $this->paging['offset']);
-
             // Add pagination to query
             $where['LIMIT'] = [(int)$this->paging['offset'], (int)$this->paging['limit']];
         }
@@ -157,8 +153,10 @@ class BaseModule extends Core
         }
 
         // Paginate results
-        $this->paging['records'] = (int)$records;
-        Response::metadata('paging', $this->paging);
+        if ($this->paginate) {
+            $this->paging['records'] = (int)$records;
+            Response::metadata('paging', $this->paging);
+        }
 
         // Objectify response
         if ($this->objectify) {
@@ -227,6 +225,10 @@ class BaseModule extends Core
      */
     function show ($id)
     {
+        // Disable pagination
+        $this->paginate = false;
+
+        // Filter by primary key
         $this->where($this->table.'.'.$this->primaryKey, $id);
 
         return $this->first();
