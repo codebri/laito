@@ -23,7 +23,8 @@ class App extends Core
         $url = Request::url();
 
         // Check if the user is logged in
-        if (($url !== '/login/') && (!User::info(Request::token()))) {
+        $user = new User();
+        if (($url !== '/login/') && (!$user->info(Request::token()))) {
             Response::error(401, 'Invalid token');
             return Response::output();
         }
