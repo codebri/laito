@@ -1,7 +1,7 @@
 ApiFramework
 ============
 
-Api Framework for PHP
+A simple API framework for PHP
 
 by **MangoLabs**
 
