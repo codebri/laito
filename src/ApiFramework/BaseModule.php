@@ -110,12 +110,6 @@ class BaseModule extends Core
      */
     function index ()
     {
-        // Get input parameters
-        $input = Request::input();
-        // Apply filters
-        $this->where($input);
-
-        $where = $this->where;
         if ($this->paginate) {
             // Add pagination to query
             $where['LIMIT'] = [(int)$this->paging['offset'], (int)$this->paging['limit']];
