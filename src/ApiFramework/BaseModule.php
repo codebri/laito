@@ -161,8 +161,9 @@ class BaseModule extends Core
         Response::metadata('paging', $this->paging);
 
         // Objectify response
-        if ($this->objectify)
+        if ($this->objectify) {
             $collection = \ApiFramework\Response::objectify($collection, $this->objectify);
+        }
 
         return $collection;
     }
@@ -226,10 +227,22 @@ class BaseModule extends Core
      */
     function show ($id)
     {
-        // Update existing row in database
-        $element = $this->db->get($this->table, "*", [$this->primaryKey => $id]);
+        $this->where($this->table.'.'.$this->primaryKey, $id);
 
-        return $element;
+        return $this->first();
+    }
+
+    /**
+     * Retrieve first element of the collection
+     * 
+     * @return boolean
+     */
+    function first ()
+    {
+        if ($collection = $this->index()) {
+            return current($collection);
+        }
+        return false;
     }
 
     /**
@@ -267,6 +280,10 @@ class BaseModule extends Core
      */
     private function filter (&$store, $valids, $field, $value=null)
     {
+        $_valids = [$this->primary_key, $this->table.'.'.$this->primaryKey];
+
+        $valids = array_merge($valids, $_valids);
+
         if (!is_array($field) && !$value) {
             return false;
         }
