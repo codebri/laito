@@ -237,6 +237,9 @@ class BaseModule extends Core
      */
     function first ()
     {
+        // Disable pagination
+        $this->paginate = false;
+        
         if ($collection = $this->index()) {
             return current($collection);
         }
