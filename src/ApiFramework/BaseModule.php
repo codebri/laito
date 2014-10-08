@@ -280,9 +280,10 @@ class BaseModule extends Core
                 if (preg_match('/^\*|\*$/is', $field)) {
                     $store['LIKE'][preg_replace('/\*/is', '%', $field)] = $value;
                     // $field = preg_replace('/^\*/is', '[LIKE]', $field);
+                } else {
+                    //$store['AND'][$field] = $value;
+                    $store[$field] = $value;
                 }
-                else
-                    $store['AND'][$field] = $value;
             }
         }
 
