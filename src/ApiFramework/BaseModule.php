@@ -20,6 +20,7 @@ class BaseModule extends Core
 
     protected $data = [];
     protected $where = [];
+    protected $objectify = [];
     protected $fields = null;
     protected $joins = null;
     protected $group = null;
@@ -158,6 +159,10 @@ class BaseModule extends Core
         // Paginate results
         $this->paging['records'] = (int)$records;
         Response::metadata('paging', $this->paging);
+
+        // Objectify response
+        if ($this->objectify)
+            $collection = \ApiFramework\Response::objectify($collection, $this->objectify);
 
         return $collection;
     }
