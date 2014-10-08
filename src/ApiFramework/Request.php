@@ -19,7 +19,8 @@ class Request extends Core
         'limit',
         'offset',
         'order',
-        'locale'
+        'locale',
+        '_method'
     ];
 
     private static $default = [
@@ -37,8 +38,8 @@ class Request extends Core
      */
     public static function method ()
     {
-return $_SERVER['REQUEST_METHOD'];
-        return filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING);
+        $override = filter_input(INPUT_GET, '_method', FILTER_SANITIZE_STRING);
+        return $override?: $_SERVER['REQUEST_METHOD'];
     }
 
 
@@ -50,9 +51,7 @@ return $_SERVER['REQUEST_METHOD'];
      */
     public static function url ()
     {
-        $uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
-$uri = $_SERVER['REQUEST_URI'];
-
+        $uri = $_SERVER['REQUEST_URI'];
         $parts = explode('?', $uri);
         return reset($parts);
     }
@@ -148,7 +147,7 @@ $uri = $_SERVER['REQUEST_URI'];
             return self::$inputs;
         }
 
-        switch (self::method()) {
+        switch ($_SERVER['REQUEST_METHOD']) {
             case 'PUT':
                 parse_str(file_get_contents("php://input"), $inputs);
                 foreach ($inputs as $key => $value) {
