@@ -130,6 +130,8 @@ class Response extends Core
             case 'json':
                 self::header('Content-type: application/json; charset=utf-8');
                 $response = json_encode($response);
+                // Replace string numbers for integers
+                $response = preg_replace('/(")([0-9]+)(")/is', '\\2', $response);
                 break;
             case 'html':
                 $response = self::html($response);
