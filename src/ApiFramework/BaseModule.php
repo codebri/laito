@@ -20,6 +20,7 @@ class BaseModule extends Core
 
     protected $data = [];
     protected $where = [];
+    protected $with = [];
     protected $objectify = [];
     protected $fields = null;
     protected $joins = null;
@@ -46,7 +47,7 @@ class BaseModule extends Core
     function __construct ()
     {
         // Database connection
-        $this->db = new \medoo([
+        $this->db = new \ApiFramework\Database([
             'database_type' => 'mysql',
             'database_name' => CONFIG_DB_NAME,
             'server' => CONFIG_DB_HOST,
@@ -122,13 +123,36 @@ class BaseModule extends Core
             $where['ORDER'] = $this->order;
         }
 
+        // Fields to retrieve
+        $fields = ($this->fields)? $this->fields : $this->table."*";
+
+        // Process with tables (many-to-many relations)
+        if ($this->with) {
+            foreach ($this->with as $_with => $with) {
+
+                // Add table to joins
+                $this->joins['[>]'.$with[0]] = [$this->primaryKey => $with[1]];
+
+                $_field .= "GROUP_CONCAT(".$with[0].".".$with[2].")(_group_".$_with.")";
+
+                // Add field retrieve
+                if (is_array($fields)) {
+                    $fields[] = $_field;
+                }
+                else
+                    $fields .= ', '.$_field;
+
+                // Add objectify for this element
+                $this->objectify[] = '_group_'.$_with;
+            }
+            // Add group by primary key
+            $this->group($this->table.'.'.$this->primaryKey);
+        }
+
         // Add Group By
         if ($this->group) {
             $where['GROUP'] = $this->group;
         }
-
-        // Fields to retrieve
-        $fields = ($this->fields)? $this->fields : "*";
 
         // Retrieve results from database
         if ($this->joins) {
@@ -152,6 +176,16 @@ class BaseModule extends Core
         if ($this->paginate) {
             $this->paging['records'] = (int)$records;
             Response::metadata('paging', $this->paging);
+        }
+
+        // Process with fields
+        if ($this->with) {
+            foreach ($collection as $k => $v) {
+                foreach ($this->with as $_with => $with) {
+                    $collection[$k][$_with] = explode(',',$collection[$k]['_group_'.$_with]);
+                    unset($collection[$k]['_group_'.$_with]);
+                }
+            }
         }
 
         // Objectify response
