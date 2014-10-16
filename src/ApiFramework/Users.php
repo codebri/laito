@@ -29,7 +29,7 @@ class Users extends BaseModule
         $this->writables = [$username, $password];
 
         // Set valid filters
-        $this->validFilters[
+        $this->validFilters = [
             'id' => $table . '.id',
             $username => $table . '.' . $username
         ];
