@@ -2,18 +2,8 @@
 
 namespace ApiFramework;
 
-class Auth extends BaseModule
+class Auth extends Core
 {
-
-    /**
-     * @var string Users table
-     */
-    protected $table = 'users';
-
-    /**
-     * @var array Filters for where, order, etc.
-     */
-    protected $validFilters = ['id' => 'id', 'email' => 'users.email'];
 
     /**
      * @var Array Authenticated user
@@ -58,12 +48,12 @@ class Auth extends BaseModule
 
 
     /**
-     * Returns the info of the logged user
+     * Tells if an user is logged in
      *
      * @param string $token Token
      * @return mixed User session data or false
      */
-    public function info ($token) {
+    public function check ($token) {
 
         // Check session
         $sessionData = $this->getSession($token);
@@ -77,12 +67,12 @@ class Auth extends BaseModule
 
 
     /**
-     * Logouts a user
+     * Signs out a user
      *
      * @param string $token Token
-     * @return boolean Success or fail of logout
+     * @return boolean Success or fail of sign out
      */
-    public function logout ($token) {
+    public function signout ($token) {
 
         // Get session
         $sessionData = $this->getSession($token);
@@ -181,7 +171,7 @@ class Auth extends BaseModule
         $data['password'] = password_hash($newPassword, PASSWORD_BCRYPT);
 
         // Update user
-        $userUpdated = $this->update($id, $data);
+        $userUpdated = $this->app->user->update($id, $data);
 
         // Delete reminder
         if ($userUpdated['sucess'] && $isReminder) {
@@ -200,7 +190,7 @@ class Auth extends BaseModule
      * @return mixed User array, of false if the user does not exist
      */
     private function findUser ($username) {
-        $user = $this->where($this->app->config('auth.username'), $username)->first();
+        $user = $this->app->user->where($this->app->config('auth.username'), $username)->first();
         return $user['data'];
     }
 

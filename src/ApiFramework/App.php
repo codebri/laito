@@ -9,6 +9,7 @@ class App extends Container
      * @var array Default settings
      */
     private $defaultSettings = [
+        'auth.table'        => 'users',
         'auth.username'     => 'email',
         'auth.password'     => 'password',
         'sessions.folder'   => 'storage/sessions/',
@@ -39,6 +40,11 @@ class App extends Container
         // Share an auth instance
         $this->container['auth'] = $this->share(function ($container) {
             return new Auth($this);
+        });
+
+        // Share an user instance
+        $this->container['user'] = $this->share(function ($container) {
+            return new User($this);
         });
 
         // Share a lang instance
@@ -107,23 +113,12 @@ class App extends Container
      */
     public function run () {
 
-        // Get Url
-        $url = $this->request->url();
-
-        // Check if the user is logged in
-        /*
-        $user = $this->auth;
-        if (($url !== '/login/') && (!$user->info($this->request->token()))) {
-            $this->response->error(401, 'Invalid token');
-        }
-        */
-
         // Get route action
         list($action, $urlParams) = $this->router->getAction($url);
 
         // Check if the class exists
         if (!class_exists($action['class'])) {
-            $this->response->error(401, 'Class does not exists');
+            $this->response->error(404, 'Class not found');
         }
 
         // Create the required object
