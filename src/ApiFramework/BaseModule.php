@@ -279,12 +279,6 @@ class BaseModule extends Core
             $records = (int)$this->db->count($this->table, "*", $this->where);
         }
 
-        // Paginate results
-        if ($this->paginate) {
-            $this->paging['records'] = (int)$records;
-            $response['paging'] = $this->paging;
-        }
-
         // Process with fields
         if ($this->with) {
             foreach ($collection as $k => $v) {
@@ -301,6 +295,11 @@ class BaseModule extends Core
         }
 
         $response['success'] = (bool) $collection;
+        // Paginate results
+        if ($this->paginate) {
+            $this->paging['records'] = (int)$records;
+            $response['paging'] = $this->paging;
+        }
         $response['data'] = $collection ? : [];
 
         $this->resetSettings();
