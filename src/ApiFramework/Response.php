@@ -109,6 +109,7 @@ class Response extends Core
 
         // Return response
         echo $response;
+        exit;
     }
 
 
