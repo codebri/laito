@@ -5,4 +5,4 @@ A simple API framework for PHP
 
 by **MangoLabs**
 
-www.mangolabs.com.ar
+mangolabs.com.ar
