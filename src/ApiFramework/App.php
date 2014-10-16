@@ -124,7 +124,7 @@ class App extends Container
             $this->response->error(404, 'Class not found');
         }
 
-        // Create the required object
+        // Create the required module
         $module = new $action['class']($this);
 
         // Apply limit
