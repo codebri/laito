@@ -2,71 +2,163 @@
 
 namespace ApiFramework;
 
-/**
- * App
- *
- * Main application class
- * @version 1.0
- * @package App
-*/
-class App extends Core
+class App extends Container
 {
 
     /**
-     * Run the application
-     * 
-     * @return view
+     * @var array Default settings
      */
-    static public function run ()
-    {
-        // Get Url
-        $url = Request::url();
+    private $defaultSettings = [
+        'auth.username'     => 'email',
+        'auth.password'     => 'password',
+        'sessions.folder'   => 'storage/sessions/',
+        'sessions.ttl'      => 3600,
+        'sessions.cookie'   => 'token',
+        'reminders.folder'  => 'storage/reminders/',
+        'reminders.ttl'     => 3600,
+        'reminders.suffix'  => 'reminders_',
+        'lang.folder'       => 'static/languages/',
+        'request.emulate'   => true,
+        'database.type'     => 'mysql',
+        'database.server'   => 'localhost',
+        'database.name'     => 'test',
+        'database.username' => 'root',
+        'database.password' => 'root'
+    ];
 
-        // Check if the user is logged in
-        $user = new User();
-        if (($url !== '/login/') && (!$user->info(Request::token()))) {
-            Response::error(401, 'Invalid token');
-            return Response::output();
+    /**
+     * Constructor
+     *
+     * @param array $userSettings Array of user defined options
+     */
+    public function __construct(array $userSettings = array()) {
+
+        // Setup settings
+        $this->container['settings'] = array_merge($this->defaultSettings, $userSettings);
+
+        // Share an auth instance
+        $this->container['auth'] = $this->share(function ($container) {
+            return new Auth($this);
+        });
+
+        // Share a lang instance
+        $this->container['lang'] = $this->share(function ($container) {
+            return new Lang($this);
+        });
+
+        // Share a request instance
+        $this->container['request'] = $this->share(function ($container) {
+            return new Request($this);
+        });
+
+        // Share a response instance
+        $this->container['response'] = $this->share(function ($container) {
+            return new Response($this);
+        });
+
+        // Share a router instance
+        $this->container['router'] = $this->share(function ($container) {
+            return new Router($this);
+        });
+
+        // Share a database instance
+        $this->container['db'] = $this->share(function ($container) {
+            $config = [
+                'database_type' => $this->config('database.type'),
+                'database_name' => $this->config('database.name'),
+                'server'        => $this->config('database.server'),
+                'username'      => $this->config('database.username'),
+                'password'      => $this->config('database.password')
+            ];
+            return new Database($config, $this);
+        });
+    }
+
+    /**
+     * Configure application settings
+     *
+     * @param string|array $name Setting to set or retrieve
+     * @param mixed $value If passed, value to apply on the setting
+     * @return mixed Value of a setting if only one argument is a string
+     */
+    public function config ($name, $value = null) {
+
+        // Check for massive assignaments
+        if (is_array($name)) {
+            foreach ($name as $key => $value) {
+                $this->config($key, $value);
+            }
+            return true;
         }
 
+        // Assign a new value
+        if (isset($value)) {
+            $this->container['settings'][$name] = $value;
+        }
+
+        // Or return the current value
+        return isset($this->container['settings'][$name]) ? $this->container['settings'][$name] : null;
+    }
+
+
+    /**
+     * Runs the application
+     * 
+     */
+    public function run () {
+
+        // Get Url
+        $url = $this->request->url();
+
+        // Check if the user is logged in
+        /*
+        $user = $this->auth;
+        if (($url !== '/login/') && (!$user->info($this->request->token()))) {
+            $this->response->error(401, 'Invalid token');
+        }
+        */
+
         // Get route action
-        list($action, $urlParams) = Router::getAction($url);
+        list($action, $urlParams) = $this->router->getAction($url);
 
         // Check if the class exists
         if (!class_exists($action['class'])) {
-            Response::error(404, 'Not Found');
-            return Response::output();
+            $this->response->error(401, 'Class does not exists');
         }
 
         // Create the required object
-        $obj = new $action['class'];
+        $module = new $action['class']($this);
 
         // Apply limit
-        $obj->limit(Request::limit());
+        $module->limit($this->request->input('limit'));
 
         // Apply offset
-        $obj->offset(Request::offset());
+        $module->offset($this->request->input('offset'));
 
         // Apply order
-        $obj->order(Request::order());
+        $module->order($this->request->input('order'));
 
-        // Apply where
-        $obj->where(Request::input());
-
-        // Set data
-        $someData = Request::input();
-        $obj->data($someData);
-
-        // Execute the required method
-        $res = call_user_func_array(array($obj, $action['method']), $urlParams?: []);
-
-        // Check if the response was successfull
-        if ($res !== false) {
-            Response::data($res);
+        // Apply wheres
+        $filters = $module->validFilters();
+        foreach ($filters as $name => $field) {
+            if ($this->request->hasInput($name)) {
+                $module->where($field, $this->request->input($name));
+            }
         }
 
+        // Apply writable data
+        $writableFields = $module->writableFields();
+        foreach ($writableFields as $field) {
+            if ($this->request->hasInput($field)) {
+                $module->data($field, $this->request->input($field));
+            }
+        }
+
+        // Execute the required method
+        $res = call_user_func_array(array($module, $action['method']), $urlParams ? : []);
+
         // Return the response in the right format
-        return Response::output($res);
+        return $this->response->output($res);
     }
 
 }

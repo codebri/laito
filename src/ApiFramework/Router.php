@@ -1,26 +1,24 @@
 <?php
 
 namespace ApiFramework;
-use ApiFramework\Request;
 
-/**
- * Router
- *
- * Manages routes
- * @version 1.0
- * @package Router
-*/
 class Router extends Core
 {
 
-    private static $methods = [
+    /**
+     * @var array HTTP methods
+     */
+    private $methods = [
         'get' => [],
         'post' => [],
         'put' => [],
         'delete' => [],
     ];
 
-    private static $resource = [
+    /**
+     * @var array Resource template
+     */
+    private $resource = [
         'get' => [
             '/%route%/' => ['class' => '', 'method' => 'index'],
             '/%route%/:id/' => ['class' => '', 'method' => 'show'],
@@ -36,6 +34,7 @@ class Router extends Core
         ],
     ];
 
+
     /**
      * Register a url
      * 
@@ -44,10 +43,10 @@ class Router extends Core
      * @param array $action Module and method to execute
      * @return boolean
      */
-    static public function register ($method, $route, $action)
-    {
-        return self::$methods[$method][$route] = ['class' => $action[0], 'method' => $action[1]];
+    public function register ($method, $route, $action) {
+        return $this->methods[$method][$route] = ['class' => $action[0], 'method' => $action[1]];
     }
+
 
     /**
      * Retrieve registered routes
@@ -55,13 +54,13 @@ class Router extends Core
      * @param string $method (Optional) Method specific routes.
      * @return array
      */
-    static public function routes ($method=null)
-    {
-        if ($method && isset(self::$methods[$method])) {
-            return self::$methods[$method];
+    public function routes ($method = null) {
+        if ($method && isset($this->methods[$method])) {
+            return $this->methods[$method];
         }
-        return self::$methods;
+        return $this->methods;
     }
+
 
     /**
      * Retrieve model and method to execute
@@ -69,19 +68,19 @@ class Router extends Core
      * @param string $route Route to match
      * @return array
      */
-    static public function getAction ($route)
-    {
+    public function getAction ($route) {
+
         // Get requested method
-        $method = Request::method()?: 'GET';
+        $method = $this->app->request->method() ? : 'GET';
         $method = strtolower($method);
 
         // Try literal match
-        if (isset($methods[$method][$route]) && $match = self::$methods[$method][$route]) {
+        if (isset($methods[$method][$route]) && $match = $this->methods[$method][$route]) {
             return [$match, []];
         }
 
         // Generate regex pattern from registered route and test it against requested route
-        foreach (self::$methods[$method] as $key => $val) {
+        foreach ($this->methods[$method] as $key => $val) {
             $pattern = preg_replace('/\/\:.+?\//is', '/(.+?)/', $key);
             $pattern = '/^'.str_replace('/', '\/', $pattern).'$/is';
             if (preg_match($pattern, $route, $matches)) {
@@ -90,7 +89,7 @@ class Router extends Core
         }
 
         // Or return an error page
-        return self::error(404, 'Not found');
+        return $this->error(404, 'Not found');
     }
 
 
@@ -101,38 +100,20 @@ class Router extends Core
      * @param string $module Module name
      * @return boolean
      */
-    static public function resource ($route, $module)
-    {
+    public function resource ($route, $module) {
+
         // Resource map template
         $resource = [];
 
         // Replace placeholders
-        foreach (self::$resource as $verb => $routes) {
+        foreach ($this->resource as $verb => $routes) {
             foreach ($routes as $k => $v) {
                 $v['class'] = $module;
                 $new_route = preg_replace('/%route%/', $route, $k);
-                self::$methods[$verb][preg_replace('/\/\//is', '/', $new_route)] = $v;
+                $this->methods[$verb][preg_replace('/\/\//is', '/', $new_route)] = $v;
             }
         }
-
         return true;
-    }
-
-
-    /**
-     * Captures non existing static functions
-     * 
-     * @param string $function Function requested to execute
-     * @param array $params Params requested for function execution
-     * @return boolean
-     */
-    public static function __callStatic ($function, $params)
-    {
-        if (isset(self::$methods[$function])) {
-            self::register($function, $params[0], $params[1]);
-            return true;
-        }
-        return false;
     }
 
 }

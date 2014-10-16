@@ -2,129 +2,224 @@
 
 namespace ApiFramework;
 
-/**
- * BaseModule
- *
- * Basic starting module
- * @version 1.0
- * @package BaseModule
-*/
 class BaseModule extends Core
 {
 
-    protected $db; // Objeto de base de datos
-    private $_error = '';
-    private $_debug = [];
-    private $_db_debug = false;
-    private $cache_ttl = 172800; // Standard time for cache ttl in seconds (2 hours)
-
-    protected $data = [];
-    protected $where = [];
-    protected $with = [];
-    protected $objectify = [];
-    protected $fields = null;
-    protected $joins = null;
-    protected $group = null;
-    protected $order = null;
-
-    // Protected variables for overloading
+    /**
+     * @var string Table name
+     */
     protected $table = null;
+
+    /**
+     * @var string Primary key column name
+     */
     protected $primaryKey = 'id';
+
+    /**
+     * @var boolean Pagination indicator
+     */
+    protected $paginate = true;
+
+    /**
+     * @var array Default pagination settings
+     */
     protected $paging = [
         'records' => 0,
-        'limit' => 50,
-        'offset' => 0,
+        'offset'  => 0,
+        'limit'   => 50
     ];
-    protected $paginate = true; // Pagination activated
-    protected $cache = true; // Returns cache if exists
-    protected $validFilters = []; // Valid fields to filter for
-    protected $writable = ['aaa', 'ccc']; // Valid fields for POST/PUT
+
+    /**
+     * @var Database Database object
+     */
+    protected $db;
+
+    /**
+     * @var array Module properties
+     */
+    protected $data = [];
+
+    /**
+     * @var array Where filters
+     */
+    protected $where = [];
+
+    /**
+     * @var array Order filters
+     */
+    protected $order = [];
+
+    /**
+     * @var array Group filters
+     */
+    protected $group = [];
+
+    /**
+     * @var array One to many relationships
+     */
+    protected $joins = [];
+
+    /**
+     * @var array Many to many relationships
+     */
+    protected $with = [];
+
+    /**
+     * @var array Fields to be retrieved
+     */
+    protected $fields = [];
+
+    /**
+     * @var array Fields to be objectified
+     */
+    protected $objectify = [];
+
+    /**
+     * @var array Fields to filter by
+     */
+    protected $validFilters = [];
+
+    /**
+     * @var array Writable fields
+     */
+    protected $writable = [];
+
+    /**
+     * @var array Object settings
+     */
+    protected $settings = [
+        'fields',
+        'joins',
+        'with',
+        'group',
+        'order',
+        'where',
+        'objectify',
+        'data'
+    ];
+
+    /**
+     * @var array Default settings
+     */
+    protected $defaults = [];
+
+    /**
+     * @var array Query debug
+     */
+    protected $debugQuery = true;
+
 
     /**
      * Class constructor
-     * 
+     *
+     * @param App Application instance
      */
-    function __construct ()
-    {
-        // Database connection
-        $this->db = new \ApiFramework\Database([
-            'database_type' => 'mysql',
-            'database_name' => CONFIG_DB_NAME,
-            'server' => CONFIG_DB_HOST,
-            'username' => CONFIG_DB_USER,
-            'password' => CONFIG_DB_PASSWORD
-        ]);
+    function __construct (App $app) {
+        parent::__construct($app);
+
+        // Database connection shortcut
+        $this->db = $this->app->db;
+
+        // Save original settings
+        foreach ($this->settings as $setting) {
+            $this->defaults[$setting] = $this->{$setting};
+        }
     }
+
 
     /**
      * Set offset for next queries
      * 
-     * @param integer $offset
-     * @return object $this
+     * @param integer $offset Number of elements to offset
+     * @return object $this Module instance
      */
-    function offset ($offset)
-    {
-        $this->paging['offset'] = (int)$offset;
+    function offset ($offset = null) {
+        if (isset($offset)) {
+            $this->paging['offset'] = (int) $offset;
+        }
         return $this;
     }
+
 
     /**
      * Set limit for next queries
      * 
-     * @param integer $limit
-     * @return object $this
+     * @param integer $limit Number of elements to retrieve
+     * @return object $this Module instance
      */
-    function limit ($limit)
-    {
-        $this->paging['limit'] = (int)$limit;
+    function limit ($limit = null) {
+        if (isset($limit)) {
+            $this->paging['limit'] = (int) $limit;
+        }
         return $this;
     }
+
 
     /**
      * Set order by for next queries
      * 
-     * @param string $field Field to order by 
-     * @return object $this
+     * @param string $order Field to order by
+     * @return object $this Module instance
      */
-    function order ($field)
-    {
-        $this->order = $field;
+    function order ($order = null) {
+        if (isset($order)) {
+            $this->order = $order;
+        }
         return $this;
     }
+
 
     /**
      * Set group by for next queries
      * 
-     * @param integer $field
-     * @return object $this
+     * @param integer $group Field to group by
+     * @return object $this Module instance
      */
-    function group ($field)
-    {
-        $this->group = $field;
+    function group ($group = null) {
+        if (isset($group)) {
+            $this->group = $group;
+        }
         return $this;
     }
+
+
+    /**
+     * Set objectify fields by for next queries
+     * 
+     * @param array $fields Fields to objectify
+     * @return object $this Module instance
+     */
+    function objectify ($fields) {
+        $this->objectify = $fields;
+        return $this;
+    }
+
 
     /**
      * List resource collection
      * 
      * @return array $collection
      */
-    function index ()
-    {
-        $where = $this->where;
+    function index () {
 
+        $response = [];
+
+        if (!empty($this->where)) {
+            $where = $this->where;
+        }
+
+        // Add pagination to query
         if ($this->paginate) {
-            // Add pagination to query
             $where['LIMIT'] = [(int)$this->paging['offset'], (int)$this->paging['limit']];
         }
 
         // Add Order By
-        if ($this->order) {
+        if (!empty($this->order)) {
             $where['ORDER'] = $this->order;
         }
 
         // Fields to retrieve
-        $fields = ($this->fields)? $this->fields : $this->table."*";
+        $fields = ($this->fields) ? $this->fields : $this->table . "*";
 
         // Process with tables (many-to-many relations)
         if ($this->with) {
@@ -138,9 +233,9 @@ class BaseModule extends Core
                 // Add field retrieve
                 if (is_array($fields)) {
                     $fields[] = $_field;
-                }
-                else
+                } else {
                     $fields .= ', '.$_field;
+                }
 
                 // Add objectify for this element
                 $this->objectify[] = '_group_'.$_with;
@@ -157,17 +252,29 @@ class BaseModule extends Core
         // Retrieve results from database
         if ($this->joins) {
             $collection = $this->db->select($this->table, $this->joins, $fields, $where);
-// echo '<pre>'.print_r($this->joins, true).'</pre>';
-// echo '<pre>'.print_r($where, true).'</pre>';
-// echo $this->db->last_query();
-// echo "\n<br/>Error: ".print_r($this->db->error(), true)."\n<br>";
+//echo '<pre>'.print_r($this->joins, true).'</pre>';
+//echo '<pre>'.print_r($where, true).'</pre>';
+//echo $this->db->last_query();
+//echo "\n<br/>Error: ".print_r($this->db->error(), true)."\n<br>";
+
+            // Debug
+            if ($this->debugQuery) {
+                $response['debug']['query'] = $this->db->last_query();
+            }
+
             // Get total records
             $records = (int)$this->db->count($this->table, $this->joins, "*", $this->where);
         } else {
             $collection = $this->db->select($this->table, $fields, $where);
-// echo '<pre>'.print_r($where, true).'</pre>';
-// echo $this->db->last_query();
-// echo "\n<br/>Error: ".print_r($this->db->error(), true)."\n<br>";
+//echo '<pre>'.print_r($where, true).'</pre>';
+//echo $this->db->last_query();
+//echo "\n<br/>Error: ".print_r($this->db->error(), true)."\n<br>";
+
+            // Debug
+            if ($this->debugQuery) {
+                $response['debug']['query'] = $this->db->last_query();
+            }
+
             // Get total records
             $records = (int)$this->db->count($this->table, "*", $this->where);
         }
@@ -175,7 +282,7 @@ class BaseModule extends Core
         // Paginate results
         if ($this->paginate) {
             $this->paging['records'] = (int)$records;
-            Response::metadata('paging', $this->paging);
+            $response['paging'] = $this->paging;
         }
 
         // Process with fields
@@ -190,48 +297,58 @@ class BaseModule extends Core
 
         // Objectify response
         if ($this->objectify) {
-            $collection = \ApiFramework\Response::objectify($collection, $this->objectify);
+            $collection = $this->app->response->objectify($collection, $this->objectify);
         }
 
-        return $collection;
+        $response['success'] = (bool) $collection;
+        $response['data'] = $collection ? : [];
+
+        $this->resetSettings();
+
+        return $response;
     }
 
+
     /**
-     * Create new element for resource collection
+     * Creates new element
      * 
      * @param array $data Key value array with information to store
-     * @return $last_id Last id created or false
+     * @return $id Last id created or false
      */
-    function create ($data=[])
-    {
-        $data = $this->data;
-
-        // Create new row in database
-        $last_id = $this->db->insert($this->table, $data);
-
-        // Empty $this->data
-        $this->data = [];
-        return $last_id;
+    function create ($data = null) {
+        if (isset($data)) {
+            $this->data = array_merge($this->data, $data);
+        }
+        $id = $this->db->insert($this->table, $this->data);
+        if ($this->debugQuery) {
+            $response['debug']['query'] = $this->db->last_query();
+        }
+        $response['success'] = (bool) $id;
+        $response['data'] = ['id' => $id];
+        return $response;
     }
 
+
     /**
-     * Update existing element from resource collection
+     * Update existing element
      * 
      * @param array $data Key value array with information to update
      * @param array $where Condition to filter records tu update
-     * @return boolean
+     * @return boolean Success or fail of update
      */
-    function update ($id)
-    {
-        $data = $this->data;
-
-        $where = [$this->primaryKey => $id];
-
-        // Update existing row in database
-        $affected = $this->db->update($this->table, $data, $where);
-
-        return (bool)$affected;
+    function update ($id, $data = null) {
+        if (isset($data)) {
+            $this->data = array_merge($this->data, $data);
+        }
+        $updated = (bool) $this->db->update($this->table, $this->data, [$this->primaryKey => $id]);
+        if ($this->debugQuery) {
+            $response['debug']['query'] = $this->db->last_query();
+        }
+        $response['success'] = $updated;
+        $response['data'] = ['id' => $id];
+        return $response;
     }
+
 
     /**
      * Delete existing element from resource collection
@@ -239,46 +356,42 @@ class BaseModule extends Core
      * @param string $id Element id to delete
      * @return boolean
      */
-    function destroy ($id)
-    {
-        // Update existing row in database
-        $affected = $this->db->delete($this->table, [$this->primaryKey => $id]);
-
-        return (bool)$affected;
+    function destroy ($id) {
+        $destroyed = (bool) $this->db->delete($this->table, [$this->primaryKey => $id]);
+        if ($this->debugQuery) {
+            $response['debug']['query'] = $this->db->last_query();
+        }
+        $response['success'] = $destroyed;
+        $response['data'] = ['id' => $id];
+        return $response;
     }
 
+
     /**
-     * Retrieve element details from resource collection
+     * Retrieves a single element from the collection
      * 
-     * @param string $id Element id to retrieve
+     * @param string $id Element ID
      * @return boolean
      */
-    function show ($id)
-    {
-        // Disable pagination
+    function show ($id) {
         $this->paginate = false;
-
-        // Filter by primary key
-        $this->where($this->table.'.'.$this->primaryKey, $id);
-
+        $this->where($this->table . '.' . $this->primaryKey, $id);
         return $this->first();
     }
 
+
     /**
-     * Retrieve first element of the collection
+     * Retrieves the first element of the collection
      * 
      * @return boolean
      */
-    function first ()
-    {
-        // Disable pagination
+    function first () {
         $this->paginate = false;
-        
-        if ($collection = $this->index()) {
-            return current($collection);
-        }
-        return false;
+        $response = $this->index();
+        $response['data'] = current($response['data']);
+        return $response;
     }
+
 
     /**
      * Add filter to apply in index method
@@ -287,10 +400,10 @@ class BaseModule extends Core
      * @param string $value Filter value
      * @return object
      */
-    public function where ($field, $value=null)
-    {
-        return $this->filter($this->where, $this->validFilters, $field, $value);
+    public function where ($field, $value = null) {
+        return $this->filter($this->where["AND"], $this->validFilters, $field, $value);
     }
+
 
     /**
      * Add data for crud methods
@@ -299,10 +412,10 @@ class BaseModule extends Core
      * @param string $value Filter value
      * @return object
      */
-    public function data ($field, $value=null)
-    {
+    public function data ($field, $value = null) {
         return $this->filter($this->data, $this->writable, $field, $value);
     }
+
 
     /**
      * Stores valid values for given array
@@ -313,62 +426,70 @@ class BaseModule extends Core
      * @param string $value Key value
      * @return object
      */
-    private function filter (&$store, $valids, $field, $value=null)
-    {
-        $_valids = [$this->primaryKey, $this->table.'.'.$this->primaryKey];
-
+    private function filter (&$store, $valids, $field, $value = null) {
+        $_valids = [$this->primaryKey, $this->table . '.' . $this->primaryKey];
         $valids = array_merge($valids, $_valids);
-
         if (!is_array($field) && !$value) {
             return false;
         }
-
         if (is_array($field)) {
             foreach ($field as $k => $v) {
                 $this->filter($store, $valids, $k, $v);
             }
         } else {
             if (in_array($field, $valids) || isset($valids[$field])) {
-                if ($valids[$field]) {
+                if (isset($valids[$field])) {
                     $field = $valids[$field];
                 }
-
-                // Full text search
                 if (preg_match('/^\*|\*$/is', $field)) {
                     $store['LIKE'][preg_replace('/\*/is', '%', $field)] = $value;
-                    // $field = preg_replace('/^\*/is', '[LIKE]', $field);
                 } else {
-                    //$store['AND'][$field] = $value;
                     $store[$field] = $value;
                 }
             }
         }
-
         return $this;
     }
+
+
+    /**
+     * Revert to the default settings
+     * 
+     * @return object
+     */
+    private function resetSettings () {
+        foreach ($this->settings as $setting) {
+            $this->{$setting} = $this->defaults[$setting];
+        }
+    }
+
 
     /**
      * Add new field to retrieve
      * 
-     * @param string|array $field Field to retrieve for or array with multiple fields.
+     * @param string|array $field Field to retrieve for or array with multiple fields
      * @return object|mixed
      */
-    function field ($field=null)
-    {
+    function field ($field = null) {
         if (!$field) {
-            return (!is_array($this->fields) || count($this->fields) <= 1)? (string)$this->fields : $this->fields;
+            return (!is_array($this->fields) || count($this->fields) <= 1) ? (string) $this->fields : $this->fields;
         }
-
         if (is_array($field)) {
             foreach ($field as $k => $v) {
                 $this->field($v);
             }
         } else {
+            if (in_array($field, $this->fields)) {
+                unset($this->fields[array_search($field, $this->fields)]);
+            }
+            if (in_array(str_replace($this->table . '.', '', $field), $this->fields)) {
+                unset($this->fields[array_search(str_replace($this->table . '.', '', $field), $this->fields)]);
+            }
             $this->fields[] = $field;
         }
-
         return $this;
     }
+
 
     /**
      * Add new table to join
@@ -378,77 +499,66 @@ class BaseModule extends Core
      * @param string $rKey Right key to join tables. If not defined, uses the same as $lKey
      * @return object
      */
-    function join ($table, $lKey, $rKey=null)
-    {
+    function join ($table, $lKey, $rKey = null) {
         if (!is_array($table) && !$lKey) {
             return false;
         }
-
         $this->joins[$table] = ($rKey)? [$lKey => $rKey] : $lKey;
-
         return $this;
     }
 
-    /**
-     * Paginate results
-     * 
-     * @param integer $code Error code
-     * @param string $message Error message
-     * @return boolean
-     */
-    function paginate ()
-    {
-        Response::metadata('paging', $this->paging);
-    }
 
     /**
      * Retrieve results quantity
      * 
-     * Results must be populated from within the results method
      * @return integer
      */
     public function records () {
         return $this->paging['records'];
     }
 
+
     /**
-     * Retrieve total pages quantity 
+     * Retrieve total pages quantity
      * 
-     * Results must be populated from within the results method
-     * @return integer
+     * @return integer Pages count
      */
     public function pages () {
-
-        // Division by zero not allowed
         if ($this->paging['limit'] == 0) {
             return 0;
         }
-
-        return ceil($this->paging['records']/$this->paging['limit']);
+        return ceil($this->paging['records'] / $this->paging['limit']);
     }
+
 
     /**
      * Retrieve primary key for this module
      * 
-     * @return boolean
+     * @return string Primary key
      */
-    function primaryKey ()
-    {
+    public function primaryKey () {
         return $this->primaryKey;
     }
 
+
     /**
-     * Stores any given method for $ttl time
+     * Retrieve valid filters for this module
      * 
-     * @param $ttl (Optional) Expiration time. If null, standard time is used.
-     * @return object
+     * @return array Valid filters
      */
-    public function remember ($ttl=null) {
-
-        // ttl for this cache
-        $ttl = ($ttl)?: $this->cache_ttl;
-
-        return $this;
+    public function validFilters () {
+        return $this->validFilters;
     }
+
+
+    /**
+     * Retrieve writable fields for this module
+     * 
+     * @return array Writable fields
+     */
+    public function writableFields () {
+        return $this->writable;
+    }
+
 
 }

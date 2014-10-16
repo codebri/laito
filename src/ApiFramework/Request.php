@@ -2,167 +2,151 @@
 
 namespace ApiFramework;
 
-/**
- * Request library
- *
- * Handles requests
- * @version 1.0
- * @package Request
-*/
 class Request extends Core
 {
 
-    private static $reserved = [
-        'id',
-        'module',
+    /**
+     * @var array Reserved parameters
+     */
+    private $reserved = [
         'token',
-        'limit',
-        'offset',
-        'order',
         'locale',
         '_method'
     ];
 
-    private static $default = [
-        'limit' => 10,
-        'offset' => 0
-    ];
+    /**
+     * @var array Received inputs
+     */
+    private $inputs = null;
 
-    private static $inputs = false;
 
     /**
-     * Retrieve the request method.
+     * Retrieves the request method
      *
-     * @param string $key
-     * @return string
+     * @return string Method
      */
-    public static function method ()
-    {
-        $override = filter_input(INPUT_GET, '_method', FILTER_SANITIZE_STRING);
-        return $override?: $_SERVER['REQUEST_METHOD'];
+    public function method () {
+
+        // Return the emulated method
+        $emulated = filter_input(INPUT_GET, '_method', FILTER_SANITIZE_STRING);
+        if ($this->app->config('request.emulate') && $emulated) {
+            return $emulated;
+        }
+
+        // Or the real method
+        return $_SERVER['REQUEST_METHOD'];
     }
 
 
     /**
-     * Retrieve requested url
+     * Retrieves the current URL
      *
-     * @param string $key
-     * @return mixed
+     * @return string URL
      */
-    public static function url ()
-    {
-        $uri = $_SERVER['REQUEST_URI'];
-        $parts = explode('?', $uri);
+    public function url () {
+        $parts = explode('?', $_SERVER['REQUEST_URI']);
         return reset($parts);
-    }
-
-
-    /**
-     * Retrieve limit
-     *
-     * @return mixed
-     */
-    public static function limit ()
-    {
-        return filter_input(INPUT_GET, 'limit', FILTER_SANITIZE_STRING)?: self::$default['limit'];
-    }
-
-
-    /**
-     * Retrieve offset
-     *
-     * @return mixed
-     */
-    public static function offset ()
-    {
-        return filter_input(INPUT_GET, 'offset', FILTER_SANITIZE_STRING)?: self::$default['offset'];
-    }
-
-
-    /**
-     * Retrieve order
-     *
-     * @return mixed
-     */
-    public static function order ()
-    {
-        return filter_input(INPUT_GET, 'order', FILTER_SANITIZE_STRING);
     }
 
 
     /**
      * Retrieve token
      *
-     * @return mixed
+     * @return mixed Token or false
      */
-    public static function token ()
-    {
-        $inputs = self::inputs();
-        return isset($inputs['token'])? $inputs['token'] : false;
+    public function token () {
+        $inputs = $this->getInputs();
+        return isset($inputs['token']) ? $inputs['token'] : false;
     }
 
 
     /**
      * Retrieve locale
      *
-     * @return mixed
+     * @return mixed Locale or false
      */
-    public static function locale ()
-    {
-        $inputs = self::inputs();
-        return $inputs['locale']?: false;
+    public function locale () {
+        $inputs = $this->getInputs();
+        return isset($inputs['locale']) ? $inputs['token'] : false;
     }
 
 
     /**
-     * Return a request variable
+     * Return a request input
      *
-     * @param string $key
-     * @return mixed
+     * @param string $input Input key
+     * @param string $default Default value to return
+     * @return mixed Array of inputs, or single input if a key is specified
      */
-    public static function input ($key = false)
-    {
-        $inputs = self::inputs();
+    public function input ($input = null, $default = null) {
 
-        $allowed = [];
-        foreach ($inputs as $input => $value) {
-            if (!in_array($input, self::$reserved)) {
-                $allowed[$input] = $value;
+        // Get all inputs
+        $inputs = $this->getInputs();
+
+        // Exclude reserved inputs
+        foreach ($inputs as $key => $value) {
+            if (in_array($key, $this->reserved)) {
+                unset($inputs[$key]);
             }
         }
 
-        return ($key)? $allowed[$key] : $allowed;
+        // Return one input
+        if ($input) {
+            return isset($inputs[$input]) ? $inputs[$input] : $default;
+        }
+
+        // Or the complete array of inputs
+        return $inputs;
     }
 
 
     /**
-     * Return an array of values from the query string.
+     * Return a request input
      *
-     * @param string $key
-     * @return mixed
+     * @param string $input Input key
+     * @return boolean Has the desired input or not
      */
-    private static function inputs ()
-    {
-        if (is_array(self::$inputs)) {
-            return self::$inputs;
+    public function hasInput ($input) {
+        return isset($this->inputs[$input]);
+    }
+
+
+    /**
+     * Stores the parameters from the request in the inputs array
+     *
+     * @return array Array of inputs
+     */
+    private function getInputs () {
+
+        // If defined, return the inputs array
+        if ($this->inputs) {
+            return $this->inputs;
         }
 
+        // Check by request method
         switch ($_SERVER['REQUEST_METHOD']) {
+
+            // Get PUT inputs
             case 'PUT':
                 parse_str(file_get_contents("php://input"), $inputs);
                 foreach ($inputs as $key => $value) {
-                    self::$inputs[$key] = filter_var($value, FILTER_SANITIZE_STRING);
+                    $this->inputs[$key] = filter_var($value, FILTER_SANITIZE_STRING);
                 }
                 break;
+
+            // Get POST inputs
             case 'POST':
-                self::$inputs = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                $this->inputs = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                 break;
+
+            // Get GET inputs
             default:
-                self::$inputs = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
+                $this->inputs = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
                 break;
         }
 
-        return self::$inputs;
+        // Return array of inputs
+        return $this->inputs ? : [];
     }
 
 }

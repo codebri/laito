@@ -2,27 +2,32 @@
 
 namespace ApiFramework;
 
-/**
- * Core
- *
- * Core abstract class
- * @version 1.0
- * @package Core
-*/
 class Core
 {
 
     /**
-     * Set the output error
-     * 
-     * @param integer $code Error code
-     * @param string $message Error message
-     * @return boolean
+     * @var App $app Application instance
      */
-    static public function error ($code, $message)
-    {
-        Response::error($code, $message);
-        return false;
+    public $app;
+
+
+    /**
+     * Constructor
+     *
+     * @param App $app Application instance
+     */
+    public function __construct(App $app) {
+        $this->app = $app;
+    }
+
+
+    /**
+     * Returns an error and stops the application
+     *
+     * @return string Error message
+     */
+    public function error ($code, $message) {
+        die('Error ' . $code  . ': ' . $message);
     }
 
 }
