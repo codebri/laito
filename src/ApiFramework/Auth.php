@@ -61,14 +61,14 @@ class Auth extends BaseModule
      * Returns the info of the logged user
      *
      * @param string $token Token
-     * @return array User session data
+     * @return mixed User session data or false
      */
     public function info ($token) {
 
         // Check session
         $sessionData = $this->getSession($token);
         if (!$sessionData) {
-            return $this->error(401, 'Invalid token');
+            return false;
         }
 
         // Return user info
@@ -89,7 +89,7 @@ class Auth extends BaseModule
 
         // Check session
         if (!$sessionData) {
-            return $this->error(401, 'Invalid token');
+            return false;
         }
 
         // Delete session cookies
@@ -165,13 +165,13 @@ class Auth extends BaseModule
         // Abort if the session is invalid
         if (!$sessionData) {
             $type = $isReminder ? 'reminder' : 'token';
-            return $this->error(401, 'Invalid ' . $type);
+            return false;
         }
 
         // Abort if the reminder is expired
         $maxage = time() + $this->app->config('reminders.ttl');
         if ($isReminder && (!isset($sessionData['expires']) || $sessionData['expires'] > $maxage)) {
-            return $this->error(401, 'Invalid reminder code');
+            return false;
         }
 
         // Get user
@@ -182,11 +182,6 @@ class Auth extends BaseModule
 
         // Update user
         $userUpdated = $this->update($id, $data);
-        /*
-        $db = new PDO('mysql:host=localhost;dbname=project', 'root', 'root');
-        $statement = $db->prepare('UPDATE users SET password = :password where id = :id limit 1');
-        $userUpdated = $statement->execute(array(':id' => $user['id'], ':password' => $data['password']));
-        */
 
         // Delete reminder
         if ($userUpdated['sucess'] && $isReminder) {
@@ -206,12 +201,6 @@ class Auth extends BaseModule
      */
     private function findUser ($username) {
         $user = $this->where($this->app->config('auth.username'), $username)->first();
-        /*
-        $db = new PDO('mysql:host=localhost;dbname=project', 'root', 'root');
-        $statement = $db->prepare('SELECT * FROM users WHERE email = :username');
-        $statement->execute(array(':username' => $username));
-        $user = $statement->fetch(PDO::FETCH_ASSOC);
-        */
         return $user['data'];
     }
 
