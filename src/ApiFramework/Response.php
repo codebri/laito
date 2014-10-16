@@ -113,6 +113,23 @@ class Response extends Core
 
 
     /**
+     * Sets an error header and echoes out the response
+     *
+     * @param array $response Response data
+     */
+    public function error ($code, $message) {
+        $response['success'] = false;
+        $response['code'] = $code;
+        if (in_array($code, array_keys($this->errors))) {
+            $this->header($this->errors[$code]);
+            $response['status'] = $this->errors[$code];
+        }
+        $response['message'] = $message;
+        return $this->output($response);
+    }
+
+
+    /**
      * Transforms an array into an HTML list
      *
      * @param array $data Array of data to transform

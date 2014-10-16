@@ -44,7 +44,7 @@ class Router extends Core
      * @return boolean
      */
     public function register ($method, $route, $action) {
-        return $this->methods[$method][$route] = ['class' => $action[0], 'method' => $action[1]];
+        return $this->methods[strtolower($method)][$route] = ['class' => $action[0], 'method' => $action[1]];
     }
 
 

@@ -24,14 +24,16 @@ class Auth extends BaseModule
     /**
      * Login a user
      *
-     * @param string $key
+     * @param string $username Username to login
+     * @param string $password Password
+     * @param boolean $remember Store cookie or not
      * @return mixed
      */
     public function attempt ($username, $password, $remember = false) {
 
         // Check credentials
         if (!$this->validate($username, $password)) {
-            return $this->error(401, 'Invalid user');
+            return false;
         }
 
         // Store session file
@@ -50,8 +52,8 @@ class Auth extends BaseModule
             $cookieSet = $this->setCookie($token);
         }
 
-        // Return username and token
-        return ['user' => $user, 'token' => $token];
+        // Return token
+        return $token;
     }
 
 
