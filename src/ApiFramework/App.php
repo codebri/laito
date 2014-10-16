@@ -114,7 +114,7 @@ class App extends Container
     public function run () {
 
         // Get URL
-        $url = $this->app->request->url();
+        $url = $this->request->url();
 
         // Get route action
         list($action, $urlParams) = $this->router->getAction($url);
