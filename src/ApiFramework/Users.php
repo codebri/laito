@@ -26,7 +26,7 @@ class Users extends BaseModule
         $this->password = $password;
 
         // Set writables
-        $this->writables = [$username, $password];
+        $this->writable = [$username, $password];
 
         // Set valid filters
         $this->validFilters = [
@@ -57,7 +57,7 @@ class Users extends BaseModule
         }
 
         // Return token
-        return ['success' => true, 'data' => ['user' => $username, 'token' => $token]]
+        return ['success' => true, 'data' => ['user' => $username, 'token' => $token]];
     }
 
 }

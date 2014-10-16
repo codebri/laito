@@ -43,8 +43,8 @@ class App extends Container
         });
 
         // Share an user instance
-        $this->container['user'] = $this->share(function ($container) {
-            return new User($this);
+        $this->container['users'] = $this->share(function ($container) {
+            return new Users($this);
         });
 
         // Share a lang instance

@@ -171,7 +171,7 @@ class Auth extends Core
         $data['password'] = password_hash($newPassword, PASSWORD_BCRYPT);
 
         // Update user
-        $userUpdated = $this->app->user->update($id, $data);
+        $userUpdated = $this->app->users->update($id, $data);
 
         // Delete reminder
         if ($userUpdated['sucess'] && $isReminder) {
@@ -190,7 +190,7 @@ class Auth extends Core
      * @return mixed User array, of false if the user does not exist
      */
     private function findUser ($username) {
-        $user = $this->app->user->where($this->app->config('auth.username'), $username)->first();
+        $user = $this->app->users->where($this->app->config('auth.username'), $username)->first();
         return $user['data'];
     }
 
