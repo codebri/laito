@@ -28,6 +28,9 @@ class Users extends BaseModule
         // Set writables
         $this->writable = [$username, $password];
 
+        // Set fields
+        $this->fields = [$username, $password];
+
         // Set valid filters
         $this->validFilters = [
             'id' => $table . '.id',
