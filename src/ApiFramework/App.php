@@ -113,11 +113,14 @@ class App extends Container
      */
     public function run () {
 
+        // Get URL
+        $url = $this->app->request->url();
+
         // Get route action
         list($action, $urlParams) = $this->router->getAction($url);
 
         // Check if the class exists
-        if (!class_exists($action['class'])) {
+        if (!isset($action) || !class_exists($action['class'])) {
             $this->response->error(404, 'Class not found');
         }
 

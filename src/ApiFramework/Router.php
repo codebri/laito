@@ -88,8 +88,8 @@ class Router extends Core
             }
         }
 
-        // Or return an error page
-        return $this->error(404, 'Not found');
+        // Or return false
+        return false;
     }
 
 
