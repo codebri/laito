@@ -120,12 +120,12 @@ class Response extends Core
      */
     public function error ($code, $message) {
         $response['success'] = false;
-        $response['code'] = $code;
+        $response['error']['code'] = $code;
         if (in_array($code, array_keys($this->errors))) {
             $this->header($this->errors[$code]);
-            $response['status'] = $this->errors[$code];
+            $response['error']['status'] = $this->errors[$code];
         }
-        $response['message'] = $message;
+        $response['error']['message'] = $message;
         return $this->output($response);
     }
 
