@@ -222,7 +222,7 @@ class BaseModule extends Core
         }
 
         // Fields to retrieve
-        $fields = ($this->fields) ? $this->fields : $this->table . ".*";
+        $fields = ($this->fields) ? $this->fields : '*';
 
         // Process with tables (many-to-many relations)
         if ($this->with) {
