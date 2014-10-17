@@ -106,7 +106,7 @@ class BaseModule extends Core
     /**
      * @var array Query debug
      */
-    protected $debugQuery = true;
+    protected $debugQueries = false;
 
 
     /**
@@ -124,6 +124,9 @@ class BaseModule extends Core
         foreach ($this->settings as $setting) {
             $this->defaults[$setting] = $this->{$setting};
         }
+
+        // Set debug
+        $this->debugQueries = $this->app->config('debug.queries');
     }
 
 
@@ -258,7 +261,7 @@ class BaseModule extends Core
 //echo "\n<br/>Error: ".print_r($this->db->error(), true)."\n<br>";
 
             // Debug
-            if ($this->debugQuery) {
+            if ($this->debugQueries) {
                 $response['debug']['query'] = $this->db->last_query();
             }
 
@@ -271,7 +274,7 @@ class BaseModule extends Core
 //echo "\n<br/>Error: ".print_r($this->db->error(), true)."\n<br>";
 
             // Debug
-            if ($this->debugQuery) {
+            if ($this->debugQueries) {
                 $response['debug']['query'] = $this->db->last_query();
             }
 
@@ -319,7 +322,7 @@ class BaseModule extends Core
             $this->data = array_merge($this->data, $data);
         }
         $id = $this->db->insert($this->table, $this->data);
-        if ($this->debugQuery) {
+        if ($this->debugQueries) {
             $response['debug']['query'] = $this->db->last_query();
         }
         $response['success'] = (bool) $id;
@@ -340,7 +343,7 @@ class BaseModule extends Core
             $this->data = array_merge($this->data, $data);
         }
         $updated = (bool) $this->db->update($this->table, $this->data, [$this->primaryKey => $id]);
-        if ($this->debugQuery) {
+        if ($this->debugQueries) {
             $response['debug']['query'] = $this->db->last_query();
         }
         $response['success'] = $updated;
@@ -357,7 +360,7 @@ class BaseModule extends Core
      */
     function destroy ($id) {
         $destroyed = (bool) $this->db->delete($this->table, [$this->primaryKey => $id]);
-        if ($this->debugQuery) {
+        if ($this->debugQueries) {
             $response['debug']['query'] = $this->db->last_query();
         }
         $response['success'] = $destroyed;

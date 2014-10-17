@@ -9,6 +9,7 @@ class App extends Container
      * @var array Default settings
      */
     private $defaultSettings = [
+        'debug.queries'     => false,
         'auth.table'        => 'users',
         'auth.username'     => 'email',
         'auth.password'     => 'password',
