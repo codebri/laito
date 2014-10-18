@@ -110,7 +110,7 @@ class Router extends Core
         $this->register('get', $route . '/{id}', [$module, 'show']);
         $this->register('post', $route, [$module, 'create']);
         $this->register('put', $route . '/{id}', [$module, 'update']);
-        $this->register('delete', $route . '/{id}', [$module, 'delete']);
+        $this->register('delete', $route . '/{id}', [$module, 'destroy']);
         return true;
     }
 
