@@ -118,7 +118,7 @@ class App extends Container
         $url = $this->request->url();
 
         // Get route action
-        list($action, $urlParams) = $this->router->getAction($url);
+        $action = $this->router->getAction($url);
 
         // Check if the class exists
         if (!isset($action) || !class_exists($action['class'])) {
@@ -154,7 +154,7 @@ class App extends Container
         }
 
         // Execute the required method
-        $res = call_user_func_array(array($module, $action['method']), $urlParams ? : []);
+        $res = call_user_func_array(array($module, $action['method']), $action['params'] ? : []);
 
         // Return the response in the right format
         return $this->response->output($res);
