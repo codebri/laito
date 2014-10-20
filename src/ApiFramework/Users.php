@@ -60,7 +60,7 @@ class Users extends BaseModule
         }
 
         // Return token
-        return ['success' => true, 'data' => ['user' => $username, 'token' => $token]];
+        return ['success' => true, 'data' => $this->app->auth->check($token)];
     }
 
 }
