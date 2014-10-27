@@ -226,6 +226,7 @@ class BaseModule extends Core
 
         // Process with tables (many-to-many relations)
         if ($this->with) {
+            $_field = '';
             foreach ($this->with as $_with => $with) {
 
                 // Add table to joins
