@@ -123,8 +123,8 @@ class Router extends Core
      */
     public static function __call ($function, $params)
     {
-        if (isset(self::$methods[$function])) {
-            self::register($function, $params[0], $params[1]);
+        if (isset($this->routes[$function])) {
+            $this->register($function, $params[0], $params[1]);
             return true;
         }
         return false;
