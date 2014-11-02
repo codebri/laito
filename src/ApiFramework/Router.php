@@ -115,14 +115,16 @@ class Router extends Core
     }
 
     /**
-     * Captures non existing static functions
+     * Captures non existing functions
      * 
      * @param string $function Function requested to execute
      * @param array $params Params requested for function execution
      * @return boolean
      */
-    public static function __call ($function, $params)
+    public function __call ($function, $params)
     {
+echo $function;
+print_r($params);
         if (isset($this->routes[$function])) {
             $this->register($function, $params[0], $params[1]);
             return true;
