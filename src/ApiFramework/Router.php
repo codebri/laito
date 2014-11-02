@@ -114,4 +114,20 @@ class Router extends Core
         return true;
     }
 
+    /**
+     * Captures non existing static functions
+     * 
+     * @param string $function Function requested to execute
+     * @param array $params Params requested for function execution
+     * @return boolean
+     */
+    public static function __call ($function, $params)
+    {
+        if (isset(self::$methods[$function])) {
+            self::register($function, $params[0], $params[1]);
+            return true;
+        }
+        return false;
+    }
+
 }
