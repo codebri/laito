@@ -164,4 +164,78 @@ class Response extends Core
         return $collection;
     }
 
+    /**
+     * Transforms duplicate rows into one row with its 
+     * inner collections for one to many relations
+     * 
+     * @param string $collection The collection to convert
+     * @return array The resulting array
+     */
+    public function joinToCollection ($collection) {
+
+        $data = [];
+        $duplicates = false;
+        $changedKeys = [];
+        if (is_array($collection)) {
+            foreach ($collection as $k => $v) {
+                if (isset($data[$v['id']])) {
+                    // There is at least 1 duplicate
+                    $duplicates = true;
+                    // Iterates keys and merge arrays
+                    foreach ($v as $key => $val) {
+                        if (is_array($val) && (serialize($data[$v['id']][$key]) != serialize($val)) ) {
+                            $changedKeys[$key] = 1;
+                            // Force numeric key array
+                            if (!isset($data[$v['id']][$key][0])) {
+                                $_tmp = $data[$v['id']][$key];
+                                unset($data[$v['id']][$key]);
+                                $data[$v['id']][$key][0] = $_tmp;
+                            }
+                            array_push($data[$v['id']][$key], $val);
+                        }
+                    }
+                }
+                else {
+                    $data[$v['id']] = $v;
+                }
+            }
+
+        }
+
+        if ($duplicates) {
+
+            // Force numeric arrays in every changed array for data normalization
+            foreach ($data as $rowId => $row) {
+                foreach ($row as $fieldKey => $field) {
+                    if ($changedKeys[$fieldKey]) {
+                        // Force numeric key array
+                        if (!isset($field[0])) {
+
+                            // Remove empty arrays
+                            $empty = true;
+                            foreach ($field as $key => $value) {
+                                if (!empty($value)) {
+                                    $empty = false;
+                                }
+                            }
+                            if ($empty) {
+                                $data[$rowId][$fieldKey] = [];
+                            }
+                            // Change associative array for numeric array
+                            else {
+                                $_tmp = $field;
+                                unset($data[$rowId][$fieldKey]);
+                                $data[$rowId][$fieldKey][0] = $_tmp;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Store new data
+            $collection = array_values($data);
+        }
+
+        return $collection;
+    }
 }

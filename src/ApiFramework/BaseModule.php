@@ -298,6 +298,9 @@ class BaseModule extends Core
             $collection = $this->app->response->objectify($collection, $this->objectify);
         }
 
+        // Transform one to many relations from duplicate rows to collection for each row
+        $collection = $this->app->response->joinToCollection($collection);
+
         $response['success'] = (bool) $collection;
         // Paginate results
         if ($this->paginate) {
