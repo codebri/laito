@@ -325,12 +325,59 @@ class BaseModule extends Core
         if (isset($data)) {
             $this->data = array_merge($this->data, $data);
         }
-        $id = $this->db->insert($this->table, $this->data);
+
+        // Leave all non array values in data
+        $_data = [];
+        foreach ($this->data as $k => $v) {
+            if (!is_array($v))
+                $_data[$k] = $v;
+        }
+
+        $id = $this->db->insert($this->table, $_data);
         if ($this->debugQueries) {
             $response['debug']['query'] = $this->db->last_query();
         }
+        $output = ['id' => $id];
+
+        // Process associated tables
+        $writableFields = $this->writableFields();
+
+        $insert = [];
+        foreach ($this->data as $field => $value) {
+            if (is_array($value)) {
+
+                $_insert = [];
+                // Force numeric index array
+                if (!isset($value[0])) {
+                    $value = [$value];
+                }
+                foreach ($value as $k => $v) {
+                    foreach ($v as $relKey => $relField) {
+                        $key = $field.'.'.$relKey;
+                        if (isset($writableFields[$key]) || in_array($key, $writableFields) ) {
+                            $_insert[$relKey] = $relField;
+                        }
+                    }
+                    if (!empty($_insert)) {
+                        $_insert['id_'.$this->table] = $id;
+                        $insert[$field][] = $_insert;
+                    }
+                }
+            }
+        }
+
+        // If related writable data, empty preexisting and store new data
+        if (!empty($insert)){
+            foreach ($insert as $fkTable => $fkData) {
+                $this->db->delete($fkTable, ['id_'.$this->table => $id]);
+                foreach ($fkData as $ins) {
+                    $output[$fkTable][] = $this->db->insert($fkTable, $ins);
+                }
+            }
+        }
+
         $response['success'] = (bool) $id;
-        $response['data'] = ['id' => $id];
+        $response['data'] = $output;
         return $response;
     }
 
@@ -343,15 +390,63 @@ class BaseModule extends Core
      * @return boolean Success or fail of update
      */
     function update ($id, $data = null) {
+
+        // Process associated tables
+        $writableFields = $this->writableFields();
+
         if (isset($data)) {
             $this->data = array_merge($this->data, $data);
         }
-        $updated = (bool) $this->db->update($this->table, $this->data, [$this->primaryKey => $id]);
+
+        // Leave all non array values in data
+        $_data = [];
+        foreach ($this->data as $k => $v) {
+            if (!is_array($v))
+                $_data[$k] = $v;
+        }
+
+        $updated = (bool) $this->db->update($this->table, $_data, [$this->primaryKey => $id]);
         if ($this->debugQueries) {
             $response['debug']['query'] = $this->db->last_query();
         }
+        $output = ['id' => $id];
+
+        $insert = [];
+        foreach ($this->data as $field => $value) {
+            if (is_array($value)) {
+
+                $_insert = [];
+                // Force numeric index array
+                if (!isset($value[0])) {
+                    $value = [$value];
+                }
+                foreach ($value as $k => $v) {
+                    foreach ($v as $relKey => $relField) {
+                        $key = $field.'.'.$relKey;
+                        if (isset($writableFields[$key]) || in_array($key, $writableFields) ) {
+                            $_insert[$relKey] = $relField;
+                        }
+                    }
+                    if (!empty($_insert)) {
+                        $_insert['id_'.$this->table] = $id;
+                        $insert[$field][] = $_insert;
+                    }
+                }
+            }
+        }
+
+        // If related writable data, empty preexisting and store new data
+        if (!empty($insert)){
+            foreach ($insert as $fkTable => $fkData) {
+                $this->db->delete($fkTable, ['id_'.$this->table => $id]);
+                foreach ($fkData as $ins) {
+                    $output[$fkTable][] = $this->db->insert($fkTable, $ins);
+                }
+            }
+        }
+
         $response['success'] = $updated;
-        $response['data'] = ['id' => $id];
+        $response['data'] = $output;
         return $response;
     }
 
@@ -433,6 +528,7 @@ class BaseModule extends Core
      * @return object
      */
     private function filter (&$store, $valids, $field, $value = null) {
+
         $_valids = [$this->primaryKey, $this->table . '.' . $this->primaryKey];
         $valids = array_merge($valids, $_valids);
         if (!is_array($field) && !$value) {
@@ -441,6 +537,10 @@ class BaseModule extends Core
         if (is_array($field)) {
             foreach ($field as $k => $v) {
                 $this->filter($store, $valids, $k, $v);
+            }
+        } else if (is_array($value)) {
+            foreach ($value as $k => $v) {
+                $this->filter($store, $valids, $field.'.'.$k, $v);
             }
         } else {
             if (in_array($field, $valids) || isset($valids[$field])) {

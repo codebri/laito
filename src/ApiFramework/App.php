@@ -139,19 +139,25 @@ class App extends Container
 
         // Apply wheres
         $filters = $module->validFilters();
+        $module->where($this->request->input());
+        /*
         foreach ($filters as $name => $field) {
             if ($this->request->hasInput($name)) {
                 $module->where($field, $this->request->input($name));
             }
         }
+        */
 
         // Apply writable data
         $writableFields = $module->writableFields();
+        $module->data($this->request->input());
+        /*
         foreach ($writableFields as $field) {
             if ($this->request->hasInput($field)) {
                 $module->data($field, $this->request->input($field));
             }
         }
+        */
 
         // Execute the required method
         $res = call_user_func_array(array($module, $action['method']), $action['params'] ? : []);
