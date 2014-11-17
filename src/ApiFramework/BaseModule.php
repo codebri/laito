@@ -85,6 +85,11 @@ class BaseModule extends Core
     protected $writable = [];
 
     /**
+     * @var boolean Sync asociated data when writing
+     */
+    protected $sync = true;
+
+    /**
      * @var array Object settings
      */
     protected $settings = [
@@ -342,36 +347,39 @@ class BaseModule extends Core
         // Process associated tables
         $writableFields = $this->writableFields();
 
-        $insert = [];
-        foreach ($this->data as $field => $value) {
-            if (is_array($value)) {
+        if ($this->sync) {
+            
+            $insert = [];
+            foreach ($this->data as $field => $value) {
+                if (is_array($value)) {
 
-                $_insert = [];
-                // Force numeric index array
-                if (!isset($value[0])) {
-                    $value = [$value];
-                }
-                foreach ($value as $k => $v) {
-                    foreach ($v as $relKey => $relField) {
-                        $key = $field.'.'.$relKey;
-                        if (isset($writableFields[$key]) || in_array($key, $writableFields) ) {
-                            $_insert[$relKey] = $relField;
-                        }
+                    $_insert = [];
+                    // Force numeric index array
+                    if (!isset($value[0])) {
+                        $value = [$value];
                     }
-                    if (!empty($_insert)) {
-                        $_insert['id_'.$this->table] = $id;
-                        $insert[$field][] = $_insert;
+                    foreach ($value as $k => $v) {
+                        foreach ($v as $relKey => $relField) {
+                            $key = $field.'.'.$relKey;
+                            if (isset($writableFields[$key]) || in_array($key, $writableFields) ) {
+                                $_insert[$relKey] = $relField;
+                            }
+                        }
+                        if (!empty($_insert)) {
+                            $_insert['id_'.$this->table] = $id;
+                            $insert[$field][] = $_insert;
+                        }
                     }
                 }
             }
-        }
 
-        // If related writable data, empty preexisting and store new data
-        if (!empty($insert)){
-            foreach ($insert as $fkTable => $fkData) {
-                $this->db->delete($fkTable, ['id_'.$this->table => $id]);
-                foreach ($fkData as $ins) {
-                    $output[$fkTable][] = $this->db->insert($fkTable, $ins);
+            // If related writable data, empty preexisting and store new data
+            if (!empty($insert)){
+                foreach ($insert as $fkTable => $fkData) {
+                    $this->db->delete($fkTable, ['id_'.$this->table => $id]);
+                    foreach ($fkData as $ins) {
+                        $output[$fkTable][] = $this->db->insert($fkTable, $ins);
+                    }
                 }
             }
         }
@@ -411,36 +419,38 @@ class BaseModule extends Core
         }
         $output = ['id' => $id];
 
-        $insert = [];
-        foreach ($this->data as $field => $value) {
-            if (is_array($value)) {
+        if ($this->sync) {
+            $insert = [];
+            foreach ($this->data as $field => $value) {
+                if (is_array($value)) {
 
-                $_insert = [];
-                // Force numeric index array
-                if (!isset($value[0])) {
-                    $value = [$value];
-                }
-                foreach ($value as $k => $v) {
-                    foreach ($v as $relKey => $relField) {
-                        $key = $field.'.'.$relKey;
-                        if (isset($writableFields[$key]) || in_array($key, $writableFields) ) {
-                            $_insert[$relKey] = $relField;
-                        }
+                    $_insert = [];
+                    // Force numeric index array
+                    if (!isset($value[0])) {
+                        $value = [$value];
                     }
-                    if (!empty($_insert)) {
-                        $_insert['id_'.$this->table] = $id;
-                        $insert[$field][] = $_insert;
+                    foreach ($value as $k => $v) {
+                        foreach ($v as $relKey => $relField) {
+                            $key = $field.'.'.$relKey;
+                            if (isset($writableFields[$key]) || in_array($key, $writableFields) ) {
+                                $_insert[$relKey] = $relField;
+                            }
+                        }
+                        if (!empty($_insert)) {
+                            $_insert['id_'.$this->table] = $id;
+                            $insert[$field][] = $_insert;
+                        }
                     }
                 }
             }
-        }
 
-        // If related writable data, empty preexisting and store new data
-        if (!empty($insert)){
-            foreach ($insert as $fkTable => $fkData) {
-                $this->db->delete($fkTable, ['id_'.$this->table => $id]);
-                foreach ($fkData as $ins) {
-                    $output[$fkTable][] = $this->db->insert($fkTable, $ins);
+            // If related writable data, empty preexisting and store new data
+            if (!empty($insert)){
+                foreach ($insert as $fkTable => $fkData) {
+                    $this->db->delete($fkTable, ['id_'.$this->table => $id]);
+                    foreach ($fkData as $ins) {
+                        $output[$fkTable][] = $this->db->insert($fkTable, $ins);
+                    }
                 }
             }
         }
