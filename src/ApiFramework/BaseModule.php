@@ -42,7 +42,7 @@ class BaseModule extends Core
     /**
      * @var array Where filters
      */
-    protected $where = [];
+    protected $where = ['AND' => [1]];
 
     /**
      * @var array Order filters
