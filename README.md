@@ -11,23 +11,36 @@ by **[MangoLabs](http://www.mangolabs.com.ar/ "Mangolabs")**
 
 Require ApiFramework in your `composer.json` file:
 
-**composer.json**
+```
+#!json
+
     "require": {
       "mangolabs/apiframework": "dev-master"
     }
+
+```
 
 And run `composer install`. This will fetch and save the package and its dependencies into the `vendor` folder.
 
 Once you installed it, create an `index.php` file in the route of your project and include the Composer's autoload file:
 
+```
+#!php
+
     require_once __DIR__ . '/vendor/autoload.php';
 
+```
+
 All requests have to be pointed to that `index.php` file. In Apache, you can do so by creating an `.htaccess` file with this rules:
+
+```
 
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
+
+```
 
 # Usage and configuration
 
