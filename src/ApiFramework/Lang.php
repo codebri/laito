@@ -1,6 +1,11 @@
-<?php
+<?php namespace ApiFramework;
 
-namespace ApiFramework;
+/**
+ * Lang class
+ *
+ * @package default
+ * @author Mangolabs
+ */
 
 class Lang extends Core
 {

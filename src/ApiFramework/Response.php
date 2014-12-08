@@ -1,6 +1,11 @@
-<?php
+<?php namespace ApiFramework;
 
-namespace ApiFramework;
+/**
+ * Response class
+ *
+ * @package default
+ * @author Mangolabs
+ */
 
 class Response extends Core
 {

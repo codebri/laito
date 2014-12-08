@@ -1,21 +1,10 @@
 {
-    "name": "mangolabs/apiframework",
-    "description": "API Framework for PHP",
-    "authors": [
-        {
-            "name": "Nico",
-            "email": "nico1485@gmail.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {
-        "php": ">=5.4.0",
-        "catfan/medoo": "*",
-        "ircmaxell/password-compat": "dev-master"
-    },
-    "autoload": {
-        "psr-0": {
-            "ApiFramework": "src/"
-        }
+  "name": "mangolabs/apiframework",
+  "description": "API Framework for PHP",
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-0": {
+      "ApiFramework": "src/"
     }
+  }
 }

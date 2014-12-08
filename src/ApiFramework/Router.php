@@ -1,6 +1,11 @@
-<?php
+<?php namespace ApiFramework;
 
-namespace ApiFramework;
+/**
+ * Router class
+ *
+ * @package default
+ * @author Mangolabs
+ */
 
 class Router extends Core
 {
@@ -21,10 +26,11 @@ class Router extends Core
      * 
      * @param string $method Method 
      * @param string $path Route to match
-     * @param array $action Module and method to execute
+     * @param array $action Controller and method to execute
+     * @param array $model Optional model to inject
      * @return boolean Success or fail of registration
      */
-    public function register ($method, $path, $action) {
+    public function register ($method, $path, $action, $model = null) {
 
         // Create arrays
         $params = [];
@@ -47,7 +53,8 @@ class Router extends Core
             'pattern' => '/^' . $pattern . '\\/?$/i',
             'class' => $action[0],
             'method' => $action[1],
-            'params' => $params
+            'params' => $params,
+            'model' => $model
         ];
     }
 
@@ -102,15 +109,16 @@ class Router extends Core
      * Register a resource
      * 
      * @param string $route Route for the resource
-     * @param string $module Module name
+     * @param string $controller Controller name
+     * @param string $model Optional model to inject
      * @return boolean Success or fail of registration
      */
-    public function resource ($route, $module) {
-        $this->register('get', $route, [$module, 'index']);
-        $this->register('get', $route . '/{id}', [$module, 'show']);
-        $this->register('post', $route, [$module, 'create']);
-        $this->register('put', $route . '/{id}', [$module, 'update']);
-        $this->register('delete', $route . '/{id}', [$module, 'destroy']);
+    public function resource ($route, $controller, $model = null) {
+        $this->register('get', $route, [$controller, 'index'], $model);
+        $this->register('get', $route . '/{id}', [$controller, 'show'], $model);
+        $this->register('post', $route, [$controller, 'store'], $model);
+        $this->register('put', $route . '/{id}', [$controller, 'update'], $model);
+        $this->register('delete', $route . '/{id}', [$controller, 'destroy'], $model);
         return true;
     }
 

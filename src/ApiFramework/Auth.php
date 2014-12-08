@@ -1,6 +1,11 @@
-<?php
+<?php namespace ApiFramework;
 
-namespace ApiFramework;
+/**
+ * Auth class
+ *
+ * @package default
+ * @author Mangolabs
+ */
 
 class Auth extends Core
 {
@@ -76,11 +81,6 @@ class Auth extends Core
 
         // Get session
         $sessionData = $this->getSession($token);
-
-        // Check session
-        if (!$sessionData) {
-            return false;
-        }
 
         // Delete session cookies
         $cookieDeleted = $this->deleteCookie();
@@ -164,14 +164,11 @@ class Auth extends Core
             return false;
         }
 
-        // Get user
-        $user = $this->findUser($username);
-
         // Hash password
         $data['password'] = password_hash($newPassword, PASSWORD_BCRYPT);
 
         // Update user
-        $userUpdated = $this->app->users->update($id, $data);
+        $userUpdated = $this->app->db->table($this->config('auth.table'))->where($this->config('auth.username'), $username)->update($id, $data);
 
         // Delete reminder
         if ($userUpdated['sucess'] && $isReminder) {
@@ -190,8 +187,8 @@ class Auth extends Core
      * @return mixed User array, of false if the user does not exist
      */
     private function findUser ($username) {
-        $user = $this->app->users->where($this->app->config('auth.username'), $username)->first();
-        return $user['data'];
+        $user = $this->app->db->table($this->app->config('auth.table'))->where($this->app->config('auth.username'), $username)->getOne();
+        return $user;
     }
 
 
@@ -254,7 +251,10 @@ class Auth extends Core
      */
     private function deleteSession ($token) {
         $path = $this->sessionPath($token);
-        return unlink($path);
+        if (file_exists($path) && is_writable($path)) {
+            unlink($path);
+        }
+        return true;
     }
 
 

@@ -1,6 +1,11 @@
-<?php
+<?php namespace ApiFramework;
 
-namespace ApiFramework;
+/**
+ * Container class
+ *
+ * @package default
+ * @author Mangolabs
+ */
 
 class Container
 {

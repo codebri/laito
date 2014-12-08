@@ -1,6 +1,11 @@
-<?php
+<?php namespace ApiFramework;
 
-namespace ApiFramework;
+/**
+ * Request class
+ *
+ * @package default
+ * @author Mangolabs
+ */
 
 class Request extends Core
 {

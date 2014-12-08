@@ -1,6 +1,11 @@
-<?php
+<?php namespace ApiFramework;
 
-namespace ApiFramework;
+/**
+ * App class
+ *
+ * @package default
+ * @author Mangolabs
+ */
 
 class App extends Container
 {
@@ -25,7 +30,8 @@ class App extends Container
         'database.server'   => 'localhost',
         'database.name'     => 'test',
         'database.username' => 'root',
-        'database.password' => 'root'
+        'database.password' => 'root',
+        'public.url'        => 'localhost'
     ];
 
     /**
@@ -41,11 +47,6 @@ class App extends Container
         // Share an auth instance
         $this->container['auth'] = $this->share(function ($container) {
             return new Auth($this);
-        });
-
-        // Share an user instance
-        $this->container['users'] = $this->share(function ($container) {
-            return new Users($this);
         });
 
         // Share a lang instance
@@ -68,16 +69,18 @@ class App extends Container
             return new Router($this);
         });
 
+        // Share a PDO instance
+        $this->container['pdo'] = $this->share(function ($container) {
+            return new \PDO(
+                'mysql:dbname=' . $this->config('database.name') . ';host=' . $this->config('database.server'),
+                $this->config('database.username'),
+                $this->config('database.password')
+            );
+        });
+
         // Share a database instance
         $this->container['db'] = $this->share(function ($container) {
-            $config = [
-                'database_type' => $this->config('database.type'),
-                'database_name' => $this->config('database.name'),
-                'server'        => $this->config('database.server'),
-                'username'      => $this->config('database.username'),
-                'password'      => $this->config('database.password')
-            ];
-            return new Database($config, $this);
+            return new Database ($this);
         });
     }
 
@@ -120,47 +123,26 @@ class App extends Container
         // Get route action
         $action = $this->router->getAction($url);
 
-        // Check if the class exists
+        // Check if the controller exists
         if (!isset($action) || !class_exists($action['class'])) {
-            $this->response->error(404, 'Class not found');
+            $this->response->error(404, 'Controller not found');
         }
 
-        // Create the required module
-        $module = new $action['class']($this);
-
-        // Apply limit
-        $module->limit($this->request->input('limit'));
-
-        // Apply offset
-        $module->offset($this->request->input('offset'));
-
-        // Apply order
-        $module->order($this->request->input('order'));
-
-        // Apply wheres
-        $filters = $module->validFilters();
-        $module->where($this->request->input());
-        /*
-        foreach ($filters as $name => $field) {
-            if ($this->request->hasInput($name)) {
-                $module->where($field, $this->request->input($name));
+        // Instance model
+        $model = null;
+        if (isset($action['model'])) {
+            if (!class_exists($action['model'])) {
+                $this->response->error(404, 'Model not found');
+            } else {
+                $model = new $action['model']($this);
             }
         }
-        */
 
-        // Apply writable data
-        $writableFields = $module->writableFields();
-        $module->data($this->request->input());
-        /*
-        foreach ($writableFields as $field) {
-            if ($this->request->hasInput($field)) {
-                $module->data($field, $this->request->input($field));
-            }
-        }
-        */
+        // Create the required controller
+        $controller = new $action['class']($this, $model);
 
         // Execute the required method
-        $res = call_user_func_array(array($module, $action['method']), $action['params'] ? : []);
+        $res = call_user_func_array(array($controller, $action['method']), $action['params'] ? : []);
 
         // Return the response in the right format
         return $this->response->output($res);
