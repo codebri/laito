@@ -31,7 +31,8 @@ class App extends Container
         'database.name'     => 'test',
         'database.username' => 'root',
         'database.password' => 'root',
-        'public.url'        => 'localhost'
+        'public.url'        => 'localhost',
+        'templates.path'    => 'templates'
     ];
 
     /**
@@ -81,6 +82,11 @@ class App extends Container
         // Share a database instance
         $this->container['db'] = $this->share(function ($container) {
             return new Database ($this);
+        });
+
+        // Share a view instance
+        $this->container['view'] = $this->share(function ($container) {
+            return new View ($this);
         });
     }
 
