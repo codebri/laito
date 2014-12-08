@@ -34,7 +34,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 All requests have to be pointed to that `index.php` file. In Apache, you can do so by creating an `.htaccess` file with this rules:
 
 ```
-#!htaccess
+#!apacheconf
 
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -153,6 +153,85 @@ function show ($id) {
 }
 ```
 
+## Resources
+
+A lot of times you'll find yourself declaring common routes for all your CRUD operations. In those cases, the resource method is a nice shortcut.
+
+```
+#!php
+
+$app->router->resource('/users', 'UsersController');
+```
+
+The parameters are:
+
+- The route to match (For example, '/posts')
+- The controller name
+- Optionally, the model name to inject
+
+It binds the following routes to the corresponding `UsersController` methods:
+
+HTTP method  | Route | Controller | Method
+-------------| ------|------------|-------
+GET | /users | UsersController | index
+GET | /users/{id} | UsersController | show
+POST | /users | UsersController | store
+PUT | /users/{id} | UsersController | update
+DELETE | /users/{id} | UsersController | destroy
+
+## Run
+
+After you declared all your application routes, you can start listening for requests:
+
+```
+#!php
+
+$app->run();
+```
+
+# Controllers
+
+The controllers are called by the application when a route asociated with them is called. The controllers are normal classes, and can have as many functions you want.
+
+```
+#!php
+class SomeController {
+
+    function hello () {
+        echo 'Hello!';
+    }
+
+}
+```
+
+## Base controller
+
+If you want to have a solid fundation for your controllers, you can create them extending the default `Controller` class:
+
+```
+#!php
+
+class PostsController extends ApiFramework\Controller {}
+```
+
+That will give you some handy default methods:
+
+- **index** to return a listing of the resource
+- **show** to return a single resource item
+- **create** to save a new resource item in storage
+- **update** to update a resource item in storage
+- **destroy** to destroy a resource item in storage
+
+As you can see, those are the expected methods names when you declare resource routes.
+
+All methods (except `index`) receive the first wildcard found in the URL as the `$id` parameter.
+
+```
+#!php
+
+public function destroy ($id = null) { ... };
+```
+
 ## Model injection
 
 Many times, your controllers will make use of a model. But creating an instance of the model in the controller breaks the controller isolation. To follow the dependency injection patterns, those models can be injected into the controller just by passing the model's name as an additional parameter in the route's declaration.
@@ -170,41 +249,14 @@ So you can make use of the injected model inside your controllers like this:
 ```
 #!php
 
-public function test () {
-    return $this->model->get();
+public function activePosts () {
+    return $this->model->where('active', 1)->get();
 }
 ```
 
-## Resources
 
-A lot of times you'll find yourself declaring common routes for all your CRUD operations. In those cases, the resource method is a nice shortcut.
 
-```
-#!php
 
-    $app->router->resource('/users', 'UsersController', 'User');
-```
 
-The parameters are:
 
-- The route to match (For example, '/posts')
-- The controller name
-- Optionally, the model name to inject
 
-It binds the following routes to the corresponding `UsersController` methods:
-
-- **GET** /users *index*
-- **GET** /users/{id} *show*
-- **POST** /users *store*
-- **PUT** /users/{id} *update*
-- **DELETE** /users/{id} *destroy*
-
-## Run
-
-After you declared all your application routes, you can start listening for requests:
-
-```
-#!php
-
-    $app->run();
-```
