@@ -59,7 +59,7 @@ class Controller extends Core {
         // Return results
         return [
             'success' => true,
-            'pagination' => $pagination,
+            'paging' => $pagination,
             'data' => $result
         ];
     }
