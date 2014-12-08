@@ -13,11 +13,11 @@ Require ApiFramework in your `composer.json` file:
 
 ```
 #!json
-
+{
     "require": {
       "mangolabs/apiframework": "dev-master"
     }
-
+}
 ```
 
 And run `composer install`. This will fetch and save the package and its dependencies into the `vendor` folder.
@@ -26,35 +26,38 @@ Once you installed it, create an `index.php` file in the route of your project a
 
 ```
 #!php
-
-    require_once __DIR__ . '/vendor/autoload.php';
-
+require_once __DIR__ . '/vendor/autoload.php';
 ```
 
 All requests have to be pointed to that `index.php` file. In Apache, you can do so by creating an `.htaccess` file with this rules:
 
 ```
-
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
-
+#!htaccess
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
 ```
 
 # Usage and configuration
 
 Now you're ready to start using the framework. Create an app instance in your `index.php` file:
 
-    $app = new ApiFramework\App();
+```
+#!php
+$app = new ApiFramework\App();
+```
 
 You can pass an array of configuration options:
 
-    $app = new ApiFramework\App([
-        'database.name' => 'app',
-        'database.username' => 'root',
-        'database.password' => 'root',
-    ]);
+```
+#!php
+$app = new ApiFramework\App([
+    'database.name' => 'app',
+    'database.username' => 'root',
+    'database.password' => 'root',
+]);
+```
 
 Or set them after initialization:
 
