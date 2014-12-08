@@ -40,7 +40,6 @@ class Response extends Core
         500 => 'HTTP/1.1 500 Internal Server Error',
     ];
 
-
     /**
      * Sets a header for the response
      *
@@ -51,7 +50,6 @@ class Response extends Core
         $this->headers[] = $header;
         return $this;
     }
-
 
     /**
      * Sets a cookie for the response
@@ -64,7 +62,6 @@ class Response extends Core
         $this->cookies[$key] = $value;
         return $this;
     }
-
 
     /**
      * Sets the format of the response
@@ -79,11 +76,11 @@ class Response extends Core
         return $this;
     }
 
-
     /**
      * Echoes out the response
      *
      * @param array $response Response data
+     * @return string HTTP Response
      */
     public function output ($response = []) {
 
@@ -117,11 +114,11 @@ class Response extends Core
         exit;
     }
 
-
     /**
      * Sets an error header and echoes out the response
      *
      * @param array $response Response data
+     * @return string HTTP Response
      */
     public function error ($code, $message) {
         $response['success'] = false;
@@ -133,7 +130,6 @@ class Response extends Core
         $response['error']['message'] = $message;
         return $this->output($response);
     }
-
 
     /**
      * Transforms an array into an HTML list
@@ -148,7 +144,6 @@ class Response extends Core
         }
         return '<ul>' . $return . '</ul>';
     }
-
 
     /**
      * Groups elements with similar keys into an object
@@ -166,81 +161,6 @@ class Response extends Core
                 unset($collection[$k]);
             }
         }
-        return $collection;
-    }
-
-    /**
-     * Transforms duplicate rows into one row with its 
-     * inner collections for one to many relations
-     * 
-     * @param string $collection The collection to convert
-     * @return array The resulting array
-     */
-    public function joinToCollection ($collection) {
-
-        $data = [];
-        $duplicates = false;
-        $changedKeys = [];
-        if (is_array($collection)) {
-            foreach ($collection as $k => $v) {
-                if (isset($data[$v['id']])) {
-                    // There is at least 1 duplicate
-                    $duplicates = true;
-                    // Iterates keys and merge arrays
-                    foreach ($v as $key => $val) {
-                        if (is_array($val) && (serialize($data[$v['id']][$key]) != serialize($val)) ) {
-                            $changedKeys[$key] = 1;
-                            // Force numeric key array
-                            if (!isset($data[$v['id']][$key][0])) {
-                                $_tmp = $data[$v['id']][$key];
-                                unset($data[$v['id']][$key]);
-                                $data[$v['id']][$key][0] = $_tmp;
-                            }
-                            array_push($data[$v['id']][$key], $val);
-                        }
-                    }
-                }
-                else {
-                    $data[$v['id']] = $v;
-                }
-            }
-
-        }
-
-        if ($duplicates) {
-
-            // Force numeric arrays in every changed array for data normalization
-            foreach ($data as $rowId => $row) {
-                foreach ($row as $fieldKey => $field) {
-                    if ($changedKeys[$fieldKey]) {
-                        // Force numeric key array
-                        if (!isset($field[0])) {
-
-                            // Remove empty arrays
-                            $empty = true;
-                            foreach ($field as $key => $value) {
-                                if (!empty($value)) {
-                                    $empty = false;
-                                }
-                            }
-                            if ($empty) {
-                                $data[$rowId][$fieldKey] = [];
-                            }
-                            // Change associative array for numeric array
-                            else {
-                                $_tmp = $field;
-                                unset($data[$rowId][$fieldKey]);
-                                $data[$rowId][$fieldKey][0] = $_tmp;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Store new data
-            $collection = array_values($data);
-        }
-
         return $collection;
     }
 }
