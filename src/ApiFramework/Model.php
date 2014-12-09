@@ -217,6 +217,9 @@ class Model extends Core {
         // Add has many relationships
         $this->hasMany();
 
+        // Format relationships
+        $this->formatBelongsToMany();
+
         // Return query results
         return $this->records;
     }
@@ -577,6 +580,35 @@ class Model extends Core {
                     }
                 }
             }
+        }
+
+        // Return model instance
+        return $this;
+    }
+
+    /**
+     * Format many to many relationships results
+     *
+     * @return object Model instance
+     */
+    private function formatBelongsToMany () {
+
+        // Return if there are no relationships of that type
+        if (!isset($this->relationships['belongsToMany']) || empty($this->relationships['belongsToMany'])) {
+            return $this;
+        }
+
+        // Iterate relationships
+        foreach ($this->relationships['belongsToMany'] as $join) {
+            $this->records = array_map(function ($record) use ($join) {
+                foreach ($record as $key => $value) {
+                    if ($key === 'concat_' . $join['alias']) {
+                        $record[$join['alias']] = ($value)? explode(',', $value) : [];
+                        unset($record[$key]);
+                    }
+                }
+                return $record;
+            }, $this->records);
         }
 
         // Return model instance
