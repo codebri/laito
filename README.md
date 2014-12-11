@@ -5,4 +5,4 @@ A simple API framework for PHP by **[MangoLabs](http://www.mangolabs.com.ar/ "Ma
 
 ---
 
-[Docs:](http://apidocs.nicolabs.com.ar/)
+- [Documentation](http://apidocs.nicolabs.com.ar/)
