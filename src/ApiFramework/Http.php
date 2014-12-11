@@ -39,8 +39,15 @@ class Http extends Core
     public function call ($url, $method = 'GET', $params = []) {
 
         // Set call parameters
-        if (is_array($params)) {
-            $this->params = array_merge($this->params, $params);
+        $params = array_merge($this->params, is_array($params)? $params : []);
+
+        // Setup parameters
+        $content = '';
+        $queryString = http_build_query($params);
+        if ($method === 'GET') {
+            $url = $url . '?' . $queryString;
+        } else {
+            $content = $queryString;
         }
 
         // Make call
@@ -48,7 +55,7 @@ class Http extends Core
             'http' => [
                 'method'  => $method,
                 'header'  => 'Content-type: application/x-www-form-urlencoded',
-                'content' => http_build_query($params)
+                'content' => $content
             ]
         ]));
 
