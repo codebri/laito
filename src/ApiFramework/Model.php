@@ -218,7 +218,7 @@ class Model extends Core {
         $this->hasMany();
 
         // Format relationships
-        $this->formatBelongsToMany();
+        $this->formatBelongsToMany()->formatHasOne();
 
         // Return query results
         return $this->records;
@@ -604,6 +604,36 @@ class Model extends Core {
                 foreach ($record as $key => $value) {
                     if ($key === 'concat_' . $join['alias']) {
                         $record[$join['alias']] = ($value)? explode(',', $value) : [];
+                        unset($record[$key]);
+                    }
+                }
+                return $record;
+            }, $this->records);
+        }
+
+        // Return model instance
+        return $this;
+    }
+
+    /**
+     * Format has many relationships results
+     *
+     * @return object Model instance
+     */
+    private function formatHasOne () {
+
+        // Return if there are no relationships of that type
+        if (!isset($this->relationships['hasOne']) || empty($this->relationships['hasOne'])) {
+            return $this;
+        }
+
+        // Iterate relationships
+        foreach ($this->relationships['hasOne'] as $join) {
+            $this->records = array_map(function ($record) use ($join) {
+                foreach ($record as $key => $value) {
+                    $prefix = $join['alias'] . '_';
+                    if (preg_match('/' . $prefix . '[\w]+/', $key)) {
+                        $record[$join['alias']][str_replace($prefix, '', $key)] = $value;
                         unset($record[$key]);
                     }
                 }
