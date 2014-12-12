@@ -557,12 +557,9 @@ class Database extends Core {
      */
     private function getWhereString () {
 
-        // String holder
-        $string = 'WHERE 1 ';
-
         // If there are not where conditions, return empty
         if (!count($this->wheres)) {
-            return $string;
+            return '';
         }
 
         // Create where named placeholders
@@ -570,8 +567,8 @@ class Database extends Core {
             return $where['table'] . '.' . $where['column'] . $where['operator'] . ':' . $where['table'] . $where['column'];
         }, $this->wheres);
 
-        // Return complete where string
-        return $string . ' AND ' . implode(' AND ', $wheres);
+        // String holder
+        $string = 'WHERE 1 AND ' . implode(' AND ', $wheres);
     }
 
     /**
@@ -617,6 +614,11 @@ class Database extends Core {
      */
     private function getJoinString () {
 
+        // If there are not joins, return empty
+        if (!count($this->orderBy)) {
+            return '';
+        }
+
         // Create join strings
         $joins = array_map(function ($join) {
             return $join['type'] . ' JOIN ' . $join['table'] . ' ON ' . $this->table . '.' . $join['first'] . $join['operator'] . $join['table'] . '.' . $join['second'];
@@ -633,13 +635,18 @@ class Database extends Core {
      */
     private function getOrderByString () {
 
+        // If there are not order conditions, return empty
+        if (!count($this->orderBy)) {
+            return '';
+        }
+
         // Create order strings
         $orders = array_map(function ($order) {
             return $order['column'] . ' '. $order['type'];
         }, $this->orderBy);
 
         // Return complete join string
-        return implode(', ', $orders);
+        return 'ORDER BY ' . implode(', ', $orders);
     }
 
     /**
