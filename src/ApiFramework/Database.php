@@ -226,7 +226,9 @@ class Database extends Core {
      * @return object Database instance
      */
     public function groupBy ($groupBy) {
-        $this->groupBy = $groupBy;
+        if (trim($groupBy) !== '') {
+            $this->groupBy = $groupBy;
+        }
         return $this;
     }
 
@@ -238,10 +240,12 @@ class Database extends Core {
      * @return object Database instance
      */
     public function orderBy ($column, $type = 'ASC') {
-        $this->orderBy[] = [
-            'column' => $column,
-            'type' => $type
-        ];
+        if (trim($column) !== '') {
+            $this->orderBy[] = [
+                'column' => $column,
+                'type' => $type
+            ];
+        }
         return $this;
     }
 
