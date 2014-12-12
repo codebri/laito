@@ -312,8 +312,6 @@ class Database extends Core {
         // Build query
         $this->query = implode(' ', [$root, $joins, $where, $whereIn, $groupBy, $orderBy, $limit]);
 
-echo $this->query;
-
         // Prepare statement
         $this->statement = $this->pdo->prepare($this->query);
 
