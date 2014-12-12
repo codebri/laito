@@ -97,7 +97,7 @@ class Request extends Core
 
         // Return one input
         if ($input) {
-            return isset($inputs[$input]) ? $inputs[$input] : $default;
+            return isset($inputs[$input])? $inputs[$input] : $default;
         }
 
         // Or the complete array of inputs

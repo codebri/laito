@@ -30,6 +30,11 @@ class Model extends Core {
     protected $limit = 100;
 
     /**
+     * @var string Order by
+     */
+    protected $orderBy = '';
+
+    /**
      * @var string Records collection
      */
     protected $records;
@@ -115,7 +120,9 @@ class Model extends Core {
      * @return object Model instance
      */
     public function offset ($offset) {
-        $this->offset = $offset;
+        if (is_numeric($offset)) {
+            $this->offset = $offset;
+        }
         return $this;
     }
 
@@ -126,7 +133,22 @@ class Model extends Core {
      * @return object Model instance
      */
     public function limit ($limit) {
-        $this->limit = $limit;
+        if (is_numeric($limit)) {
+            $this->limit = $limit;
+        }
+        return $this;
+    }
+
+    /**
+     * Sets the order
+     *
+     * @param int $orderBy Order column
+     * @return object Model instance
+     */
+    public function orderBy ($orderBy) {
+        if (is_string($orderBy)) {
+            $this->orderBy = $orderBy;
+        }
         return $this;
     }
 
@@ -169,12 +191,15 @@ class Model extends Core {
             return false;
         }
 
-        // Set limit and offset
+        // Set limit, offset and order
         if (isset($filters['limit'])) {
             $this->limit($filters['limit']);
         }
         if (isset($filters['offset'])) {
             $this->offset($filters['offset']);
+        }
+        if (isset($filters['order'])) {
+            $this->orderBy($filters['order']);
         }
 
         // Remove invalid filters
@@ -200,7 +225,7 @@ class Model extends Core {
     function get () {
 
         // Set basic query
-        $this->db->table($this->table)->limit($this->limit)->offset($this->offset);
+        $this->db->table($this->table)->limit($this->limit)->offset($this->offset)->orderBy($this->orderBy);
 
         // Set columns to select
         $this->db->select($this->columns);

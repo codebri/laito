@@ -37,13 +37,13 @@ class Controller extends Core {
      * @param array $params Listing parameters
      * @return string Response
      */
-    public function index ($filters = []) {
+    public function index ($params = []) {
 
         // Set the filters
-        $filters = (!empty($filters))? $filters : $this->app->request->input();
+        $params = (!empty($params))? $params : $this->app->request->input();
 
         // Get records
-        $result = $this->model->search($filters)->get();
+        $result = $this->model->search($params)->get();
 
         // Return on fails
         if (!$result) {
