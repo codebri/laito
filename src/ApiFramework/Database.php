@@ -564,7 +564,7 @@ class Database extends Core {
         }, $this->wheres);
 
         // String holder
-        $string = 'WHERE 1 AND ' . implode(' AND ', $wheres);
+        return 'WHERE 1 AND ' . implode(' AND ', $wheres);
     }
 
     /**
