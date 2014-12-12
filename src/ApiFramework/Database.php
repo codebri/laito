@@ -235,16 +235,12 @@ class Database extends Core {
     /**
      * Sets the column to order by
      *
-     * @param string $column Column name
-     * @param string $type Order type
+     * @param string $order Order column and type
      * @return object Database instance
      */
-    public function orderBy ($column, $type = 'ASC') {
-        if (trim($column) !== '') {
-            $this->orderBy[] = [
-                'column' => $column,
-                'type' => $type
-            ];
+    public function orderBy ($order) {
+        if (trim($order) !== '') {
+            $this->orderBy[] = $order;
         }
         return $this;
     }
@@ -315,6 +311,8 @@ class Database extends Core {
 
         // Build query
         $this->query = implode(' ', [$root, $joins, $where, $whereIn, $groupBy, $orderBy, $limit]);
+
+echo $this->query;
 
         // Prepare statement
         $this->statement = $this->pdo->prepare($this->query);
@@ -640,13 +638,8 @@ class Database extends Core {
             return '';
         }
 
-        // Create order strings
-        $orders = array_map(function ($order) {
-            return $order['column'] . ' '. $order['type'];
-        }, $this->orderBy);
-
-        // Return complete join string
-        return 'ORDER BY ' . implode(', ', $orders);
+        // Return complete order string
+        return 'ORDER BY ' . implode(', ', $this->orderBy);
     }
 
     /**
