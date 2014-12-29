@@ -555,7 +555,7 @@ class Database extends Core {
 
         // If there are not where conditions, return empty
         if (!count($this->wheres)) {
-            return '';
+            return 'WHERE 1=1 ';
         }
 
         // Create where named placeholders
