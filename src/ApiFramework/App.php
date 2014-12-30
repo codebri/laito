@@ -93,6 +93,11 @@ class App extends Container
         $this->container['http'] = $this->share(function ($container) {
             return new Http ($this);
         });
+
+        // Share a file instance
+        $this->container['file'] = $this->share(function ($container) {
+            return new File ($this);
+        });
     }
 
     /**
