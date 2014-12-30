@@ -444,7 +444,7 @@ class Model extends Core {
         foreach ($this->relationships['hasMany'] as $join) {
 
             // Get relationship results
-            $childs = $this->db->table($join['table'])->select(array_merge([$join['foreignKey']], $join['columns']))->whereIn($join['foreignKey'], $ids)->limit($join['limit'])->get();
+            $childs = $this->db->table($join['table'])->select(array_merge([$join['foreignKey']], $join['columns']))->whereIn($join['foreignKey'], $ids)->limit($join['limit'])->orderBy($join['orderBy'])->get();
 
             // Group them by foreign key
             if ($childs) {
