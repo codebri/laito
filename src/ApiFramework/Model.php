@@ -316,6 +316,9 @@ class Model extends Core {
             return false;
         }
 
+        // Perform before hook
+        $fields = $this->beforeCreate($fields);
+
         // Create the model and return its ID
         $result = $this->db->table($this->table)->insertGetId($fields);
 
@@ -330,8 +333,14 @@ class Model extends Core {
         // Upsert has many relationships
         $this->updateHasMany($result, $attributes);
 
+        // Get the created model
+        $model = $this->find($result);
+
+        // Run after hook
+        $model = $this->afterCreate($model);
+
         // Return the created model
-        return $this->find($result);
+        return $model;
     }
 
     /**
@@ -356,6 +365,9 @@ class Model extends Core {
             return false;
         }
 
+        // Perform before hook
+        $fields = $this->beforeUpdate($id, $fields);
+
         // Update the model
         $result = $this->db->table($this->table)->where($this->primaryKey, $id, '=', $this->table)->update($fields);
 
@@ -370,8 +382,14 @@ class Model extends Core {
         // Upsert has many relationships
         $this->updateHasMany($id, $attributes);
 
-        // Return the updated model
-        return $this->find($id);
+        // Get the created model
+        $model = $this->find($result);
+
+        // Run after hook
+        $model = $this->afterUpdate($model);
+
+        // Return the created model
+        return $model;
     }
 
     /**
@@ -386,11 +404,83 @@ class Model extends Core {
             return false;
         }
 
+        // Perform before hook
+        $this->beforeDestroy($id);
+
         // Update the model
         $result = $this->db->table($this->table)->where($this->primaryKey, $id)->limit(1)->delete();
 
+        // Return false on failures
+        if (!$result) {
+            return false;
+        }
+
+        // Perform after hook
+        $this->afterDestroy($id);
+
         // Return the destroyed model ID, or false on fail
-        return ($result)? $id : false;
+        return $id;
+    }
+
+    /**
+     * Hook that runs before creating a model
+     *
+     * @param $attributes Model attributes
+     * @return bool|array Tweaked model attributes
+     */
+    function beforeCreate ($attributes) {
+        return $attributes;
+    }
+
+    /**
+     * Hook that runs after creating a model
+     *
+     * @param $attributes Model attributes
+     * @return bool|array Tweaked model attributes
+     */
+    function afterCreate ($model) {
+        return $model;
+    }
+
+    /**
+     * Hook that runs before updating a model
+     *
+     * @param $id Model primary key
+     * @param $attributes Model attributes
+     * @return bool|array Tweaked model attributes
+     */
+    function beforeUpdate ($id, $attributes) {
+        return $attributes;
+    }
+
+    /**
+     * Hook that runs after updating a model
+     *
+     * @param $attributes Model attributes
+     * @return bool|array Tweaked model attributes
+     */
+    function afterUpdate ($model) {
+        return $model;
+    }
+
+    /**
+     * Hook that runs before deleting a model
+     *
+     * @param $id Model primary key
+     * @return int Model primary key
+     */
+    function beforeDestroy ($id) {
+        return $id;
+    }
+
+    /**
+     * Hook that runs after deleting a model
+     *
+     * @param $id Model primary key
+     * @return int Model primary key
+     */
+    function afterDestroy ($id) {
+        return $id;
     }
 
     /**
