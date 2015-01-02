@@ -15,7 +15,6 @@ class Auth extends Core
      */
     private $user = null;
 
-
     /**
      * Login a user
      *
@@ -51,7 +50,6 @@ class Auth extends Core
         return $token;
     }
 
-
     /**
      * Tells if an user is logged in
      *
@@ -69,7 +67,6 @@ class Auth extends Core
         // Return user info
         return $sessionData;
     }
-
 
     /**
      * Signs out a user
@@ -89,7 +86,6 @@ class Auth extends Core
         // Return success or fail
         return $cookieDeleted && $sessionDeleted;
     }
-
 
     /**
      * Validates a user - password pair
@@ -111,7 +107,6 @@ class Auth extends Core
         // Verify the password against the stored hash
         return password_verify($password, $user[$this->app->config('auth.password')]);
     }
-
 
     /**
      * Creates a reminder and sends it to the user
@@ -138,7 +133,6 @@ class Auth extends Core
         // Return
         return $reminderSaved;
     }
-
 
     /**
      * Changes the password of a user
@@ -168,7 +162,7 @@ class Auth extends Core
         $data['password'] = password_hash($newPassword, PASSWORD_BCRYPT);
 
         // Update user
-        $userUpdated = $this->app->db->table($this->config('auth.table'))->where($this->config('auth.username'), $username)->update($id, $data);
+        $userUpdated = $this->app->db->reset()->table($this->config('auth.table'))->where($this->config('auth.username'), $username)->update($id, $data);
 
         // Delete reminder
         if ($userUpdated['sucess'] && $isReminder) {
@@ -179,7 +173,6 @@ class Auth extends Core
         return $userUpdated;
     }
 
-
     /**
      * Gets a user from the database
      *
@@ -187,7 +180,7 @@ class Auth extends Core
      * @return mixed User array, of false if the user does not exist
      */
     private function findUser ($username) {
-        $user = $this->app->db->table($this->app->config('auth.table'))->where($this->app->config('auth.username'), $username)->getOne();
+        $user = $this->app->db->reset()->table($this->app->config('auth.table'))->where($this->app->config('auth.username'), $username)->getOne();
         return $user;
     }
 
@@ -202,7 +195,6 @@ class Auth extends Core
         return md5($username . time() . rand(0, 100));
     }
 
-
     /**
      * Returns the session path for a given token
      *
@@ -212,7 +204,6 @@ class Auth extends Core
     private function sessionPath ($token) {
         return $this->app->config('sessions.folder') . $token . '.json';
     }
-
 
     /**
      * Stores the session data on a file
@@ -242,7 +233,6 @@ class Auth extends Core
         return (file_exists($path)) ? json_decode(file_get_contents($path), true) : false;
     }
 
-
     /**
      * Deletes the session file
      *
@@ -257,7 +247,6 @@ class Auth extends Core
         return true;
     }
 
-
     /**
      * Creates a random reminder hash on the username and time
      *
@@ -268,7 +257,6 @@ class Auth extends Core
         return $this->app->config('reminders.suffix') . md5($username . time() . rand(0, 100));
     }
 
-
     /**
      * Returns the reminder path for a given reminder
      *
@@ -278,7 +266,6 @@ class Auth extends Core
     private function reminderPath ($reminder) {
         return $this->app->config('reminders.folder') . $reminder . '.json';
     }
-
 
     /**
      * Stores the reminder data on a file
@@ -296,7 +283,6 @@ class Auth extends Core
         ]));
     }
 
-
     /**
      * Retrieves the data from the reminder file
      *
@@ -307,7 +293,6 @@ class Auth extends Core
         $path = $this->reminderPath($reminder);
         return (file_exists($path)) ? json_decode(file_get_contents($path), true) : false;
     }
-
 
     /**
      * Deletes the reminder file
@@ -320,7 +305,6 @@ class Auth extends Core
         return unlink($path);
     }
 
-
     /**
      * Check if a hash is a reminder
      *
@@ -330,7 +314,6 @@ class Auth extends Core
     private function isReminder ($string) {
         return strpos($string, $this->app->config('reminders.suffix')) === 0;
     }
-
 
     /**
      * Sets the token cookie
@@ -343,7 +326,6 @@ class Auth extends Core
         $cookie = $this->app->config('sessions.cookie');
         return setcookie($cookie, $token, time() + $ttl, '/');
     }
-
 
     /**
      * Deletes the token cookie
