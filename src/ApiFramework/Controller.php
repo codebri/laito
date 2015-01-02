@@ -20,15 +20,10 @@ class Controller extends Core {
      * @param App $app App instance
      * @param object $model Model instance
      */
-    public function __construct (App $app, $model = null) {
+    public function __construct (App $app) {
 
         // Construct from parent
         parent::__construct($app);
-
-        // Reference model
-        if ($model) {
-            $this->model = $model;
-        }
     }
 
     /**

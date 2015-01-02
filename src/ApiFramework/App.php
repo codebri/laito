@@ -40,7 +40,7 @@ class App extends Container
      *
      * @param array $userSettings Array of user defined options
      */
-    public function __construct(array $userSettings = array()) {
+    public function __construct ($userSettings = []) {
 
         // Setup settings
         $this->container['settings'] = array_merge($this->defaultSettings, $userSettings);
@@ -105,7 +105,7 @@ class App extends Container
      *
      * @param string|array $name Setting to set or retrieve
      * @param mixed $value If passed, value to apply on the setting
-     * @return mixed Value of a setting if only one argument is a string
+     * @return mixed Value of a setting
      */
     public function config ($name, $value = null) {
 
@@ -126,10 +126,10 @@ class App extends Container
         return isset($this->container['settings'][$name]) ? $this->container['settings'][$name] : null;
     }
 
-
     /**
      * Runs the application
-     * 
+     *
+     * @return string Response
      */
     public function run () {
 
@@ -150,18 +150,55 @@ class App extends Container
             if (!class_exists($action['model'])) {
                 $this->response->error(404, 'Model not found');
             } else {
-                $model = new $action['model']($this);
+                $model = $this->make($action['model']);
             }
         }
 
         // Create the required controller
-        $controller = new $action['class']($this, $model);
+        $controller = $this->make($action['class']);
 
         // Execute the required method
-        $res = call_user_func_array(array($controller, $action['method']), $action['params'] ? : []);
+        $response = call_user_func_array(array($controller, $action['method']), $action['params'] ? : []);
 
         // Return the response in the right format
-        return $this->response->output($res);
+        return $this->response->output($response);
+    }
+
+    /**
+     * Makes an instance of a class
+     *
+     * @param string $className Class name
+     * @return object Class instance
+     */
+    public function make ($className) {
+
+        // Create a reflection to access the class properties
+        $reflection = new \ReflectionClass($className);
+
+        // If the class has no constructor, just return a new instance
+        $constructor = $reflection->getConstructor();
+        if (is_null($constructor)) {
+            return new $className;
+        }
+
+        // Or get the constructor parameters and instance dependencies
+        $dependencies = [];
+        $parameters = $reflection->getConstructor()->getParameters();
+        foreach ($parameters as $param) {
+            $class = $param->getClass();
+            if ($class && $class->getName() === 'ApiFramework\App') {
+
+                // If the dependency is the app itself, inject the current instance
+                $dependencies[] = $this;
+            } else {
+
+                // Otherwise, inject the instantiated dependency or a null value
+                $dependencies[] = $class? $this->make($class->name) : 'NULL';
+            }
+        }
+
+        // Return the class instance
+        return $reflection->newInstanceArgs($dependencies);
     }
 
 }

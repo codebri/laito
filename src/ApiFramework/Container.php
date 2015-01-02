@@ -13,7 +13,7 @@ class Container
     /**
      * @var array Container of settings and services
      */
-    protected $container = array();
+    protected $container = [];
 
 
     /**

@@ -103,6 +103,16 @@ class Model extends Core {
         // Construct from parent
         parent::__construct($app);
 
+        // Setup configurations and boot
+        $this->boot();
+    }
+
+    /**
+     * Class constructor
+     *
+     */
+    public function boot () {
+
         // Setup database
         $this->db = $this->app->db;
 
