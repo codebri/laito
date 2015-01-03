@@ -196,9 +196,9 @@ class Model extends Core {
      */
     function search ($filters = []) {
 
-        // Filters has to be an array
-        if (!is_array($filters)) {
-            return false;
+        // Check the filters
+        if (!isset($filters) || !is_array($filters)) {
+            throw new \InvalidArgumentException('Undefined search filters', 400);
         }
 
         // Set limit, offset and order
@@ -271,24 +271,29 @@ class Model extends Core {
     /**
      * Returns a single model by primary key
      *
-     * @param string $value Primary key value
+     * @param string $id Primary key value
      * @return bool|array Model attributes, or false
      */
-    function find ($value) {
+    function find ($id = null) {
 
-        // Value has to be defined
-        if (!isset($value)) {
-            return false;
+        // ID has to be defined
+        if (!isset($id)) {
+            throw new \InvalidArgumentException('Undefined ID', 400);
         }
 
         // Use the primary key for the where
-        $this->db->table($this->table)->where($this->primaryKey, $value, '=', $this->table);
+        $this->db->table($this->table)->where($this->primaryKey, $id, '=', $this->table);
 
         // Return the first found record
         $result = $this->get();
 
-        // Return the first matching record, or false if no records were found
-        return is_array($result) ? reset($result) : false;
+        // Abort if no models where found
+        if (!$result || !is_array($result) || empty($result)) {
+            throw new \Exception('Element not found', 404);
+        }
+
+        // Return the first matching record
+        return reset($result);
     }
 
     /**
@@ -301,8 +306,13 @@ class Model extends Core {
         // Perform query
         $result = $this->get();
 
-        // Return the first matching model, or false if no models were found
-        return is_array($result) ? reset($result) : false;
+        // Abort if no models where found
+        if (!$result || !is_array($result) || empty($result)) {
+            throw new \Exception('Element not found', 404);
+        }
+
+        // Return the first matching model
+        return reset($result);
     }
 
     /**
@@ -311,11 +321,11 @@ class Model extends Core {
      * @param $attributes Model attributes
      * @return bool|array Created model ID, or false
      */
-    function create ($attributes) {
+    function create ($attributes = []) {
 
-        // Attributes has to be array
+        // Attributes have to be array
         if (!(isset($attributes)) || !is_array($attributes)) {
-            return false;
+            throw new \InvalidArgumentException('Undefined attributes', 400);
         }
 
         // Remove non fillable attributes
@@ -323,7 +333,7 @@ class Model extends Core {
 
         // Validate attributes
         if ($this->validationErrors($fields)) {
-            return false;
+            throw new \InvalidArgumentException('Invalid attributes', 400);
         }
 
         // Perform before hook
@@ -334,7 +344,7 @@ class Model extends Core {
 
         // Return false if create fails
         if (!$result) {
-            return false;
+            throw new \Exception('Could not create the model', 500);
         }
 
         // Sync many to many relationships
@@ -360,11 +370,16 @@ class Model extends Core {
      * @param $attributes Model attributes
      * @return bool|array Updated model, or false
      */
-    function update ($id, $attributes) {
+    function update ($id = null, $attributes = []) {
 
-        // ID has to be defined, attributes an array
-        if (!isset($id) || !isset($attributes) || !is_array($attributes)) {
-            return false;
+        // ID has to be defined
+        if (!isset($id)) {
+            throw new \InvalidArgumentException('Undefined ID', 400);
+        }
+
+        // Attributes have to be array
+        if (!(isset($attributes)) || !is_array($attributes)) {
+            throw new \InvalidArgumentException('Undefined attributes', 400);
         }
 
         // Remove non fillable attributes
@@ -372,7 +387,7 @@ class Model extends Core {
 
         // Validate attributes
         if ($this->validationErrors($fields)) {
-            return false;
+            throw new \InvalidArgumentException('Invalid attributes', 400);
         }
 
         // Perform before hook
@@ -383,7 +398,7 @@ class Model extends Core {
 
         // Return false if the update failed
         if (!$result) {
-            return false;
+            throw new \Exception('Could not update the model', 500);
         }
 
         // Sync many to many relationships
@@ -407,11 +422,11 @@ class Model extends Core {
      *
      * @return bool|array Deleted model ID, or false
      */
-    function destroy ($id) {
+    function destroy ($id = null) {
 
         // ID has to be defined
         if (!isset($id)) {
-            return false;
+            throw new \InvalidArgumentException('Undefined ID', 400);
         }
 
         // Perform before hook
@@ -422,7 +437,7 @@ class Model extends Core {
 
         // Return false on failures
         if (!$result) {
-            return false;
+            throw new \Exception('Could not destroy the model', 500);
         }
 
         // Perform after hook

@@ -123,45 +123,7 @@ class App extends Container
         }
 
         // Or return the current value
-        return isset($this->container['settings'][$name]) ? $this->container['settings'][$name] : null;
-    }
-
-    /**
-     * Runs the application
-     *
-     * @return string Response
-     */
-    public function run () {
-
-        // Get URL
-        $url = $this->request->url();
-
-        // Get route action
-        $action = $this->router->getAction($url);
-
-        // Check if the controller exists
-        if (!isset($action) || !class_exists($action['class'])) {
-            $this->response->error(404, 'Controller not found');
-        }
-
-        // Instance model
-        $model = null;
-        if (isset($action['model'])) {
-            if (!class_exists($action['model'])) {
-                $this->response->error(404, 'Model not found');
-            } else {
-                $model = $this->make($action['model']);
-            }
-        }
-
-        // Create the required controller
-        $controller = $this->make($action['class']);
-
-        // Execute the required method
-        $response = call_user_func_array(array($controller, $action['method']), $action['params'] ? : []);
-
-        // Return the response in the right format
-        return $this->response->output($response);
+        return isset($this->container['settings'][$name])? $this->container['settings'][$name] : null;
     }
 
     /**
@@ -199,6 +161,49 @@ class App extends Container
 
         // Return the class instance
         return $reflection->newInstanceArgs($dependencies);
+    }
+
+    /**
+     * Runs the application
+     *
+     * @return string Response
+     */
+    public function run () {
+
+        // Encapsulate to catch errors
+        try {
+
+            // Get URL
+            $url = $this->request->url();
+
+            // Get route action
+            $action = $this->router->getAction($url);
+
+            // Check if the controller exists
+            if (!isset($action) || !class_exists($action['class'])) {
+                return $this->response->error(404, 'Controller not found');
+            }
+
+            // Instance model
+            $model = null;
+            if (isset($action['model'])) {
+                if (!class_exists($action['model'])) {
+                    return $this->response->error(404, 'Model not found');
+                } else {
+                    $model = $this->make($action['model']);
+                }
+            }
+
+            // Create the required controller
+            $controller = $this->make($action['class']);
+
+            // Execute the required method and return the response
+            return $this->response->output(call_user_func_array([$controller, $action['method']], $action['params']? : []));
+        } catch (\Exception $e) {
+
+            // Return an error response
+            return $this->response->error($e->getCode(), $e->getMessage());
+        }
     }
 
 }

@@ -34,6 +34,7 @@ class Response extends Core
      * @var array Error codes and messages
      */
     private $errors = [
+        400 => 'HTTP/1.1 400 Bad Request',
         401 => 'HTTP/1.1 401 Unauthorized',
         403 => 'HTTP/1.1 403 Forbidden',
         404 => 'HTTP/1.1 404 Not Found',
@@ -156,7 +157,7 @@ class Response extends Core
         foreach ($collection as $k => $v) {
             if (is_array($v)) {
                 $collection[$k] = self::objectify($v, $indexes);
-            } else if ( ($key = current(explode('_', $k))) && in_array($key, $indexes) ) {
+            } else if (($key = current(explode('_', $k))) && in_array($key, $indexes) ) {
                 $collection[$key][str_replace($key.'_', '', $k)] = $v;
                 unset($collection[$k]);
             }

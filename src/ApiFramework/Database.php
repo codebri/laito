@@ -322,7 +322,7 @@ class Database extends Core {
 
         // Execute statement
         if (!$this->statement->execute()) {
-            return false;
+            throw new \PDOException('Error reading from database', 500);
         }
 
         // Return results
@@ -384,7 +384,7 @@ class Database extends Core {
 
         // Execute statement
         if (!$this->statement->execute()) {
-            return false;
+            throw new \PDOException('Error writing to database', 500);
         }
 
         // Get results
@@ -437,7 +437,7 @@ class Database extends Core {
 
         // Internal call to insert
         if (!$this->insert($fields)) {
-            return false;
+            throw new \PDOException('Error writing to database', 500);
         }
 
         // Get last id

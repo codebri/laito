@@ -45,14 +45,9 @@ class Lang extends Core
             return true;
         }
 
-        // Abort if the language file does not exist
-        $path = $this->app->config('lang.folder')  . $lang . '.json';
-        if (!file_exists($path)) {
-            return false;
-        }
-
         // Add the terms to the internal dictionary
-        $terms = file_get_contents($path);
+        $path = $this->app->config('lang.folder')  . $lang . '.json';
+        $terms = $this->app->file->get($path);
         return $this->languages[$lang] = json_decode($terms, true);
     }
 
@@ -67,7 +62,7 @@ class Lang extends Core
     public function get ($term, $lang = null) {
 
         // If we don't receive a language key, use the default
-        $lang = isset($lang) ? $lang : $this->lang;
+        $lang = isset($lang)? $lang : $this->lang;
 
         // Load the language terms
         if (!isset($this->languages[$lang])) {
@@ -75,7 +70,7 @@ class Lang extends Core
         }
 
         // Return the translated term
-        return isset($this->languages[$lang][$term]) ? $this->languages[$lang][$term] : $term;
+        return isset($this->languages[$lang][$term])? $this->languages[$lang][$term] : $term;
     }
 
 
@@ -86,13 +81,6 @@ class Lang extends Core
      * @return mixed Language key setted, or false if failed
      */
     public function locale ($lang) {
-
-        // Check if the language can be loaded
-        if (!$this->load($lang)) {
-            return false;
-        }
-
-        // Set the new lang
         return $this->lang = $lang;
     }
 }

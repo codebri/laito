@@ -34,10 +34,13 @@ class Container
      * @param mixed $value Value or service
      */
     function __get ($id) {
+
+        // Abort if the element is not in the container
         if (!isset($this->container[$id])) {
-            throw new InvalidArgumentException($id . ' not defined in container');
+            throw new \InvalidArgumentException($id . ' not defined in container', 500);
         }
 
+        // Return instance
         if (is_callable($this->container[$id])) {
             return $this->container[$id]($this);
         } else {
@@ -56,11 +59,9 @@ class Container
     function share ($callable) {
         return function ($c) use ($callable) {
             static $object;
-
             if (is_null($object)) {
                 $object = $callable($c);
             }
-
             return $object;
         };
     }

@@ -144,7 +144,7 @@ class Auth extends Core
 
         // Get data from reminder or session
         $isReminder = $this->isReminder($token);
-        $sessionData = $isReminder ? $this->getReminder($token) : $this->getSession($token);
+        $sessionData = $isReminder? $this->getReminder($token) : $this->getSession($token);
 
         // Abort if the session is invalid
         if (!$sessionData) {

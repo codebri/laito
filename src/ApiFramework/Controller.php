@@ -40,11 +40,6 @@ class Controller extends Core {
         // Get records
         $result = $this->model->search($params)->get();
 
-        // Return on fails
-        if (!$result) {
-            return $this->failed();
-        }
-
         // Get pagination and number of records
         $pagination = array_merge(
             ['records' => $this->model->count()],
@@ -67,13 +62,13 @@ class Controller extends Core {
      */
     public function show ($id = null) {
 
+        // Check the ID
+        if (!isset($id)) {
+            throw new \InvalidArgumentException('Undefined ID', 400);
+        }
+
         // Get records
         $result = $this->model->find($id);
-
-        // Return on fails
-        if (!$result) {
-            return $this->failed($id);
-        }
 
         // Return results
         return [
@@ -96,11 +91,6 @@ class Controller extends Core {
         // Create the record
         $result = $this->model->create($attributes);
 
-        // Return on fails
-        if (!$result) {
-            return $this->failed(null, $attributes);
-        }
-
         // Return results
         return [
             'success' => true,
@@ -117,16 +107,16 @@ class Controller extends Core {
      */
     public function update ($id = null, $attributes = []) {
 
+        // Check the ID
+        if (!isset($id)) {
+            throw new \InvalidArgumentException('Undefined ID', 400);
+        }
+
         // Set the attributes
         $attributes = (!empty($attributes))? $attributes : $this->app->request->input();
 
         // Update the record
         $result = $this->model->update($id, $attributes);
-
-        // Return errors
-        if (!$result) {
-            return $this->failed($id, $attributes);
-        }
 
         // Return results
         return [
@@ -144,13 +134,13 @@ class Controller extends Core {
      */
     public function destroy ($id = null) {
 
+        // Check the ID
+        if (!isset($id)) {
+            throw new \InvalidArgumentException('Undefined ID', 400);
+        }
+
         // Delete the record
         $result = $this->model->destroy($id);
-
-        // Return on fails
-        if (!$result) {
-            return $this->failed($id);
-        }
 
         // Return results
         return [
@@ -166,6 +156,7 @@ class Controller extends Core {
      * @param array $attributes Invalid attributes
      * @return string Response
      */
+    /*
     private function failed ($id = null, $attributes = null) {
 
         // Create response
@@ -187,5 +178,6 @@ class Controller extends Core {
         // Return response
         return $response;
     }
+    */
 
 }

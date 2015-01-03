@@ -24,7 +24,7 @@ class View extends Core {
 
         // Check if the template exists
         if (!file_exists($view)) {
-            throw new Exception('Template not found: ' . $view);
+            throw new \Exception('Template not found: ' . $view, 404);
         }
 
         // Extract values and include template

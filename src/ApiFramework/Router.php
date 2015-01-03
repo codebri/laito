@@ -81,6 +81,9 @@ class Router extends Core
      */
     public function getAction ($url) {
 
+        // Current route holder
+        $current =  false;
+
         // Get requested method
         $method = $this->app->request->method() ? : 'GET';
         $method = strtolower($method);
@@ -96,12 +99,17 @@ class Router extends Core
                         $matches
                     );
                 }
-                return $route;
+                $current = $route;
             }
         }
 
-        // Return false if none of the routes matched
-        return false;
+        // Abort if none of the routes matched
+        if (!$current) {
+            throw new \Exception('Route not found', 404);
+        }
+
+        // Return current route
+        return $current;
     }
 
 
