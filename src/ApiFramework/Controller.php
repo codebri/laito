@@ -149,35 +149,4 @@ class Controller extends Core {
         ];
     }
 
-    /**
-     * Returns a failed response
-     *
-     * @param array $id Resource ID
-     * @param array $attributes Invalid attributes
-     * @return string Response
-     */
-    /*
-    private function failed ($id = null, $attributes = null) {
-
-        // Create response
-        $response = ['success' => false];
-
-        // Set ID
-        if ($id) {
-            $response['id'] = $id;
-        }
-
-        // Set error list
-        if ($attributes && is_array($attributes)) {
-            $errors = $this->model->validationErrors($attributes);
-            if ($errors) {
-                $response['errors'] = $errors;
-            }
-        }
-
-        // Return response
-        return $response;
-    }
-    */
-
 }
