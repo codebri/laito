@@ -234,6 +234,9 @@ class Model extends Core {
      */
     function get () {
 
+        // Perform before hook
+        $this->beforeGet();
+
         // Set basic query
         $this->db->table($this->table)->limit($this->limit)->offset($this->offset)->orderBy($this->orderBy);
 
@@ -254,6 +257,9 @@ class Model extends Core {
 
         // Format relationships
         $this->formatBelongsToMany()->formatHasOne();
+
+        // Perform after hook
+        $this->afterGet();
 
         // Return query results
         return $this->records;
@@ -448,10 +454,28 @@ class Model extends Core {
     }
 
     /**
+     * Hook that runs before getting an array of models
+     *
+     * @param bool Success or failure
+     */
+    function beforeGet () {
+        return true;
+    }
+
+    /**
+     * Hook that runs after getting an array of models
+     *
+     * @param bool Success or failure
+     */
+    function afterGet () {
+        return true;
+    }
+
+    /**
      * Hook that runs before creating a model
      *
-     * @param $attributes Model attributes
-     * @return bool|array Tweaked model attributes
+     * @param $attributes Original attributes
+     * @return bool|array Customized attributes
      */
     function beforeCreate ($attributes) {
         return $attributes;
@@ -460,8 +484,8 @@ class Model extends Core {
     /**
      * Hook that runs after creating a model
      *
-     * @param $attributes Model attributes
-     * @return bool|array Tweaked model attributes
+     * @param $attributes Original attributes
+     * @return bool|array Customized attributes
      */
     function afterCreate ($model) {
         return $model;
@@ -471,8 +495,8 @@ class Model extends Core {
      * Hook that runs before updating a model
      *
      * @param $id Model primary key
-     * @param $attributes Model attributes
-     * @return bool|array Tweaked model attributes
+     * @param $attributes Original attributes
+     * @return bool|array Customized attributes
      */
     function beforeUpdate ($id, $attributes) {
         return $attributes;
@@ -481,8 +505,8 @@ class Model extends Core {
     /**
      * Hook that runs after updating a model
      *
-     * @param $attributes Model attributes
-     * @return bool|array Tweaked model attributes
+     * @param $attributes Original attributes
+     * @return bool|array Customized attributes
      */
     function afterUpdate ($model) {
         return $model;
