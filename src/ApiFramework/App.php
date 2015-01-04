@@ -181,17 +181,7 @@ class App extends Container
 
             // Check if the controller exists
             if (!isset($action) || !class_exists($action['class'])) {
-                return $this->response->error(404, 'Controller not found');
-            }
-
-            // Instance model
-            $model = null;
-            if (isset($action['model'])) {
-                if (!class_exists($action['model'])) {
-                    return $this->response->error(404, 'Model not found');
-                } else {
-                    $model = $this->make($action['model']);
-                }
+                throw new Exception('Controller not found', 404);
             }
 
             // Create the required controller
