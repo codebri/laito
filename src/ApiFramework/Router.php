@@ -11,7 +11,7 @@ class Router extends Core
 {
 
     /**
-     * @var array HTTP methods
+     * @var array Routes holder
      */
     private $routes = [
         'get' => [],
@@ -20,6 +20,10 @@ class Router extends Core
         'delete' => [],
     ];
 
+    /**
+     * @var array Filters holder
+     */
+    private $filters = [];
 
     /**
      * Register a url
@@ -27,10 +31,10 @@ class Router extends Core
      * @param string $method Method 
      * @param string $path Route to match
      * @param array $action Controller and method to execute
-     * @param array $model Optional model to inject
+     * @param array $filter Optional filter to execute
      * @return boolean Success or fail of registration
      */
-    public function register ($method, $path, $action, $model = null) {
+    public function register ($method, $path, $action, $filter = null) {
 
         // Create arrays
         $params = [];
@@ -54,7 +58,7 @@ class Router extends Core
             'class' => $action[0],
             'method' => $action[1],
             'params' => $params,
-            'model' => $model
+            'filter' => $filter
         ];
     }
 
@@ -118,16 +122,37 @@ class Router extends Core
      * 
      * @param string $route Route for the resource
      * @param string $controller Controller name
-     * @param string $model Optional model to inject
+     * @param string $filter Optional filter to execute
      * @return boolean Success or fail of registration
      */
-    public function resource ($route, $controller, $model = null) {
-        $this->register('get', $route, [$controller, 'index'], $model);
-        $this->register('get', $route . '/{id}', [$controller, 'show'], $model);
-        $this->register('post', $route, [$controller, 'store'], $model);
-        $this->register('put', $route . '/{id}', [$controller, 'update'], $model);
-        $this->register('delete', $route . '/{id}', [$controller, 'destroy'], $model);
+    public function resource ($route, $controller, $filter = null) {
+        $this->register('get', $route, [$controller, 'index'], $filter);
+        $this->register('get', $route . '/{id}', [$controller, 'show'], $filter);
+        $this->register('post', $route, [$controller, 'store'], $filter);
+        $this->register('put', $route . '/{id}', [$controller, 'update'], $filter);
+        $this->register('delete', $route . '/{id}', [$controller, 'destroy'], $filter);
         return true;
+    }
+
+    /**
+     * Sets a route filter
+     * 
+     * @param string $filterName Filter name
+     * @param array $callback Callback to exectue
+     * @return boolean Success or failure of registration
+     */
+    public function filter ($filterName, $callback) {
+        return $this->filters[$filterName] = $callback;
+    }
+
+    /**
+     * Returns a route filter
+     * 
+     * @param string $filterName Filter name
+     * @return mixed Registered filter
+     */
+    public function getFilter ($filterName) {
+        return $this->filters[$filterName];
     }
 
     /**

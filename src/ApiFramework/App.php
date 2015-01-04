@@ -179,6 +179,22 @@ class App extends Container
             // Get route action
             $action = $this->router->getAction($url);
 
+            // Perform the filter
+            $filter = $this->router->getFilter($action['filter']);
+            if (isset($action['filter']) && $filter) {
+                if ($filter instanceof \Closure) {
+                    call_user_func($filter);
+                } else if (is_array($filter)) {
+                    list($class, $method) = $filter;
+                    if (class_exists($class)) {
+                        $class = $this->make($class);
+                        call_user_func([$class, $method]);
+                    }
+                } else {
+                    throw new Exception('Invalid filter', 500);
+                }
+            }
+
             // Check if the controller exists
             if (!isset($action) || !class_exists($action['class'])) {
                 throw new Exception('Controller not found', 404);
