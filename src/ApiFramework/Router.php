@@ -151,8 +151,8 @@ class Router extends Core
      * @param string $filterName Filter name
      * @return mixed Registered filter
      */
-    public function getFilter ($filterName) {
-        return $this->filters[$filterName];
+    public function getFilter ($filterName = null) {
+        return isset($this->filters[$filterName])? $this->filters[$filterName] : false;
     }
 
     /**
