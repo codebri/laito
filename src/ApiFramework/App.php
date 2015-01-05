@@ -191,13 +191,13 @@ class App extends Container
                         call_user_func([$class, $method]);
                     }
                 } else {
-                    throw new Exception('Invalid filter', 500);
+                    throw new \Exception('Invalid filter', 500);
                 }
             }
 
             // Check if the controller exists
             if (!isset($action) || !class_exists($action['class'])) {
-                throw new Exception('Controller not found', 404);
+                throw new \Exception('Controller not found', 404);
             }
 
             // Create the required controller
@@ -205,6 +205,11 @@ class App extends Container
 
             // Execute the required method and return the response
             return $this->response->output(call_user_func_array([$controller, $action['method']], $action['params']? : []));
+        } catch (\PDOException $e) {
+
+            // Show the invalid query
+            echo 'Invalid query:<br>' . $this->db->lastQuery();
+            exit;
         } catch (\Exception $e) {
 
             // Return an error response
