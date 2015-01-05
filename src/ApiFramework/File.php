@@ -11,6 +11,16 @@ class File extends Core
 {
 
     /**
+     * Check if a file exists
+     *
+     * @param $path File path
+     * @return boolean True if the file exists, otherwise false
+     */
+    public function exists ($path) {
+        return file_exists($path);
+    }
+
+    /**
      * Get the contents of a file
      *
      * @param $path File path
