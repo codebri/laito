@@ -148,11 +148,6 @@ class Database extends Core {
      */
     public function table ($table) {
 
-        // Reset to default values
-        if ($table !== $this->table) {
-            $this->reset();
-        }
-
         // User other table
         $this->table = $table;
 
@@ -328,6 +323,9 @@ class Database extends Core {
         // Return results
         $result = $this->statement->fetchAll(\PDO::FETCH_ASSOC);
 
+        // Reset
+        $this->reset();
+
         // Return result
         return $result;
     }
@@ -347,50 +345,20 @@ class Database extends Core {
     }
 
     /**
-     * Performs a SELECT COUNT(*) query
+     * Performs a SELECT COUNT query
      *
+     * @param string $column Column to count by
      * @return int Number of rows matching the SELECT query
      */
-    public function count () {
+    public function count ($column) {
 
-        // Define root
-        $root = 'SELECT COUNT(*) AS count FROM ' . $this->table;
+        // Select only the COUNT
+        $result = $this->select(['COUNT(' . $this->table . '.' . $column .') as count'])->get();
 
-        // Define joins
-        $joins = count($this->joins)? $this->getJoinString() : '';
+        // Reset
+        $this->reset();
 
-        // Define where conditions
-        $where = $this->getWhereString();
-
-        // Define where in conditions
-        $whereIn = $this->getWhereInString();
-
-        // Define group by
-        $groupBy = ($this->groupBy)? 'GROUP BY ' . $this->groupBy : '';
-
-        // Define order
-        $orderBy = ($this->orderBy)? $this->getOrderByString() : '';
-
-        // Build query
-        $this->query = implode(' ', [$root, $joins, $where, $whereIn, $groupBy, $orderBy]);
-
-        // Prepare statement
-        $this->statement = $this->pdo->prepare($this->query);
-
-        // Bind where values
-        if (count($this->wheres)) {
-            $this->bindWheres();
-        }
-
-        // Execute statement
-        if (!$this->statement->execute()) {
-            throw new \PDOException('Error writing to database', 500);
-        }
-
-        // Get results
-        $result = $this->statement->fetchAll(\PDO::FETCH_ASSOC);
-
-        // Return result
+        // Return number of records
         return (count($result) === 1)? (int) reset($result)['count'] : count($result);
     }
 

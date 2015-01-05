@@ -42,7 +42,7 @@ class Controller extends Core {
 
         // Get pagination and number of records
         $pagination = array_merge(
-            ['records' => $this->model->count()],
+            //['records' => $this->model->search($params)->count('*')],
             $this->model->pagination()
         );
 

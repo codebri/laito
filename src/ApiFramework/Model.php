@@ -121,6 +121,8 @@ class Model extends Core {
 
         // Merge validation rules
         $this->rules = array_merge($this->defaultRules, $this->rules);
+
+        return $this;
     }
 
     /**
@@ -189,6 +191,18 @@ class Model extends Core {
     }
 
     /**
+     * Sets a where in condition
+     *
+     * @param string $column Column name
+     * @param string $values Values to match
+     * @return object Database instance
+     */
+    public function whereIn ($column, $values, $table = null) {
+        $this->db->whereIn($column, $values, $table);
+        return $this;
+    }
+
+    /**
      * Sets an array of filters as where conditions
      *
      * @param array $params Search parameters
@@ -200,6 +214,9 @@ class Model extends Core {
         if (!isset($filters) || !is_array($filters)) {
             throw new \InvalidArgumentException('Undefined search filters', 400);
         }
+
+        // Set table
+        $this->db->table = $this->table;
 
         // Set limit, offset and order
         if (isset($filters['limit'])) {
@@ -249,9 +266,6 @@ class Model extends Core {
         // Get results
         $this->records = $this->db->get();
 
-        // Get results count
-        $this->count = $this->db->count();
-
         // Add has many relationships
         $this->hasMany();
 
@@ -268,10 +282,11 @@ class Model extends Core {
     /**
      * Returns the total number of models
      *
+     * @param string $column Column to count by
      * @return int Total number of models
      */
     function count () {
-        return $this->count;
+        return $this->db->table($this->table)->groupBy($this->table . '.' . $this->primaryKey)->count($this->primaryKey);
     }
 
     /**
@@ -552,7 +567,7 @@ class Model extends Core {
 
             // Add related columns to select
             foreach ($join['columns'] as $column) {
-                $column = $join['table'] . '.' . $column . ' as ' . $join['alias'] . '_' . $column;
+                $column = $join['table'] . '.' . $column . ' as _' . $join['alias'] . '_' . $column;
                 $this->db->addSelect($column);
             }
         }
@@ -575,6 +590,11 @@ class Model extends Core {
 
         // Get current records IDs
         $ids = array_column($this->records, 'id');
+
+        // Return if no records where found
+        if (empty($ids)) {
+            return $this;
+        }
 
         // Make a associative array from current records
         $records = array_combine($ids, $this->records);
@@ -795,8 +815,8 @@ class Model extends Core {
         foreach ($this->relationships['hasOne'] as $join) {
             $this->records = array_map(function ($record) use ($join) {
                 foreach ($record as $key => $value) {
-                    $prefix = $join['alias'] . '_';
-                    if (preg_match('/' . $prefix . '[\w]+/', $key)) {
+                    $prefix = '_' . $join['alias'] . '_';
+                    if (preg_match('/^' . $prefix . '[\w]+/', $key)) {
                         $record[$join['alias']][str_replace($prefix, '', $key)] = $value;
                         unset($record[$key]);
                     }
