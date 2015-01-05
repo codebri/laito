@@ -139,6 +139,9 @@ class Response extends Core
      * @return string HTML list
      */
     private function html ($data) {
+        if (!is_array($data)) {
+            return $data;
+        }
         $return = '';
         foreach ($data as $key => $value) {
             $return .= '<li>' . $key . ': ' . (is_array($value) ? $this->html($value) : $value) . '</li>';
