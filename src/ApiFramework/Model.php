@@ -429,7 +429,7 @@ class Model extends Core {
         $this->updateHasMany($id, $attributes);
 
         // Get the created model
-        $model = $this->find($result);
+        $model = $this->find($id);
 
         // Run after hook
         $model = $this->afterUpdate($model);
