@@ -133,10 +133,7 @@ class Request extends Core
 
             // Get PUT inputs
             case 'PUT':
-                parse_str(file_get_contents("php://input"), $inputs);
-                foreach ($inputs as $key => $value) {
-                    $this->inputs[$key] = filter_var($value, FILTER_SANITIZE_STRING);
-                }
+                parse_str(file_get_contents("php://input"), $this->inputs);
                 break;
 
             // Get POST inputs
