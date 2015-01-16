@@ -307,6 +307,11 @@ class Database extends Core {
         // Build query
         $this->query = implode(' ', [$root, $joins, $where, $whereIn, $groupBy, $orderBy, $limit]);
 
+        // Debug
+        if ($this->app->config('debug.queries')) {
+            $this->app->file->append($this->app->config('debug.queries'), date('Y-m-d h:i:s') . ' - ' . $this->query . "\r\n");
+        }
+
         // Prepare statement
         $this->statement = $this->pdo->prepare($this->query);
 
