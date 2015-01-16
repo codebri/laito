@@ -185,8 +185,9 @@ class Model extends Core {
      * @param string $operator Operator to compare with
      * @return object Database instance
      */
-    public function where ($column, $value, $operator = '=') {
-        $this->db->where($column, $value, $operator);
+    public function where ($column, $value, $operator = '=', $table) {
+        $table = $table? $table : $this->table;
+        $this->db->where($column, $value, $operator, $table);
         return $this;
     }
 
@@ -200,6 +201,24 @@ class Model extends Core {
     public function whereIn ($column, $values, $table = null) {
         $this->db->whereIn($column, $values, $table);
         return $this;
+    }
+
+    /**
+     * Gets the primary key
+     *
+     * @return string Primary key column name
+     */
+    public function getPrimaryKey () {
+        return $this->primaryKey;
+    }
+
+    /**
+     * Gets the table
+     *
+     * @return string Table name
+     */
+    public function getTable () {
+        return $this->table;
     }
 
     /**
@@ -602,8 +621,20 @@ class Model extends Core {
         // Iterate relationships
         foreach ($this->relationships['hasMany'] as $join) {
 
-            // Get relationship results
-            $childs = $this->db->table($join['table'])->select(array_merge([$join['foreignKey']], $join['columns']))->whereIn($join['foreignKey'], $ids)->limit($join['limit'])->orderBy($join['orderBy'])->get();
+            // Get relationship results trought the model
+            if (isset($join['model'])) {
+                if (isset($this->models) && isset($this->models[$join['model']])) {
+                    $instance = $this->models[$join['model']];
+                } else {
+                    $instance = $this->app->make($join['model']);
+                }
+                $childs = $instance->whereIn($join['foreignKey'], $ids)->limit($join['limit'])->orderBy($join['orderBy'])->get();
+            }
+
+            // Or get relationship results by database
+            if (!isset($join['model'])) {
+                $childs = $this->db->table($join['table'])->select(array_merge([$join['foreignKey']], $join['columns']))->whereIn($join['foreignKey'], $ids)->limit($join['limit'])->orderBy($join['orderBy'])->get();
+            }
 
             // Group them by foreign key
             if ($childs) {
@@ -730,36 +761,83 @@ class Model extends Core {
                 // Get related elements
                 $related = $attributes[$join['alias']];
 
-                // Delete elements if the overwrite option was set
-                if (in_array('overwrite', $join['sync'])) {
-                    $results = $this->db->table($join['table'])->where($join['foreignKey'], $id)->limit(100)->get();
-                    if ($results) {
-                        $ids = array_diff(array_column($results, 'id'), array_column($related, 'id'));
-                        $this->db->table($join['table'])->whereIn('id', $ids)->delete();
+                // Write trough the model
+                if (isset($join['model'])) {
+
+                    // Get or instance the related model
+                    if (isset($this->models) && isset($this->models[$join['model']])) {
+                        $instance = $this->models[$join['model']];
+                    } else {
+                        $instance = $this->app->make($join['model']);
+                    }
+
+                    // Delete elements if the overwrite option was set
+                    if (in_array('overwrite', $join['sync'])) {
+                        $results = $instance->where($join['foreignKey'], $id, '=', $instance->getTable())->limit($join['limit'])->get();
+                        if ($results) {
+                            foreach ($results as $result) {
+                                $instance->destroy($result[$instance->getPrimaryKey()]);
+                            }
+                        }
+                    }
+
+                    // Iterate related elements
+                    foreach ($related as $value) {
+
+                        // Add the foreign key
+                        $value[$join['foreignKey']] = $id;
+
+                        // Insert elements whitout ID
+                        if (in_array('insert', $join['sync']) && !isset($value['id'])) {
+                            $instance->create($value);
+                        }
+
+                        // Update elements width ID
+                        if (in_array('update', $join['sync']) && isset($value['id'])) {
+
+                            // Check if the existing element belongs to this record
+                            $current = $instance->find($value['id']);
+                            if ($current && isset($current[$join['foreignKey']]) && $current[$join['foreignKey']] == $id) {
+                                $instance->update($value['id'], $value);
+                            }
+                        }
                     }
                 }
 
-                // Iterate related elements
-                foreach ($related as $value) {
+                // Write trough database
+                if (!isset($join['model'])) {
 
-                    // Leave only writable fields
-                    $fields = array_intersect_key($value, array_flip($join['columns']));
-
-                    // Add the foreign key
-                    $fields[$join['foreignKey']] = $id;
-
-                    // Insert elements whitout ID
-                    if (in_array('insert', $join['sync']) && !isset($value['id'])) {
-                        $this->db->table($join['table'])->insert($fields);
+                    // Delete elements if the overwrite option was set
+                    if (in_array('overwrite', $join['sync'])) {
+                        $results = $this->db->table($join['table'])->where($join['foreignKey'], $id)->limit(100)->get();
+                        if ($results) {
+                            $ids = array_diff(array_column($results, 'id'), array_column($related, 'id'));
+                            $this->db->table($join['table'])->whereIn('id', $ids)->delete();
+                        }
                     }
 
-                    // Update elements width ID
-                    if (in_array('update', $join['sync']) && isset($value['id'])) {
+                    // Iterate related elements
+                    foreach ($related as $value) {
 
-                        // Check if the existing element belongs to this record
-                        $current = $this->db->table($join['table'])->where('id', $value['id'])->limit(1)->getOne();
-                        if ($current && isset($current[$join['foreignKey']]) && $current[$join['foreignKey']] == $id) {
-                            $this->db->table($join['table'])->where('id', $value['id'])->update($fields);
+                        // Leave only writable fields
+                        $fields = array_intersect_key($value, array_flip($join['columns']));
+
+                        // Add the foreign key
+                        $fields[$join['foreignKey']] = $id;
+
+                        // Insert elements whitout ID
+                        if (in_array('insert', $join['sync']) && !isset($value['id'])) {
+                            $this->db->table($join['table'])->insert($fields);
+                        }
+
+                        // Update elements width ID
+                        if (in_array('update', $join['sync']) && isset($value['id'])) {
+
+                            // Check if the existing element belongs to this record
+                            $current = $this->db->table($join['table'])->where('id', $value['id'])->limit(1)->getOne();
+                            if ($current && isset($current[$join['foreignKey']]) && $current[$join['foreignKey']] == $id) {
+                                $this->db->table($join['table'])->where('id', $value['id'])->update($fields);
+                            }
                         }
                     }
                 }
