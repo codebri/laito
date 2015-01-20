@@ -256,7 +256,7 @@ class Model extends Core {
             $current = $this->filters[$key];
             $column = $current[0];
             $operator = isset($current[1])? $current[1] : '=';
-            $this->where($column, $value, $operator);
+            $this->where($column, $value, $operator, $this->table);
         }
 
         // Return model instance
