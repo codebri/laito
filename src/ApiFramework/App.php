@@ -31,6 +31,7 @@ class App extends Container
         'database.name'     => 'test',
         'database.username' => 'root',
         'database.password' => 'root',
+        'database.file'     => '',
         'public.url'        => 'localhost',
         'templates.path'    => 'templates'
     ];
@@ -72,11 +73,16 @@ class App extends Container
 
         // Share a PDO instance
         $this->container['pdo'] = $this->share(function ($container) {
-            return new \PDO(
-                'mysql:dbname=' . $this->config('database.name') . ';host=' . $this->config('database.server'),
-                $this->config('database.username'),
-                $this->config('database.password')
-            );
+            if ($this->config('database.type') === 'mysql') {
+                return new \PDO(
+                    'mysql:dbname=' . $this->config('database.name') . ';host=' . $this->config('database.server'),
+                    $this->config('database.username'),
+                    $this->config('database.password')
+                );
+            }
+            if ($this->config('database.type') === 'sqlite') {
+                return new \PDO('sqlite:' . $this->config('database.file'));
+            }
         });
 
         // Share a database instance
