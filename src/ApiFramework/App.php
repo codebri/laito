@@ -18,6 +18,7 @@ class App extends Container
         'auth.table'        => 'users',
         'auth.username'     => 'email',
         'auth.password'     => 'password',
+        'uploads.folder'    => 'storage/uploads/',
         'sessions.folder'   => 'storage/sessions/',
         'sessions.ttl'      => 3600,
         'sessions.cookie'   => 'token',

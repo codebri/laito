@@ -55,7 +55,7 @@ class Request extends Core
 
 
     /**
-     * Retrieve token
+     * Retrieves the token
      *
      * @return mixed Token or false
      */
@@ -66,7 +66,7 @@ class Request extends Core
 
 
     /**
-     * Retrieve locale
+     * Retrieves the locale
      *
      * @return mixed Locale or false
      */
@@ -77,7 +77,7 @@ class Request extends Core
 
 
     /**
-     * Return a request input
+     * Returns a request input
      *
      * @param string $input Input key
      * @param string $default Default value to return
@@ -106,13 +106,76 @@ class Request extends Core
 
 
     /**
-     * Return a request input
+     * Tells if a request input exists
      *
      * @param string $input Input key
      * @return boolean Has the desired input or not
      */
     public function hasInput ($input) {
         return isset($this->inputs[$input]);
+    }
+
+
+    /**
+     * Gets a request file
+     *
+     * @param string $input Input key
+     * @return mixed File info, or false
+     */
+    public function file ($input = null) {
+
+        // The input name must be defined
+        if (!isset($input) || !isset($_FILES[$input])) {
+            throw new \InvalidArgumentException('Invalid file', 400);
+        }
+
+        // Return the file info
+        return $_FILES[$input];
+    }
+
+
+    /**
+     * Tells if a request file exists
+     *
+     * @param string $input Input key
+     * @return boolean Has the desired input or not
+     */
+    public function hasFile ($input = null) {
+
+        // The input name must be defined
+        if (!isset($input)) {
+            throw new \InvalidArgumentException('Undefined input name', 400);
+        }
+
+        // Return the file info
+        return isset($_FILES[$input]);
+    }
+
+
+    /**
+     * Stores a request file
+     *
+     * @param string $input Input key
+     * @param string $target Target path
+     * @return boolean Success or fail of the store operation
+     */
+    public function storeFile ($input = null, $target) {
+
+        // The input name and target path must be defined
+        if (!isset($input) || !isset($target)) {
+            throw new \InvalidArgumentException('Undefined input name or target', 400);
+        }
+
+        // Move the uploaded file
+        $result = move_uploaded_file($_FILES[$input]['tmp_name'], $target);
+
+        // Check if the file was stored
+        if (!$result) {
+            throw new \InvalidArgumentException('The file could not be stored', 500);
+        }
+
+        // Return the file info
+        return $result;
     }
 
 
