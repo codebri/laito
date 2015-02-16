@@ -256,7 +256,8 @@ class Model extends Core {
             $current = $this->filters[$key];
             $column = $current[0];
             $operator = isset($current[1])? $current[1] : '=';
-            $this->where($column, $value, $operator, $this->table);
+            $table = isset($current[2])? $current[2] : $this->table;
+            $this->where($column, $value, $operator, $table);
         }
 
         // Return model instance
@@ -305,7 +306,10 @@ class Model extends Core {
      * @return int Total number of models
      */
     function count () {
-        return $this->db->table($this->table)->groupBy($this->table . '.' . $this->primaryKey)->count($this->primaryKey);
+        $this->db->table($this->table)->groupBy($this->table . '.' . $this->primaryKey);
+        $this->hasOne()->belongsToMany();
+        $count = $this->db->count($this->primaryKey);
+        return $count;
     }
 
     /**
