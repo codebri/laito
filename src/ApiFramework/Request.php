@@ -32,8 +32,15 @@ class Request extends Core
      */
     public function method () {
 
-        // Return the emulated method
+        // Return the emulated method from GET
         $emulated = filter_input(INPUT_GET, '_method', FILTER_SANITIZE_STRING);
+
+        // Return the emulated method from POST
+        if (!$emulated) {
+            $emulated = filter_input(INPUT_POST, '_method', FILTER_SANITIZE_STRING);
+        }
+
+        // Set the emulated method
         if ($this->app->config('request.emulate') && $emulated) {
             return $emulated;
         }
