@@ -357,6 +357,9 @@ class Database extends Core {
      */
     public function count ($column) {
 
+        // Reset limit
+        $this->limit(1000 * 1000);
+
         // Select only the COUNT
         $result = $this->select(['COUNT(' . $this->table . '.' . $column .') as count'])->get();
 
