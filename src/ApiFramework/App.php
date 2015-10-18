@@ -105,6 +105,23 @@ class App extends Container
         $this->container['file'] = $this->share(function ($container) {
             return new File ($this);
         });
+
+        // Share a mailing instance
+        if (class_exists('\\PHPMailer')) {
+            $this->container['mail'] = $this->share(function ($container) {
+                $mail = new \PHPMailer;
+                $mail->isSMTP();
+                $mail->Host = 'smtp.huesped.org';
+                $mail->Username = 'info@huesped.org';
+                $mail->Password = 'huesped';
+                $mail->SMTPSecure = 'ssl';
+                $mail->SMTPAuth = true;
+                $mail->Port = 465;
+                $mail->From = 'info@huesped.org';
+                $mail->FromName = 'Testing';
+                return $mail;
+            });
+        }
     }
 
     /**
