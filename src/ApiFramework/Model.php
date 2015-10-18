@@ -185,7 +185,7 @@ class Model extends Core {
      * @param string $operator Operator to compare with
      * @return object Database instance
      */
-    public function where ($column, $value, $operator = '=', $table) {
+    public function where ($column, $value, $operator = '=', $table = null) {
         $table = $table? $table : $this->table;
         $this->db->where($column, $value, $operator, $table);
         return $this;
@@ -956,7 +956,7 @@ class Model extends Core {
      * @return object Model instance
      */
     public function pagination () {
-        return ['offset' => $this->offset, 'limit' => $this->limit];
+        return ['offset' => (int) $this->offset, 'limit' => (int) $this->limit];
     }
 
 }
