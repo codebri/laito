@@ -1,7 +1,7 @@
 {
   "name": "mangolabs/apiframework",
   "description": "API Framework for PHP",
-  "keywords": ["framework", "api", "rest"],
+  "keywords": ["Framework", "API", "REST"],
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.4.0",
