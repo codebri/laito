@@ -4,7 +4,7 @@
   "keywords": ["Framework", "API", "REST"],
   "minimum-stability": "dev",
   "require": {
-    "php": ">=5.4.0",
+    "php": ">=5.3.0",
     "ircmaxell/password-compat": "1.0.*",
     "ramsey/array_column": "~1.1"
   },
