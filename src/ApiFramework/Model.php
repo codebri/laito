@@ -372,6 +372,9 @@ class Model extends Core {
             throw new \InvalidArgumentException('Undefined attributes', 400);
         }
 
+        // Perform before hook
+        $attributes = $this->beforeCreate($attributes);
+
         // Remove non fillable attributes
         $fields = array_intersect_key($attributes, array_flip($this->fillable));
 
@@ -379,9 +382,6 @@ class Model extends Core {
         if ($this->validationErrors($fields)) {
             throw new \InvalidArgumentException('Invalid attributes', 400);
         }
-
-        // Perform before hook
-        $fields = $this->beforeCreate($fields);
 
         // Create the model and return its ID
         $result = $this->db->table($this->table)->insertGetId($fields);
