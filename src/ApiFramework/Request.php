@@ -68,7 +68,20 @@ class Request extends Core
      */
     public function token () {
         $inputs = $this->getInputs();
-        return isset($inputs['token']) ? $inputs['token'] : false;
+        $headers = $this->headers();
+
+        // Read token from request custom header
+        if (isset($headers['X-Auth-Token'])) {
+            return $headers['X-Auth-Token'];
+        }
+
+        // Read token from request input
+        if (isset($inputs['token'])) {
+            return $inputs['token'];
+        }
+
+        // Otherwise, return false
+        return false;
     }
 
 
@@ -80,6 +93,16 @@ class Request extends Core
     public function locale () {
         $inputs = $this->getInputs();
         return isset($inputs['locale']) ? $inputs['token'] : false;
+    }
+
+
+    /**
+     * Retrieves all the headers
+     *
+     * @return array|boolean Headers array or false
+     */
+    public function headers () {
+        return getallheaders();
     }
 
 
@@ -196,6 +219,16 @@ class Request extends Core
         // If defined, return the inputs array
         if ($this->inputs) {
             return $this->inputs;
+        }
+
+        // Check for JSON data
+        if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') === 0) {
+            $input = file_get_contents('php://input');
+            $decoded = json_decode($input, true);
+            if ($decoded) {
+                $this->inputs = $decoded;
+                return $this->inputs;
+            }
         }
 
         // Check by request method
