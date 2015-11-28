@@ -122,6 +122,7 @@ class Model extends Core {
         // Merge validation rules
         $this->rules = array_merge($this->defaultRules, $this->rules);
 
+        // Return instance
         return $this;
     }
 
@@ -401,7 +402,7 @@ class Model extends Core {
         $model = $this->find($result);
 
         // Run after hook
-        $model = $this->afterCreate($model);
+        $model = $this->afterCreate($result, $attributes, $model);
 
         // Return the created model
         return $model;
@@ -426,6 +427,9 @@ class Model extends Core {
             throw new \InvalidArgumentException('Undefined attributes', 400);
         }
 
+        // Perform before hook
+        $attributes = $this->beforeUpdate($id, $attributes);
+
         // Remove non fillable attributes
         $fields = array_intersect_key($attributes, array_flip($this->fillable));
 
@@ -433,9 +437,6 @@ class Model extends Core {
         if ($this->validationErrors($fields)) {
             throw new \InvalidArgumentException('Invalid attributes', 400);
         }
-
-        // Perform before hook
-        $fields = $this->beforeUpdate($id, $fields);
 
         // Update the model
         $result = $this->db->table($this->table)->where($this->primaryKey, $id, '=', $this->table)->update($fields);
@@ -455,7 +456,7 @@ class Model extends Core {
         $model = $this->find($id);
 
         // Run after hook
-        $model = $this->afterUpdate($model);
+        $model = $this->afterUpdate($id, $attributes, $model);
 
         // Return the created model
         return $model;
@@ -522,10 +523,12 @@ class Model extends Core {
     /**
      * Hook that runs after creating a model
      *
-     * @param $attributes Original attributes
-     * @return bool|array Customized attributes
+     * @param $id Model primary key
+     * @param $attributes Create attributes
+     * @param $model Created model
+     * @return array Created model
      */
-    function afterCreate ($model) {
+    function afterCreate ($id, $attributes, $model) {
         return $model;
     }
 
@@ -543,10 +546,12 @@ class Model extends Core {
     /**
      * Hook that runs after updating a model
      *
-     * @param $attributes Original attributes
-     * @return bool|array Customized attributes
+     * @param $id Model primary key
+     * @param $attributes Update attributes
+     * @param $model Updated model
+     * @return array Updated model
      */
-    function afterUpdate ($model) {
+    function afterUpdate ($id, $attributes, $model) {
         return $model;
     }
 
