@@ -380,7 +380,9 @@ class Model extends Core {
         $fields = array_intersect_key($attributes, array_flip($this->fillable));
 
         // Validate attributes
-        if ($this->validationErrors($fields)) {
+        $errors = $this->validationErrors($fields);
+        if ($errors) {
+            $this->app->response->extra('error', ['errors' => $errors]);
             throw new \InvalidArgumentException('Invalid attributes', 400);
         }
 
@@ -434,7 +436,9 @@ class Model extends Core {
         $fields = array_intersect_key($attributes, array_flip($this->fillable));
 
         // Validate attributes
-        if ($this->validationErrors($fields)) {
+        $errors = $this->validationErrors($fields);
+        if ($errors) {
+            $this->app->response->extra('error', ['errors' => $errors]);
             throw new \InvalidArgumentException('Invalid attributes', 400);
         }
 
@@ -936,7 +940,7 @@ class Model extends Core {
         // Check for required attributes
         foreach ($ruleSet as $key => $rules) {
             if (in_array('required', $rules) && !isset($attributes[$key])) {
-                $errors[] = ['required', $key, ''];
+                $errors[$key] = 'required';
             }
             $ruleSet[$key] = array_diff($rules, ['required']);
         }
@@ -945,7 +949,7 @@ class Model extends Core {
         foreach ($attributes as $key => $value) {
             foreach ($ruleSet[$key] as $name => $rule) {
                 if (!preg_match($this->rules[$rule], $value)) {
-                    $errors[] = [$rule, $key, $value];
+                    $errors[$key] = $rule;
                 }
             }
         }

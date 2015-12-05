@@ -31,6 +31,11 @@ class Response extends Core
     private $cookies = [];
 
     /**
+     * @var array Reponse extra data
+     */
+    private $extra = [];
+
+    /**
      * @var array Error codes and messages
      */
     private $errors = [
@@ -77,6 +82,20 @@ class Response extends Core
         return $this;
     }
 
+
+    /**
+     * Sets extra data for the response
+     *
+     * @param string $key Extra data key
+     * @param string $value Extra data value
+     * @return object Response instance
+     */
+    public function extra ($key, $value) {
+        $this->extra[$key] = $value;
+        return $this;
+    }
+
+
     /**
      * Echoes out the response
      *
@@ -84,6 +103,9 @@ class Response extends Core
      * @return string HTTP Response
      */
     public function output ($response = []) {
+
+        // Set extra data
+        $response = array_merge_recursive($response, $this->extra);
 
         // Set format
         switch ($this->format) {
@@ -118,7 +140,8 @@ class Response extends Core
     /**
      * Sets an error header and echoes out the response
      *
-     * @param array $response Response data
+     * @param int $code Error code
+     * @param string $message Error message
      * @return string HTTP Response
      */
     public function error ($code, $message) {
