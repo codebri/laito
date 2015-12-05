@@ -27,7 +27,7 @@ class Auth extends Core
 
         // Check credentials
         if (!$this->validate($username, $password)) {
-            return false;
+            throw new Exception('Incorrect username or password', 401);
         }
 
         // Store session file
@@ -112,7 +112,7 @@ class Auth extends Core
      * Creates a reminder and sends it to the user
      *
      * @param string $username Username to validate
-     * @return boolean Success or fail of reminder saving and sending
+     * @return boolean|string Password reminder or false
      */
     public function remindPassword ($username) {
 
@@ -121,7 +121,7 @@ class Auth extends Core
 
         // Abort if the user does not exist
         if (!$user) {
-            return false;
+            throw new \Exception('Username not found', 404);
         }
 
         // Creates the reminder
@@ -131,16 +131,26 @@ class Auth extends Core
         $reminderSaved = $this->storeReminder($reminder, [$this->app->config('auth.username') => $username]);
 
         // Return
-        return $reminderSaved;
+        return $reminder;
     }
 
     /**
      * Changes the password of a user
      *
-     * @param string $token Token or temporal token
+     * @param string $username Username
+     * @param string $token Token or password reminder
+     * @param string $newPassword New password
      * @return boolean Success or fail of password change
      */
     public function changePassword ($username, $token, $newPassword) {
+
+        // Get the user's data
+        $user = $this->findUser($username);
+
+        // Abort if the user does not exist
+        if (!$user) {
+            throw new \Exception('Username not found', 404);
+        }
 
         // Get data from reminder or session
         $isReminder = $this->isReminder($token);
@@ -148,24 +158,29 @@ class Auth extends Core
 
         // Abort if the session is invalid
         if (!$sessionData) {
-            $type = $isReminder ? 'reminder' : 'token';
-            return false;
+            $type = $isReminder? 'reminder' : 'token';
+            throw new \InvalidArgumentException('Invalid ' . $type, 400);
         }
 
         // Abort if the reminder is expired
         $maxage = time() + $this->app->config('reminders.ttl');
         if ($isReminder && (!isset($sessionData['expires']) || $sessionData['expires'] > $maxage)) {
-            return false;
+            throw new \InvalidArgumentException('Expired reminder', 400);
         }
 
         // Hash password
         $data['password'] = password_hash($newPassword, PASSWORD_BCRYPT);
 
         // Update user
-        $userUpdated = $this->app->db->reset()->table($this->config('auth.table'))->where($this->config('auth.username'), $username)->update($id, $data);
+        $userUpdated = $this->app->db->reset()->table($this->app->config('auth.table'))->where($this->app->config('auth.username'), $username)->update($data);
+
+        // Check for errors
+        if (!$userUpdated) {
+            throw new \InvalidArgumentException('Could not change password', 500);
+        }
 
         // Delete reminder
-        if ($userUpdated['sucess'] && $isReminder) {
+        if ($userUpdated && $isReminder) {
             $reminderDeleted = $this->deleteReminder($token);
         }
 
@@ -291,7 +306,7 @@ class Auth extends Core
      */
     private function getReminder ($reminder) {
         $path = $this->reminderPath($reminder);
-        return (file_exists($path)) ? json_decode(file_get_contents($path), true) : false;
+        return (file_exists($path))? json_decode(file_get_contents($path), true) : false;
     }
 
     /**
