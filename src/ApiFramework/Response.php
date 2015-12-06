@@ -146,11 +146,12 @@ class Response extends Core
      */
     public function error ($code, $message) {
         $response['success'] = false;
-        $response['error']['code'] = $code;
-        if (in_array($code, array_keys($this->errors))) {
-            $this->header($this->errors[$code]);
-            $response['error']['status'] = $this->errors[$code];
+        if (!in_array($code, array_keys($this->errors))) {
+            $code = 500;
         }
+        $response['error']['code'] = $code;
+        $this->header($this->errors[$code]);
+        $response['error']['status'] = $this->errors[$code];
         $response['error']['message'] = $message;
         return $this->output($response);
     }
