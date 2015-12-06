@@ -27,7 +27,7 @@ class Auth extends Core
 
         // Check credentials
         if (!$this->validate($username, $password)) {
-            throw new Exception('Incorrect username or password', 401);
+            throw new \Exception('Incorrect username or password', 401);
         }
 
         // Store session file
