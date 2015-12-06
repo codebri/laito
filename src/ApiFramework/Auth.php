@@ -16,12 +16,12 @@ class Auth extends Core
     private $user = null;
 
     /**
-     * Login a user
+     * Attempts to login a user
      *
      * @param string $username Username to login
      * @param string $password Password
      * @param boolean $remember Store cookie or not
-     * @return mixed
+     * @return string Token
      */
     public function attempt ($username, $password, $remember = false) {
 
@@ -30,21 +30,43 @@ class Auth extends Core
             throw new \Exception('Incorrect username or password', 401);
         }
 
-        // Store session file
-        $token = $this->createTokenHash($username);
-
-        // Get user data
-        $user = $this->findUser($username);
-        unset($user[$this->app->config('auth.password')]);
-        $this->user = $user;
-
-        // Save session
-        $sessionSaved = $this->storeSession($token, $user);
+        // Logins user
+        $token = $this->login($username);
 
         // Set cookie
         if ($remember) {
             $cookieSet = $this->setCookie($token);
         }
+
+        // Return token
+        return $token;
+    }
+
+    /**
+     * Login a user
+     *
+     * @param string $username Username to login
+     * @return mixed
+     */
+    public function login ($username) {
+
+        // Store session file
+        $token = $this->createTokenHash($username);
+
+        // Get user data
+        $user = $this->findUser($username);
+
+        // Abort if the user does not exist
+        if (!$user) {
+            throw new \Exception('Username not found', 404);
+        }
+
+        // Manage session data
+        unset($user[$this->app->config('auth.password')]);
+        $this->user = $user;
+
+        // Save session
+        $sessionSaved = $this->storeSession($token, $user);
 
         // Return token
         return $token;
