@@ -86,12 +86,11 @@ class Response extends Core
     /**
      * Sets extra data for the response
      *
-     * @param string $key Extra data key
-     * @param string $value Extra data value
+     * @param array $extra Extra data
      * @return object Response instance
      */
-    public function extra ($key, $value) {
-        $this->extra[$key] = $value;
+    public function extra ($extra) {
+        $this->extra = array_merge_recursive($this->extra, $extra);
         return $this;
     }
 
@@ -104,10 +103,12 @@ class Response extends Core
      */
     public function output ($response = []) {
 
+        // Set extra data
+        $response = array_merge_recursive($response, $this->extra);
+
         // Set format
         switch ($this->format) {
             case 'json':
-                $response = array_merge_recursive($response, $this->extra);
                 $this->header('Content-type: application/json; charset=utf-8');
                 $response = json_encode($response);
 

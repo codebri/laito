@@ -382,7 +382,7 @@ class Model extends Core {
         // Validate attributes
         $errors = $this->validationErrors($fields);
         if ($errors) {
-            $this->app->response->extra('error', ['errors' => $errors]);
+            $this->app->response->extra(['error' => ['errors' => $errors]]);
             throw new \InvalidArgumentException('Invalid attributes', 400);
         }
 
@@ -438,7 +438,7 @@ class Model extends Core {
         // Validate attributes
         $errors = $this->validationErrors($fields);
         if ($errors) {
-            $this->app->response->extra('error', ['errors' => $errors]);
+            $this->app->response->extra(['error' => ['errors' => $errors]]);
             throw new \InvalidArgumentException('Invalid attributes', 400);
         }
 
@@ -939,7 +939,7 @@ class Model extends Core {
 
         // Check for required attributes
         foreach ($ruleSet as $key => $rules) {
-            if (in_array('required', $rules) && !isset($attributes[$key])) {
+            if (in_array('required', $rules) && (!isset($attributes[$key]) || trim($attributes[$key]) === '')) {
                 $errors[$key] = 'required';
             }
             $ruleSet[$key] = array_diff($rules, ['required']);
