@@ -103,12 +103,10 @@ class Response extends Core
      */
     public function output ($response = []) {
 
-        // Set extra data
-        $response = array_merge_recursive($response, $this->extra);
-
         // Set format
         switch ($this->format) {
             case 'json':
+                $response = array_merge_recursive($response, $this->extra);
                 $this->header('Content-type: application/json; charset=utf-8');
                 $response = json_encode($response);
 
