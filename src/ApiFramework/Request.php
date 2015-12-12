@@ -24,6 +24,10 @@ class Request extends Core
      */
     private $inputs = null;
 
+    /**
+     * @var array Additional inputs
+     */
+    private $additionalInputs = [];
 
     /**
      * Retrieves the request method
@@ -49,7 +53,6 @@ class Request extends Core
         return $_SERVER['REQUEST_METHOD'];
     }
 
-
     /**
      * Retrieves the current URL
      *
@@ -60,14 +63,13 @@ class Request extends Core
         return reset($parts);
     }
 
-
     /**
      * Retrieves the token
      *
      * @return mixed Token or false
      */
     public function token () {
-        $inputs = $this->getInputs();
+        $inputs = $this->input();
         $headers = $this->headers();
 
         // Read token from request custom header
@@ -84,17 +86,15 @@ class Request extends Core
         return false;
     }
 
-
     /**
      * Retrieves the locale
      *
      * @return mixed Locale or false
      */
     public function locale () {
-        $inputs = $this->getInputs();
+        $inputs = $this->input();
         return isset($inputs['locale']) ? $inputs['token'] : false;
     }
-
 
     /**
      * Retrieves all the headers
@@ -104,7 +104,6 @@ class Request extends Core
     public function headers () {
         return getallheaders();
     }
-
 
     /**
      * Returns a request input
@@ -116,7 +115,7 @@ class Request extends Core
     public function input ($input = null, $default = null) {
 
         // Get all inputs
-        $inputs = $this->getInputs();
+        $inputs = array_merge($this->getInputs(), $this->additionalInputs);
 
         // Exclude reserved inputs
         foreach ($inputs as $key => $value) {
@@ -134,7 +133,6 @@ class Request extends Core
         return $inputs;
     }
 
-
     /**
      * Tells if a request input exists
      *
@@ -142,9 +140,21 @@ class Request extends Core
      * @return boolean Has the desired input or not
      */
     public function hasInput ($input) {
-        return isset($this->inputs[$input]);
+        $inputs = $this->input();
+        return isset($inputs[$input]);
     }
 
+    /**
+     * Adds an additional input
+     *
+     * @param string $input Input key
+     * @param string $value Input value
+     * @return string Added input
+     */
+    public function addInput ($input, $value) {
+        $this->additionalInputs[$input] = $value;
+        return $input;
+    }
 
     /**
      * Gets a request file
@@ -163,7 +173,6 @@ class Request extends Core
         return $_FILES[$input];
     }
 
-
     /**
      * Tells if a request file exists
      *
@@ -180,7 +189,6 @@ class Request extends Core
         // Return the file info
         return isset($_FILES[$input]);
     }
-
 
     /**
      * Stores a request file
@@ -207,7 +215,6 @@ class Request extends Core
         // Return the file info
         return $result;
     }
-
 
     /**
      * Stores the parameters from the request in the inputs array
