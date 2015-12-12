@@ -924,12 +924,13 @@ class Model extends Core {
      * Validates a model
      *
      * @param $attributes Attributes to validate
+     * @param $rules Rules to validate
      * @return array|bool Array of errors, or false if the model is valid
      */
-    function validationErrors ($attributes) {
+    function validationErrors ($attributes, $rules = null) {
 
         // Ruleset
-        $ruleSet = $this->validate;
+        $ruleSet = isset($rules)? $rules : $this->validate;
 
         // Errors collector
         $errors = [];
