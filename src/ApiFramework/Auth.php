@@ -184,6 +184,11 @@ class Auth extends Core
             throw new \InvalidArgumentException('Invalid ' . $type, 400);
         }
 
+        // Abort if the received username does not match the session data username
+        if ($username !== $sessionData['user'][$this->app->config('auth.username')]) {
+            throw new \InvalidArgumentException('Invalid username for this ' . $type, 400);
+        }
+
         // Abort if the reminder is expired
         $maxage = time() + $this->app->config('reminders.ttl');
         if ($isReminder && (!isset($sessionData['expires']) || $sessionData['expires'] > $maxage)) {
