@@ -69,7 +69,7 @@ class Request extends Core
      * @return mixed Token or false
      */
     public function token () {
-        $inputs = $this->input();
+        $inputs = $this->getInputs();
         $headers = $this->headers();
 
         // Read token from request custom header
@@ -92,7 +92,7 @@ class Request extends Core
      * @return mixed Locale or false
      */
     public function locale () {
-        $inputs = $this->input();
+        $inputs = $this->getInputs();
         return isset($inputs['locale']) ? $inputs['token'] : false;
     }
 
