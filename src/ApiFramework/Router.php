@@ -26,6 +26,11 @@ class Router extends Core
     private $filters = [];
 
     /**
+     * @var array Applied filters
+     */
+    private $appliedFilters = [];
+
+    /**
      * Register a url
      * 
      * @param string $method Method 
@@ -153,6 +158,26 @@ class Router extends Core
      */
     public function getFilter ($filterName = null) {
         return isset($this->filters[$filterName])? $this->filters[$filterName] : false;
+    }
+
+    /**
+     * Sets an applied filter
+     * 
+     * @param string $filterName Filter name
+     * @return mixed Registered filter
+     */
+    public function setAppliedFilter ($filterName = null) {
+        return $this->appliedFilters[] = $filterName;
+    }
+
+    /**
+     * Sets an applied filter
+     * 
+     * @param string $filterName Filter name
+     * @return mixed Registered filter
+     */
+    public function filtered ($filterName = null) {
+        return in_array($filterName, $this->appliedFilters);
     }
 
     /**

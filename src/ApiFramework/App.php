@@ -196,6 +196,7 @@ class App extends Container
             // Perform the filter
             $filter = $this->router->getFilter($action['filter']);
             if (isset($action['filter']) && $filter) {
+                $this->router->setAppliedFilter($action['filter']);
                 if ($filter instanceof \Closure) {
                     call_user_func($filter);
                 } else if (is_array($filter)) {
