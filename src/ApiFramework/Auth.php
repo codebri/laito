@@ -216,6 +216,20 @@ class Auth extends Core
     }
 
     /**
+     * Retrieves data from the session file
+     *
+     * @param string $token Token
+     * @return mixed Session data, or false if the session is invalid
+     */
+    public function getSession ($token = null) {
+        if (!$token) {
+            $token = $this->app->request->token();
+        }
+        $path = $this->sessionPath($token);
+        return (file_exists($path)) ? json_decode(file_get_contents($path), true) : false;
+    }
+
+    /**
      * Gets a user from the database
      *
      * @param string $username Username
@@ -225,7 +239,6 @@ class Auth extends Core
         $user = $this->app->db->reset()->table($this->app->config('auth.table'))->where($this->app->config('auth.username'), $username)->getOne();
         return $user;
     }
-
 
     /**
      * Creates a random token hash based on the username and time
@@ -261,18 +274,6 @@ class Auth extends Core
             'token' => $token,
             'ctime' => time()
         ]));
-    }
-
-
-    /**
-     * Retrieves data from the session file
-     *
-     * @param string $token Token
-     * @return mixed Session data, or false if the session is invalid
-     */
-    private function getSession ($token) {
-        $path = $this->sessionPath($token);
-        return (file_exists($path)) ? json_decode(file_get_contents($path), true) : false;
     }
 
     /**
