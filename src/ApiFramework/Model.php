@@ -353,7 +353,7 @@ class Model extends Core {
 
         // Abort if no models where found
         if (!$result || !is_array($result) || empty($result)) {
-            throw new \Exception('Element not found', 404);
+            return false;
         }
 
         // Return the first matching model

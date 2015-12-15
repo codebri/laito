@@ -67,8 +67,13 @@ class Controller extends Core {
             throw new \InvalidArgumentException('Undefined ID', 400);
         }
 
-        // Get records
+        // Get record
         $result = $this->model->find($id);
+
+        // Abort if the record is not found
+        if (!$result) {
+            throw new \Exception('Element not found', 404);
+        }
 
         // Return results
         return [
