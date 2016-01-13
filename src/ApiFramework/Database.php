@@ -536,7 +536,7 @@ class Database extends Core {
 
         // Create where named placeholders
         $wheres = array_map(function ($where) {
-            return $where['table'] . '.' . $where['column'] . $where['operator'] . ':' . $where['table'] . $where['column'];
+            return $where['table'] . '.' . $where['column'] . ' ' . $where['operator'] . ' :' . $where['table'] . $where['column'];
         }, $this->wheres);
 
         // String holder

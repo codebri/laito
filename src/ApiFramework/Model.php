@@ -257,6 +257,9 @@ class Model extends Core {
             $current = $this->filters[$key];
             $column = $current[0];
             $operator = isset($current[1])? $current[1] : '=';
+            if ($operator === 'LIKE') {
+                $value = '%' . $value . '%';
+            }
             $table = isset($current[2])? $current[2] : $this->table;
             $this->where($column, $value, $operator, $table);
         }
