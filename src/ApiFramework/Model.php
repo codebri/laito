@@ -230,6 +230,9 @@ class Model extends Core {
      */
     function search ($filters = []) {
 
+        // Set resolved
+        $resolved = [];
+
         // Check the filters
         if (!isset($filters) || !is_array($filters)) {
             throw new \InvalidArgumentException('Undefined search filters', 400);
@@ -252,16 +255,38 @@ class Model extends Core {
         // Remove invalid filters
         $filters = array_intersect_key($filters, array_flip(array_keys($this->filters)));
 
+        // Set where in conditions
+        foreach ($filters as $key => $value) {
+
+            // Get filter data
+            $current = $this->filters[$key];
+            $filterName = $current[0];
+
+            // Add condition
+            foreach ($this->relationships['belongsToMany'] as $join) {
+                if ($filterName === $join['alias']) {
+                    $this->whereIn($join['pivot'] . '.' . $join['foreignKey'], (array) $value, $join['pivot']);
+                    $resolved[] = $key;
+                }
+            }
+        }
+
         // Set where conditions
         foreach ($filters as $key => $value) {
-            $current = $this->filters[$key];
-            $column = $current[0];
-            $operator = isset($current[1])? $current[1] : '=';
-            if ($operator === 'LIKE') {
-                $value = '%' . $value . '%';
+            if (!in_array($key, $resolved)) {
+
+                // Get filter data
+                $current = $this->filters[$key];
+                $column = $current[0];
+                $operator = isset($current[1])? $current[1] : '=';
+                if ($operator === 'LIKE') {
+                    $value = '%' . $value . '%';
+                }
+
+                // Add condition
+                $table = isset($current[2])? $current[2] : $this->table;
+                $this->where($column, $value, $operator, $table);
             }
-            $table = isset($current[2])? $current[2] : $this->table;
-            $this->where($column, $value, $operator, $table);
         }
 
         // Return model instance
@@ -446,11 +471,13 @@ class Model extends Core {
         }
 
         // Update the model
-        $result = $this->db->table($this->table)->where($this->primaryKey, $id, '=', $this->table)->update($fields);
+        if ($fields && count($fields)) {
+            $result = $this->db->table($this->table)->where($this->primaryKey, $id, '=', $this->table)->update($fields);
 
-        // Return false if the update failed
-        if (!$result) {
-            throw new \Exception('Could not update the model', 500);
+            // Return false if the update failed
+            if (!$result) {
+                throw new \Exception('Could not update the model', 500);
+            }
         }
 
         // Sync many to many relationships
