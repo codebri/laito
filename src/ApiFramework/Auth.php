@@ -16,6 +16,11 @@ class Auth extends Core
     private $user = null;
 
     /**
+     * @var Array Current token
+     */
+    private $token = null;
+
+    /**
      * Attempts to login a user
      *
      * @param string $username Username to login
@@ -64,6 +69,7 @@ class Auth extends Core
         // Manage session data
         unset($user[$this->app->config('auth.password')]);
         $this->user = $user;
+        $this->token = $token;
 
         // Save session
         $sessionSaved = $this->storeSession($token, $user);
@@ -224,6 +230,9 @@ class Auth extends Core
     public function getSession ($token = null) {
         if (!$token) {
             $token = $this->app->request->token();
+        }
+        if (!$token) {
+            $token = $this->token;
         }
         $path = $this->sessionPath($token);
         return (file_exists($path)) ? json_decode(file_get_contents($path), true) : false;
