@@ -1,0 +1,6 @@
+{
+  "name": "Laito",
+  "tagline": "A light PHP framework",
+  "body": "# Welcome!\r\n\r\nLaito is a simple PHP package for creating RESTful API's in a breeze.",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
