@@ -1,6 +1,6 @@
 {
-  "name": "mangolabs/apiframework",
-  "description": "API Framework for PHP",
+  "name": "mangolabs/laito",
+  "description": "A light PHP framework",
   "keywords": ["Framework", "API", "REST"],
   "minimum-stability": "dev",
   "require": {
@@ -10,7 +10,7 @@
   },
   "autoload": {
     "psr-0": {
-      "ApiFramework": "src/"
+      "Laito": "src/"
     }
   }
 }

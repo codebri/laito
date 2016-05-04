@@ -1,4 +1,4 @@
-<?php namespace ApiFramework;
+<?php namespace Laito;
 
 /**
  * App class
@@ -162,7 +162,7 @@ class App extends Container
         $parameters = $reflection->getConstructor()->getParameters();
         foreach ($parameters as $param) {
             $class = $param->getClass();
-            if ($class && $class->getName() === 'ApiFramework\App') {
+            if ($class && $class->getName() === 'Laito\App') {
 
                 // If the dependency is the app itself, inject the current instance
                 $dependencies[] = $this;

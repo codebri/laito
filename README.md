@@ -1,10 +1,8 @@
-APIFramework
-============
+Laito
+=====
 
-A simple API framework for PHP by **[MangoLabs](http://www.mangolabs.com.ar/ "Mangolabs")**
-
-By @nico1485 and @alihno
+A light PHP framework for creating quick and powerful REST APIs
 
 ---
 
-- [Documentation](http://apidocs.nicolabs.com.ar/)
+- [Docs](http://apidocs.nicolabs.com.ar/)

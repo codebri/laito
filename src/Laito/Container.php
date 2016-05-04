@@ -1,4 +1,4 @@
-<?php namespace ApiFramework;
+<?php namespace Laito;
 
 /**
  * Container class
