@@ -108,8 +108,9 @@ class Model extends Core {
     }
 
     /**
-     * Class constructor
+     * Boot method
      *
+     * @return object Model instance
      */
     public function boot () {
 

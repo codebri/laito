@@ -18,12 +18,30 @@ class Controller extends Core {
      * Class constructor
      *
      * @param App $app App instance
-     * @param object $model Model instance
      */
     public function __construct (App $app) {
 
         // Construct from parent
         parent::__construct($app);
+
+        // Setup configurations and boot
+        $this->boot();
+    }
+
+    /**
+     * Boot method
+     *
+     * @return object Controller instance
+     */
+    public function boot () {
+
+        // Setup model
+        if (isset($this->modelName)) {
+            $this->model = $this->app->make($this->modelName);
+        }
+
+        // Return instance
+        return $this;
     }
 
     /**
