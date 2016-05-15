@@ -228,6 +228,8 @@ class Auth extends Core
      * @return mixed Session data, or false if the session is invalid
      */
     public function getSession ($token = null) {
+
+        // Determine token path
         if (!$token) {
             $token = $this->app->request->token();
         }
@@ -235,7 +237,23 @@ class Auth extends Core
             $token = $this->token;
         }
         $path = $this->sessionPath($token);
-        return (file_exists($path)) ? json_decode(file_get_contents($path), true) : false;
+
+        // Abort if the session does not exist
+        if (!file_exists($path)) {
+            return false;
+        }
+
+        // Get session data
+        $sessionData = json_decode(file_get_contents($path), true);
+
+        // Abort if the token has expired
+        $expiringDate = $sessionData['ctime'] + $this->app->config('sessions.ttl');
+        if (time() > $expiringDate) {
+            throw new \InvalidArgumentException('Expired token', 401);
+        }
+
+        // Return session
+        return $sessionData;
     }
 
     /**
