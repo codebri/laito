@@ -357,10 +357,10 @@ class Database extends Core {
      */
     public function count ($column) {
 
-        // Reset limit
-        $this->limit(1000 * 1000);
+        // Set a really hight limit
+        $this->limit(pow(100, 3));
 
-        // Select only the COUNT
+        // Select only the COUNT column and get
         $result = $this->select(['COUNT(' . $this->table . '.' . $column .') as count'])->get();
 
         // Reset
