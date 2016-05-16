@@ -30,7 +30,7 @@ class File extends Core
 
         // Abort if the file does not exists
         if (!$path || !file_exists($path) || !is_readable($path)) {
-            throw new \InvalidArgumentException('Invalid file path', 400);
+            throw new \InvalidArgumentException('Invalid file path ' . $path, 400);
         }
 
         // Get the file contents
@@ -51,7 +51,7 @@ class File extends Core
 
         // Abort if the path is not defined
         if (!$path) {
-            throw new \InvalidArgumentException('Invalid file path', 400);
+            throw new \InvalidArgumentException('Invalid file path ' . $path, 400);
         }
 
         // Save the contents to the file
@@ -69,7 +69,7 @@ class File extends Core
 
         // Abort if the path is not defined
         if (!$path || !file_exists($path)) {
-            throw new \InvalidArgumentException('Invalid file path', 400);
+            throw new \InvalidArgumentException('Invalid file path ' . $path, 400);
         }
 
         // Append the contents
@@ -86,7 +86,7 @@ class File extends Core
 
         // Abort if the path is not defined
         if (!$path || !file_exists($path)) {
-            throw new \InvalidArgumentException('Invalid file path', 400);
+            throw new \InvalidArgumentException('Invalid file path ' . $path, 400);
         }
 
         // Destroy the file
@@ -104,7 +104,7 @@ class File extends Core
 
         // Abort if the path is not defined
         if (!$path || !file_exists($path)) {
-            throw new \InvalidArgumentException('Invalid file path', 400);
+            throw new \InvalidArgumentException('Invalid file path ' . $path, 400);
         }
 
         // Abort if the target is not defined
@@ -127,7 +127,7 @@ class File extends Core
 
         // Abort if the path is not defined
         if (!$path || !file_exists($path)) {
-            throw new \InvalidArgumentException('Invalid file path', 400);
+            throw new \InvalidArgumentException('Invalid file path ' . $path, 400);
         }
 
         // Abort if the target is not defined
@@ -149,7 +149,7 @@ class File extends Core
 
         // Abort if the path is not defined
         if (!$path || !file_exists($path)) {
-            throw new \InvalidArgumentException('Invalid file path', 400);
+            throw new \InvalidArgumentException('Invalid file path ' . $path, 400);
         }
 
         // Return extension
@@ -166,7 +166,7 @@ class File extends Core
 
         // Abort if the path is not defined
         if (!$path || !file_exists($path)) {
-            throw new \InvalidArgumentException('Invalid file path', 400);
+            throw new \InvalidArgumentException('Invalid file path ' . $path, 400);
         }
 
         // Return extension
