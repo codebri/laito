@@ -7,7 +7,7 @@
  * @author Mangolabs
  */
 
-abstract class Model extends Core {
+abstract class Model {
 
     /**
      * @var object Database query builder
@@ -96,15 +96,9 @@ abstract class Model extends Core {
     /**
      * Class constructor
      *
-     * @param App $app App instance
      */
-    public function __construct (App $app) {
+    public function __construct () {
 
-        // Construct from parent
-        parent::__construct($app);
-
-        // Setup configurations and boot
-        $this->boot();
     }
 
     /**
@@ -680,7 +674,7 @@ abstract class Model extends Core {
                 if (isset($this->models) && isset($this->models[$join['model']])) {
                     $instance = $this->models[$join['model']];
                 } else {
-                    $instance = $this->app->make($join['model']);
+                    $instance = new $join['model'];
                 }
                 $childs = $instance->whereIn($join['foreignKey'], $ids)->limit($join['limit'])->orderBy($join['orderBy'])->get();
             }
@@ -822,7 +816,7 @@ abstract class Model extends Core {
                     if (isset($this->models) && isset($this->models[$join['model']])) {
                         $instance = $this->models[$join['model']];
                     } else {
-                        $instance = $this->app->make($join['model']);
+                        $instance = new $join['model'];
                     }
 
                     // Delete elements if the overwrite option was set
