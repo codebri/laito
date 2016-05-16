@@ -12,7 +12,7 @@ class Controller extends Core {
     /**
      * @var Model repository
      */
-    public $model;
+    public $modelName;
 
     /**
      * Class constructor
