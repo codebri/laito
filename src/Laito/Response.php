@@ -141,8 +141,9 @@ class Response extends Core
      * @param string $message Error message
      * @return string HTTP Response
      */
-    public function error ($code, $message) {
+    public function error ($code, $message, $extra = []) {
         $response['success'] = false;
+        $this->extra($extra);
         if (!in_array($code, array_keys($this->errors))) {
             $code = 500;
         }
