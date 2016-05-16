@@ -137,8 +137,13 @@ class App extends Container
             $this->container['settings'][$name] = $value;
         }
 
-        // Or return the current value
-        return isset($this->container['settings'][$name])? $this->container['settings'][$name] : null;
+        // Abort if the configuration key does not exist
+        if (!isset($this->container['settings'][$name])) {
+            throw new \Exception('Configuration key not defined: ' . $name, 500);
+        }
+
+        // Return value
+        return $this->container['settings'][$name];
     }
 
     /**
