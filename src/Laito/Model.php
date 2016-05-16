@@ -7,12 +7,12 @@
  * @author Mangolabs
  */
 
-class Model extends Core {
+abstract class Model extends Core {
 
     /**
-     * @var object Database instance
+     * @var object Database query builder
      */
-    protected $db;
+    protected static $database;
 
     /**
      * @var string Table name
@@ -108,23 +108,31 @@ class Model extends Core {
     }
 
     /**
+     * Setups a database connection
+     *
+     * @param Database $database Database connection
+     * @return object Connection
+     */
+    public static function setupConnection (Database $database) {
+        return self::$database = $database;
+    }
+
+    /**
      * Boot method
      *
      * @return object Model instance
      */
     public function boot () {
-
-        // Setup database
-        $this->db = $this->app->db;
-
-        // Set table name and columns to select
-        $this->db->table($this->table)->select($this->columns);
-
-        // Merge validation rules
-        $this->rules = array_merge($this->defaultRules, $this->rules);
-
-        // Return instance
         return $this;
+    }
+
+    /**
+     * Returns a database connection
+     *
+     * @return object Database connection
+     */
+    public function db () {
+        return self::$database;
     }
 
     /**
@@ -189,7 +197,7 @@ class Model extends Core {
      */
     public function where ($column, $value, $operator = '=', $table = null) {
         $table = $table? $table : $this->table;
-        $this->db->where($column, $value, $operator, $table);
+        $this->db()->where($column, $value, $operator, $table);
         return $this;
     }
 
@@ -201,7 +209,7 @@ class Model extends Core {
      * @return object Database instance
      */
     public function whereIn ($column, $values, $table = null) {
-        $this->db->whereIn($column, $values, $table);
+        $this->db()->whereIn($column, $values, $table);
         return $this;
     }
 
@@ -238,9 +246,6 @@ class Model extends Core {
         if (!isset($filters) || !is_array($filters)) {
             throw new \InvalidArgumentException('Undefined search filters', 400);
         }
-
-        // Set table
-        $this->db->table = $this->table;
 
         // Set limit, offset and order
         if (isset($filters['limit'])) {
@@ -307,16 +312,13 @@ class Model extends Core {
         $this->beforeGet();
 
         // Set basic query
-        $this->db->table($this->table)->limit($this->limit)->offset($this->offset)->orderBy($this->orderBy);
-
-        // Set columns to select
-        $this->db->select($this->columns);
+        $this->db()->table($this->table)->select($this->columns)->limit($this->limit)->offset($this->offset)->orderBy($this->orderBy);
 
         // Resolve relationships
         $this->hasOne()->belongsToMany();
 
         // Get results
-        $this->records = $this->db->get();
+        $this->records = $this->db()->get();
 
         // Add has many relationships
         $this->hasMany();
@@ -338,9 +340,9 @@ class Model extends Core {
      * @return int Total number of models
      */
     function count () {
-        $this->db->table($this->table)->groupBy($this->table . '.' . $this->primaryKey);
+        $this->db()->table($this->table)->groupBy($this->table . '.' . $this->primaryKey);
         $this->hasOne()->belongsToMany();
-        $count = $this->db->count($this->primaryKey);
+        $count = $this->db()->count($this->primaryKey);
         return $count;
     }
 
@@ -357,11 +359,8 @@ class Model extends Core {
             throw new \InvalidArgumentException('Undefined ID', 400);
         }
 
-        // Use the primary key for the where
-        $this->db->table($this->table)->where($this->primaryKey, $id, '=', $this->table);
-
-        // Return the first found record
-        $result = $this->get();
+        // Return the first found record using the primary key for the where
+        $result = $this->db()->table($this->table)->select($this->columns)->where($this->primaryKey, $id, '=', $this->table)->limit(1)->get();
 
         // Abort if no models where found
         if (!$result || !is_array($result) || empty($result)) {
@@ -411,14 +410,14 @@ class Model extends Core {
         $fields = array_intersect_key($attributes, array_flip($this->fillable));
 
         // Validate attributes
+        $this->setValidationRules();
         $errors = $this->validationErrors($fields);
         if ($errors) {
-            $this->app->response->extra(['error' => ['errors' => $errors]]);
-            throw new \InvalidArgumentException('Invalid attributes', 400);
+            throw new Exceptions\ValidationException('Invalid attributes', 400, $errors);
         }
 
         // Create the model and return its ID
-        $result = $this->db->table($this->table)->insertGetId($fields);
+        $result = $this->db()->table($this->table)->insertGetId($fields);
 
         // Return false if create fails
         if (!$result) {
@@ -467,15 +466,15 @@ class Model extends Core {
         $fields = array_intersect_key($attributes, array_flip($this->fillable));
 
         // Validate attributes
+        $this->setValidationRules();
         $errors = $this->validationErrors($fields);
         if ($errors) {
-            $this->app->response->extra(['error' => ['errors' => $errors]]);
-            throw new \InvalidArgumentException('Invalid attributes', 400);
+            throw new Exceptions\ValidationException('Invalid attributes', 400, $errors);
         }
 
         // Update the model
         if ($fields && count($fields)) {
-            $result = $this->db->table($this->table)->where($this->primaryKey, $id, '=', $this->table)->update($fields);
+            $result = $this->db()->table($this->table)->where($this->primaryKey, $id, '=', $this->table)->update($fields);
 
             // Return false if the update failed
             if (!$result) {
@@ -515,7 +514,7 @@ class Model extends Core {
         $this->beforeDestroy($id);
 
         // Update the model
-        $result = $this->db->table($this->table)->where($this->primaryKey, $id)->limit(1)->delete();
+        $result = $this->db()->table($this->table)->where($this->primaryKey, $id)->limit(1)->delete();
 
         // Return false on failures
         if (!$result) {
@@ -613,6 +612,15 @@ class Model extends Core {
     }
 
     /**
+     * Returns limit and offset
+     *
+     * @return array Pagination array
+     */
+    function pagination () {
+        return ['offset' => (int) $this->offset, 'limit' => (int) $this->limit];
+    }
+
+    /**
      * Resolves one to one relationships
      *
      * @return object Model instance
@@ -628,12 +636,12 @@ class Model extends Core {
         foreach ($this->relationships['hasOne'] as $join) {
 
             // Perform join
-            $this->db->join($join['table'], $join['localKey'], '=', $join['foreignKey']);
+            $this->db()->join($join['table'], $join['localKey'], '=', $join['foreignKey']);
 
             // Add related columns to select
             foreach ($join['columns'] as $column) {
                 $column = $join['table'] . '.' . $column . ' as _' . $join['alias'] . '_' . $column;
-                $this->db->addSelect($column);
+                $this->db()->addSelect($column);
             }
         }
 
@@ -679,7 +687,7 @@ class Model extends Core {
 
             // Or get relationship results by database
             if (!isset($join['model'])) {
-                $childs = $this->db->table($join['table'])->select(array_merge([$join['foreignKey']], $join['columns']))->whereIn($join['foreignKey'], $ids)->limit($join['limit'])->orderBy($join['orderBy'])->get();
+                $childs = $this->db()->table($join['table'])->select(array_merge([$join['foreignKey']], $join['columns']))->whereIn($join['foreignKey'], $ids)->limit($join['limit'])->orderBy($join['orderBy'])->get();
             }
 
             // Group them by foreign key
@@ -725,17 +733,17 @@ class Model extends Core {
         }
 
         // Group by primary key
-        $this->db->groupBy($this->table . '.' . $this->primaryKey);
+        $this->db()->groupBy($this->table . '.' . $this->primaryKey);
 
         // Iterate relationships
         foreach ($this->relationships['belongsToMany'] as $join) {
 
             // Perform join
-            $this->db->join($join['pivot'], $this->primaryKey, '=', $join['localKey']);
+            $this->db()->join($join['pivot'], $this->primaryKey, '=', $join['localKey']);
 
             // Add related columns to select
             $column = 'GROUP_CONCAT(' . $join['pivot'] . '.' . $join['foreignKey'] . ') as concat_' . $join['alias'];
-            $this->db->addSelect($column);
+            $this->db()->addSelect($column);
         }
 
         // Return model instance
@@ -767,11 +775,11 @@ class Model extends Core {
             if (isset($join['sync']) && $join['sync'] && isset($attributes[$join['alias']]) && is_array($attributes[$join['alias']])) {
 
                 // Delete old values
-                $delete = $this->db->table($join['pivot'])->where($join['localKey'], $id, '=')->delete();
+                $delete = $this->db()->table($join['pivot'])->where($join['localKey'], $id, '=')->delete();
 
                 // Insert new values
                 foreach ($attributes[$join['alias']] as $value) {
-                    $this->db->table($join['pivot'])->insert([$join['localKey'] => $id, $join['foreignKey'] => $value]);
+                    $this->db()->table($join['pivot'])->insert([$join['localKey'] => $id, $join['foreignKey'] => $value]);
                 }
             }
         }
@@ -855,10 +863,10 @@ class Model extends Core {
 
                     // Delete elements if the overwrite option was set
                     if (in_array('overwrite', $join['sync'])) {
-                        $results = $this->db->table($join['table'])->where($join['foreignKey'], $id)->limit(100)->get();
+                        $results = $this->db()->table($join['table'])->where($join['foreignKey'], $id)->limit(100)->get();
                         if ($results) {
                             $ids = array_diff(array_column($results, 'id'), array_column($related, 'id'));
-                            $this->db->table($join['table'])->whereIn('id', $ids)->delete();
+                            $this->db()->table($join['table'])->whereIn('id', $ids)->delete();
                         }
                     }
 
@@ -873,16 +881,16 @@ class Model extends Core {
 
                         // Insert elements whitout ID
                         if (in_array('insert', $join['sync']) && !isset($value['id'])) {
-                            $this->db->table($join['table'])->insert($fields);
+                            $this->db()->table($join['table'])->insert($fields);
                         }
 
                         // Update elements width ID
                         if (in_array('update', $join['sync']) && isset($value['id'])) {
 
                             // Check if the existing element belongs to this record
-                            $current = $this->db->table($join['table'])->where('id', $value['id'])->limit(1)->getOne();
+                            $current = $this->db()->table($join['table'])->where('id', $value['id'])->limit(1)->getOne();
                             if ($current && isset($current[$join['foreignKey']]) && $current[$join['foreignKey']] == $id) {
-                                $this->db->table($join['table'])->where('id', $value['id'])->update($fields);
+                                $this->db()->table($join['table'])->where('id', $value['id'])->update($fields);
                             }
                         }
                     }
@@ -954,6 +962,16 @@ class Model extends Core {
     }
 
     /**
+     * Merges the default validation rules with the model's custom validation rules
+     *
+     * @return object Model instance
+     */
+    private function setValidationRules () {
+        $this->rules = array_merge($this->defaultRules, $this->rules);
+        return $this;
+    }
+
+    /**
      * Validates a model
      *
      * @param $attributes Attributes to validate
@@ -990,16 +1008,6 @@ class Model extends Core {
 
         // Return errors or false
         return count($errors)? $errors : false;
-    }
-
-    /**
-     * Returns the limit and offset options
-     *
-     * @param int $limit Limit number
-     * @return object Model instance
-     */
-    public function pagination () {
-        return ['offset' => (int) $this->offset, 'limit' => (int) $this->limit];
     }
 
 }

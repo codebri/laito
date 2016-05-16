@@ -80,7 +80,7 @@ class App extends Container
                 );
             }
             if ($this->config('database.type') === 'sqlite') {
-                return new \PDO('sqlite:' . $this->config('database.file'));
+                return new \PDO('sqlite:' . $this->config('database.file'), '', '', [\PDO::ATTR_PERSISTENT => true]);
             }
         });
 
@@ -110,6 +110,9 @@ class App extends Container
                 return new \PHPMailer;
             });
         }
+
+        // Inject database connection to models
+        $this->setupDatabaseConnection();
     }
 
     /**
@@ -209,7 +212,7 @@ class App extends Container
             }
 
             // Check if the controller exists
-            if (!isset($action) || !class_exists($action['class'])) {
+            if (!isset($action) || !is_string($action['class']) || !class_exists($action['class'])) {
                 throw new \Exception('Controller not found', 404);
             }
 
@@ -218,16 +221,31 @@ class App extends Container
 
             // Execute the required method and return the response
             return $this->response->output(call_user_func_array([$controller, $action['method']], $action['params']? : []));
+
+        // Return validation errors
+        } catch (Exceptions\ValidationException $e) {
+            return $this->response->error($e->getCode(), $e->getMessage(), ['error' => ['errors' => $e->getErrors()]]);
+
+        // Return database errors
         } catch (\PDOException $e) {
 
             // Show the invalid query
             echo 'Invalid query:<br>' . $this->db->lastQuery();
             exit;
-        } catch (\Exception $e) {
 
-            // Return an error response
+        // Return generic error
+        } catch (\Exception $e) {
             return $this->response->error($e->getCode(), $e->getMessage());
         }
+    }
+
+    /**
+     * Setups a database connection for models
+     *
+     * @return void
+     */
+    private function setupDatabaseConnection () {
+        Model::setupConnection($this->db);
     }
 
 }
