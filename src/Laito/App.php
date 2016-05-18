@@ -15,17 +15,8 @@ class App extends Container
      */
     private $defaultSettings = [
         'debug.queries'     => false,
-        'auth.table'        => 'users',
-        'auth.username'     => 'email',
-        'auth.password'     => 'password',
-        'sessions.folder'   => 'storage/sessions/',
-        'sessions.ttl'      => 3600,
-        'sessions.cookie'   => 'token',
-        'reminders.folder'  => 'storage/reminders/',
-        'reminders.ttl'     => 3600,
-        'reminders.suffix'  => 'reminders_',
         'request.emulate'   => true,
-        'database.type'     => 'mysql',
+        'database.type'     => false,
         'database.server'   => 'localhost',
         'database.name'     => 'test',
         'database.username' => 'root',
@@ -47,7 +38,7 @@ class App extends Container
 
         // Share an auth instance
         $this->container['auth'] = $this->share(function ($container) {
-            return new Auth($this);
+            return new Authentication($this);
         });
 
         // Share a lang instance
@@ -70,24 +61,31 @@ class App extends Container
             return new Router($this);
         });
 
-        // Share a PDO instance
-        $this->container['pdo'] = $this->share(function ($container) {
-            if ($this->config('database.type') === 'mysql') {
-                return new \PDO(
-                    'mysql:dbname=' . $this->config('database.name') . ';host=' . $this->config('database.server'),
-                    $this->config('database.username'),
-                    $this->config('database.password')
-                );
-            }
-            if ($this->config('database.type') === 'sqlite') {
-                return new \PDO('sqlite:' . $this->config('database.file'), '', '', [\PDO::ATTR_PERSISTENT => true]);
-            }
-        });
+        // If the app uses a database
+        if ($this->config('database.type')) {
 
-        // Share a database instance
-        $this->container['db'] = $this->share(function ($container) {
-            return new Database ($this);
-        });
+            // Share a PDO instance
+            $this->container['pdo'] = $this->share(function ($container) {
+                if ($this->config('database.type') === 'mysql') {
+                    return new \PDO(
+                        'mysql:dbname=' . $this->config('database.name') . ';host=' . $this->config('database.server'),
+                        $this->config('database.username'),
+                        $this->config('database.password')
+                    );
+                }
+                if ($this->config('database.type') === 'sqlite') {
+                    return new \PDO('sqlite:' . $this->config('database.file'), '', '', [\PDO::ATTR_PERSISTENT => true]);
+                }
+            });
+
+            // Share a database instance
+            $this->container['db'] = $this->share(function ($container) {
+                return new Database ($this);
+            });
+
+            // Inject database connection to models
+            $this->setupDatabaseConnection();
+        }
 
         // Share a view instance
         $this->container['view'] = $this->share(function ($container) {
@@ -110,9 +108,6 @@ class App extends Container
                 return new \PHPMailer;
             });
         }
-
-        // Inject database connection to models
-        $this->setupDatabaseConnection();
     }
 
     /**
@@ -180,7 +175,15 @@ class App extends Container
         }
 
         // Return the class instance
-        return $reflection->newInstanceArgs($dependencies);
+        $instance = $reflection->newInstanceArgs($dependencies);
+
+        // If the class has a boot method, run it
+        if (method_exists($instance, 'boot')) {
+            $instance->boot();
+        }
+
+        // Return instance
+        return $instance;
     }
 
     /**

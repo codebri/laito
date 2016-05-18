@@ -99,6 +99,7 @@ abstract class Model {
      */
     public function __construct () {
 
+        // Assign attributes
     }
 
     /**
@@ -109,15 +110,6 @@ abstract class Model {
      */
     public static function setupConnection (Database $database) {
         return self::$database = $database;
-    }
-
-    /**
-     * Boot method
-     *
-     * @return object Model instance
-     */
-    public function boot () {
-        return $this;
     }
 
     /**
@@ -354,15 +346,10 @@ abstract class Model {
         }
 
         // Return the first found record using the primary key for the where
-        $result = $this->db()->table($this->table)->select($this->columns)->where($this->primaryKey, $id, '=', $this->table)->limit(1)->get();
-
-        // Abort if no models where found
-        if (!$result || !is_array($result) || empty($result)) {
-            throw new \Exception('Element not found', 404);
-        }
+        $result = $this->where($this->primaryKey, $id, '=', $this->table)->limit(1)->first();
 
         // Return the first matching record
-        return reset($result);
+        return $result;
     }
 
     /**

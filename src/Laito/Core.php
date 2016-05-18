@@ -15,7 +15,6 @@ class Core
      */
     public $app;
 
-
     /**
      * Constructor
      *

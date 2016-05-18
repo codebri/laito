@@ -1,34 +1,67 @@
 <?php namespace Laito;
 
 /**
- * Auth class
+ * Authentication class
  *
  * @package default
  * @author Mangolabs
  */
 
-class Auth extends Core
+class Authentication extends Model
 {
 
     /**
      * @var Array Authenticated user
      */
-    private $user = null;
+    protected $user = null;
 
     /**
      * @var Array Current token
      */
-    private $token = null;
+    protected $token = null;
+
+    /**
+     * @var string Username column in table
+     */
+    protected $usernameColumn = 'email';
+
+    /**
+     * @var string Password column in table
+     */
+    protected $passwordColumn = 'password';
+
+    /**
+     * @var Array TTL for tokens and reminders
+     */
+    protected $ttl = ['token' => 3600, 'reminder' => 3600];
+
+    /**
+     * @var Array Folder paths for tokens and reminders
+     */
+    protected $folders = ['token' => 'storage/sessions', 'reminder' => 'storage/reminders'];
+
+    /**
+     * @var string Reminders suffix
+     */
+    protected $remindersSuffix = 'reminders_';
+
+    /**
+     * @var array Fields to be store in the session file
+     */
+    protected $sessionFields = [
+        'id',
+        'username',
+        'email'
+    ];
 
     /**
      * Attempts to login a user
      *
      * @param string $username Username to login
      * @param string $password Password
-     * @param boolean $remember Store cookie or not
      * @return string Token
      */
-    public function attempt ($username, $password, $remember = false) {
+    public function attempt ($username, $password) {
 
         // Check credentials
         if (!$this->validate($username, $password)) {
@@ -36,30 +69,25 @@ class Auth extends Core
         }
 
         // Logins user
-        $token = $this->login($username);
-
-        // Set cookie
-        if ($remember) {
-            $cookieSet = $this->setCookie($token);
-        }
+        $token = $this->startSession($username);
 
         // Return token
         return $token;
     }
 
     /**
-     * Login a user
+     * Logins a user
      *
      * @param string $username Username to login
      * @return mixed
      */
-    public function login ($username) {
+    public function startSession ($username) {
 
         // Store session file
         $token = $this->createTokenHash($username);
 
         // Get user data
-        $user = $this->findUser($username);
+        $user = $this->findByUsername($username);
 
         // Abort if the user does not exist
         if (!$user) {
@@ -67,7 +95,7 @@ class Auth extends Core
         }
 
         // Manage session data
-        unset($user[$this->app->config('auth.password')]);
+        unset($user[$this->passwordColumn]);
         $this->user = $user;
         $this->token = $token;
 
@@ -108,11 +136,10 @@ class Auth extends Core
         $sessionData = $this->getSession($token);
 
         // Delete session cookies
-        $cookieDeleted = $this->deleteCookie();
         $sessionDeleted = $this->deleteSession($token);
 
         // Return success or fail
-        return $cookieDeleted && $sessionDeleted;
+        return $sessionDeleted;
     }
 
     /**
@@ -125,15 +152,10 @@ class Auth extends Core
     public function validate ($username, $password) {
 
         // Get the user's data
-        $user = $this->findUser($username);
-
-        // Abort if the user does not exist
-        if (!$user) {
-            return false;
-        }
+        $storedPassword = $this->getStoredPassword($username);
 
         // Verify the password against the stored hash
-        return password_verify($password, $user[$this->app->config('auth.password')]);
+        return password_verify($password, $storedPassword);
     }
 
     /**
@@ -145,7 +167,7 @@ class Auth extends Core
     public function remindPassword ($username) {
 
         // Get the user's data
-        $user = $this->findUser($username);
+        $user = $this->findByUsername($username);
 
         // Abort if the user does not exist
         if (!$user) {
@@ -156,7 +178,7 @@ class Auth extends Core
         $reminder = $this->createReminderHash($username);
 
         // Saves the reminder
-        $reminderSaved = $this->storeReminder($reminder, [$this->app->config('auth.username') => $username]);
+        $reminderSaved = $this->storeReminder($reminder, [$this->usernameColumn => $username]);
 
         // Return
         return $reminder;
@@ -173,7 +195,7 @@ class Auth extends Core
     public function changePassword ($username, $token, $newPassword) {
 
         // Get the user's data
-        $user = $this->findUser($username);
+        $user = $this->findByUsername($username);
 
         // Abort if the user does not exist
         if (!$user) {
@@ -191,12 +213,12 @@ class Auth extends Core
         }
 
         // Abort if the received username does not match the session data username
-        if ($username !== $sessionData['user'][$this->app->config('auth.username')]) {
+        if ($username !== $sessionData['user'][$this->usernameColumn]) {
             throw new \InvalidArgumentException('Invalid username for this ' . $type, 400);
         }
 
         // Abort if the reminder is expired
-        $maxage = time() + $this->app->config('reminders.ttl');
+        $maxage = time() + $this->ttl['reminder'];
         if ($isReminder && (!isset($sessionData['expires']) || $sessionData['expires'] > $maxage)) {
             throw new \InvalidArgumentException('Expired reminder', 400);
         }
@@ -205,7 +227,7 @@ class Auth extends Core
         $data['password'] = password_hash($newPassword, PASSWORD_BCRYPT);
 
         // Update user
-        $userUpdated = $this->app->db->reset()->table($this->app->config('auth.table'))->where($this->app->config('auth.username'), $username)->update($data);
+        $userUpdated = $this->update($sessionData['user']['id'], $data);
 
         // Check for errors
         if (!$userUpdated) {
@@ -229,13 +251,15 @@ class Auth extends Core
      */
     public function getSession ($token = null) {
 
-        // Determine token path
-        if (!$token) {
-            $token = $this->app->request->token();
-        }
+        // Set token
         if (!$token) {
             $token = $this->token;
         }
+        if (!$token) {
+            throw new \Exception('No token received', 500);
+        }
+
+        // Determine token path
         $path = $this->sessionPath($token);
 
         // Abort if the session does not exist
@@ -247,7 +271,7 @@ class Auth extends Core
         $sessionData = json_decode(file_get_contents($path), true);
 
         // Abort if the token has expired
-        $expiringDate = $sessionData['ctime'] + $this->app->config('sessions.ttl');
+        $expiringDate = $sessionData['ctime'] + $this->ttl['token'];
         if (time() > $expiringDate) {
             throw new \InvalidArgumentException('Expired token', 401);
         }
@@ -262,9 +286,23 @@ class Auth extends Core
      * @param string $username Username
      * @return mixed User array, of false if the user does not exist
      */
-    private function findUser ($username) {
-        $user = $this->app->db->reset()->table($this->app->config('auth.table'))->where($this->app->config('auth.username'), $username)->getOne();
+    private function findByUsername ($username) {
+        $user = $this->db()->reset()->table($this->table)->select($this->sessionFields)->limit(1)->where($this->usernameColumn, $username)->getOne();
         return $user;
+    }
+
+    /**
+     * Gets an stored password for a user
+     *
+     * @param string $username Username
+     * @return mixed User password, of false if the user does not exist
+     */
+    private function getStoredPassword ($username) {
+        $user = $this->db()->reset()->table($this->table)->select($user[$this->passwordColumn])->limit(1)->where($this->usernameColumn, $username)->getOne();
+        if (is_array($user) && isset($user[$this->passwordColumn])) {
+            return $user[$this->passwordColumn];
+        }
+        return false;
     }
 
     /**
@@ -284,7 +322,7 @@ class Auth extends Core
      * @return string Session path
      */
     private function sessionPath ($token) {
-        return $this->app->config('sessions.folder') . $token . '.json';
+        return $this->folders['token'] . '/' . $token . '.json';
     }
 
     /**
@@ -324,7 +362,7 @@ class Auth extends Core
      * @return string Reminder
      */
     private function createReminderHash ($username) {
-        return $this->app->config('reminders.suffix') . md5($username . time() . rand(0, 100));
+        return $this->remindersSuffix . md5($username . time() . rand(0, 100));
     }
 
     /**
@@ -334,7 +372,7 @@ class Auth extends Core
      * @return string Reminder path
      */
     private function reminderPath ($reminder) {
-        return $this->app->config('reminders.folder') . $reminder . '.json';
+        return $this->folders['reminder'] . '/' . $reminder . '.json';
     }
 
     /**
@@ -349,7 +387,7 @@ class Auth extends Core
         return file_put_contents($path, json_encode([
             'user' => $data,
             'reminder' => $reminder,
-            'expires' => time() + $this->app->config('reminders.ttl')
+            'expires' => time() + $this->ttl['reminder']
         ]));
     }
 
@@ -382,29 +420,7 @@ class Auth extends Core
      * @return boolean True if the string is a reminder
      */
     private function isReminder ($string) {
-        return strpos($string, $this->app->config('reminders.suffix')) === 0;
-    }
-
-    /**
-     * Sets the token cookie
-     *
-     * @param string $token Token
-     * @return boolean Success or fail of cookie writing
-     */
-    private function setCookie ($token) {
-        $ttl = $this->app->config('sessions.ttl');
-        $cookie = $this->app->config('sessions.cookie');
-        return setcookie($cookie, $token, time() + $ttl, '/');
-    }
-
-    /**
-     * Deletes the token cookie
-     *
-     * @return boolean Success or fail of cookie writing
-     */
-    private function deleteCookie () {
-        $cookie = $this->app->config('sessions.cookie');
-        return setcookie($cookie, '', time() - 3600, '/');
+        return strpos($string, $this->remindersSuffix) === 0;
     }
 
 }

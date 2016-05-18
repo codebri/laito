@@ -24,21 +24,21 @@ class Controller extends Core {
         // Construct from parent
         parent::__construct($app);
 
-        // Setup configurations and boot
-        $this->boot();
-    }
-
-    /**
-     * Boot method
-     *
-     * @return object Controller instance
-     */
-    public function boot () {
-
         // Setup model
         if (isset($this->modelName)) {
             $this->model = $this->app->make($this->modelName);
         }
+
+        // Initialize
+        $this->initialize();
+    }
+
+    /**
+     * Setup configurations and dependencies
+     *
+     * @return object Controller instance
+     */
+    public function initialize () {
 
         // Return instance
         return $this;
@@ -86,17 +86,17 @@ class Controller extends Core {
         }
 
         // Get record
-        $result = $this->model->find($id);
+        $item = $this->model->find($id);
 
         // Abort if the record is not found
-        if (!$result) {
+        if (!$item) {
             throw new \Exception('Element not found', 404);
         }
 
-        // Return results
+        // Return response
         return [
             'success' => true,
-            'data' => $result
+            'data' => $item
         ];
     }
 
@@ -104,7 +104,7 @@ class Controller extends Core {
      * Stores a newly created resource in storage
      *
      * @param array $params Resource attributes
-     * @return string Response
+     * @return array Response
      */
     public function store ($attributes = []) {
 
@@ -117,7 +117,7 @@ class Controller extends Core {
         // Return results
         return [
             'success' => true,
-            'id' =>$result['id'],
+            'id' => $result['id'],
             'data' => $result
         ];
     }
