@@ -256,7 +256,7 @@ class Authentication extends Model
             $token = $this->token;
         }
         if (!$token) {
-            throw new \Exception('No token received', 500);
+            return false;
         }
 
         // Determine token path
