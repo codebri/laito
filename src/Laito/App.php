@@ -238,7 +238,9 @@ class App extends Container
         } catch (\PDOException $e) {
 
             // Show the invalid query
-            echo 'Invalid query:<br>' . $this->db->lastQuery();
+            echo '<pre>';
+            print_r($this->db->statement->errorInfo());
+            echo $this->db->lastQuery();
             exit;
 
         // Return generic error
