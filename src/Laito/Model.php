@@ -74,12 +74,12 @@ abstract class Model {
     ];
 
     /**
-     * @var array Default validation rules
+     * @var array Custom validation rules
      */
     protected $rules = [];
 
     /**
-     * @var array Validation rules
+     * @var array Default validation rules
      */
     protected $defaultRules = [
         'alpha' => '/[a-zA-Z\s]+/',
@@ -790,7 +790,7 @@ abstract class Model {
         // Sync each relationship
         foreach ($this->relationships['hasMany'] as $join) {
 
-            // The sync option has to be true, the related attribute an array
+            // The sync option has to be set, the related attribute an array
             if (isset($join['sync']) && is_array($join['sync']) && isset($attributes[$join['alias']]) && is_array($attributes[$join['alias']])) {
 
                 // Get related elements
@@ -948,8 +948,7 @@ abstract class Model {
      * @return object Model instance
      */
     private function setValidationRules () {
-        $this->rules = array_merge($this->defaultRules, $this->rules);
-        return $this;
+        return array_merge($this->defaultRules, $this->rules);
     }
 
     /**
@@ -960,6 +959,9 @@ abstract class Model {
      * @return array|bool Array of errors, or false if the model is valid
      */
     function validationErrors ($attributes, $rules = null) {
+
+        // Rules container
+        $this->rules = $this->setValidationRules();
 
         // Ruleset
         $ruleSet = isset($rules)? $rules : $this->validate;
