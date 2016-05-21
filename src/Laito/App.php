@@ -203,21 +203,7 @@ class App extends Container
             $action = $this->router->getAction($url);
 
             // Perform the filter
-            $filter = $this->router->getFilter($action['filter']);
-            if (isset($action['filter']) && $filter) {
-                $this->router->setAppliedFilter($action['filter']);
-                if ($filter instanceof \Closure) {
-                    call_user_func($filter);
-                } else if (is_array($filter)) {
-                    list($class, $method) = $filter;
-                    if (class_exists($class)) {
-                        $class = $this->make($class);
-                        call_user_func([$class, $method]);
-                    }
-                } else {
-                    throw new \Exception('Invalid filter', 500);
-                }
-            }
+            $filter = $this->router->performFilter($action['filter']);
 
             // Check if the controller exists
             if (!isset($action) || !is_string($action['class']) || !class_exists($action['class'])) {

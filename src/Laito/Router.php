@@ -67,7 +67,6 @@ class Router extends Core
         ];
     }
 
-
     /**
      * Retrieve registered routes
      * 
@@ -80,7 +79,6 @@ class Router extends Core
         }
         return $this->routes;
     }
-
 
     /**
      * Retrieve model and method to execute
@@ -109,6 +107,7 @@ class Router extends Core
                     );
                 }
                 $current = $route;
+                break;
             }
         }
 
@@ -120,7 +119,6 @@ class Router extends Core
         // Return current route
         return $current;
     }
-
 
     /**
      * Register a resource
@@ -178,6 +176,55 @@ class Router extends Core
      */
     public function filtered ($filterName = null) {
         return in_array($filterName, $this->appliedFilters);
+    }
+
+    /**
+     * Performs a filter
+     *
+     * @param string $filter Filter name
+     */
+    public function performFilter ($filter) {
+        $filter = $this->getFilter($filter);
+
+        if (!$filter) {
+            throw new \Exception('Filter not found', 500);
+        }
+
+        if ($filter instanceof \Closure) {
+            call_user_func($filter);
+            return $this->setAppliedFilter($filter);
+        }
+
+        if (is_array($filter)) {
+            list($class, $method) = $filter;
+            if (!class_exists($class)) {
+                throw new \Exception('Invalid filter class', 500);
+            }
+
+            $class = $this->app->make($class);
+            call_user_func([$class, $method]);
+            return $this->setAppliedFilter($filter);
+        }
+
+        throw new \Exception('Invalid filter', 500);
+    }
+
+    /**
+     * Register a group of routers with a common filter
+     * 
+     * @param string $filter Filter name
+     * @param string $prefix Prefix for all routes
+     * @param array $routers Routes
+     */
+    public function group ($filter, $prefix = '', $routes) {
+        foreach ($routes as $route) {
+            $type = $route[0];
+            if ($type === 'resource') {
+                $this->resource($prefix . $route[1], $route[2], $filter);
+            } else {
+                $this->register($type, $prefix . $route[1], $route[2], $filter);
+            }
+        }
     }
 
     /**
