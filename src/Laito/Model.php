@@ -342,7 +342,7 @@ abstract class Model {
 
         // ID has to be defined
         if (!isset($id)) {
-            throw new \InvalidArgumentException('Undefined ID', 400);
+            throw new \InvalidArgumentException('Undefined ID to find', 400);
         }
 
         // Return the first found record using the primary key for the where
@@ -432,7 +432,7 @@ abstract class Model {
 
         // ID has to be defined
         if (!isset($id)) {
-            throw new \InvalidArgumentException('Undefined ID', 400);
+            throw new \InvalidArgumentException('Undefined ID to update', 400);
         }
 
         // Attributes have to be array
@@ -488,7 +488,7 @@ abstract class Model {
 
         // ID has to be defined
         if (!isset($id)) {
-            throw new \InvalidArgumentException('Undefined ID', 400);
+            throw new \InvalidArgumentException('Undefined ID to destroy', 400);
         }
 
         // Perform before hook
