@@ -281,6 +281,20 @@ class Authentication extends Model
     }
 
     /**
+     * Retrieves the logged in ID
+     *
+     * @param string $token Token
+     * @return mixed Logged user ID, or false if the session is invalid
+     */
+    public function getId ($token) {
+        $session = $this->getSession($token);
+        if (!$session) {
+            return false;
+        }
+        return $session['id'];
+    }
+
+    /**
      * Gets a user from the database
      *
      * @param string $username Username
@@ -334,11 +348,9 @@ class Authentication extends Model
      */
     private function storeSession ($token, $data) {
         $path = $this->sessionPath($token);
-        return file_put_contents($path, json_encode([
-            'user' => $data,
-            'token' => $token,
-            'ctime' => time()
-        ]));
+        $data['token'] = $token;
+        $data['ctime'] = time();
+        return file_put_contents($path, json_encode($data));
     }
 
     /**
