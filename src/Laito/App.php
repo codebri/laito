@@ -203,7 +203,9 @@ class App extends Container
             $action = $this->router->getAction($url);
 
             // Perform the filter
-            $filter = $this->router->performFilter($action['filter']);
+            if ($action['filter']) {
+                $filter = $this->router->performFilter($action['filter']);
+            }
 
             // Check if the controller exists
             if (!isset($action) || !is_string($action['class']) || !class_exists($action['class'])) {

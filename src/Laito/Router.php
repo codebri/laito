@@ -216,7 +216,17 @@ class Router extends Core
      * @param string $prefix Prefix for all routes
      * @param array $routers Routes
      */
-    public function group ($filter, $prefix = '', $routes) {
+    public function group () {
+
+        // Get arguments
+        if (func_num_args() === 2) {
+            list($prefix, $routes) = func_get_args();
+            $filter = null;
+        } elseif (func_num_args() === 3) {
+            list($filter, $prefix, $routes) = func_get_args();
+        }
+
+        // Register routes
         foreach ($routes as $route) {
             $type = $route[0];
             if ($type === 'resource') {
