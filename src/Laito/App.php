@@ -233,7 +233,7 @@ class App extends Container
 
         // Return generic error
         } catch (\Exception $e) {
-            return $this->response->error($e->getCode(), $e->getMessage());
+            return $this->response->error($e->getCode(), $e->getMessage() . ': ' . $e->getTraceAsString());
         }
     }
 

@@ -48,7 +48,7 @@ class Controller extends Core {
      * Display a listing of the resource
      *
      * @param array $params Listing parameters
-     * @return string Response
+     * @return array Response
      */
     public function index ($params = []) {
 
@@ -76,7 +76,7 @@ class Controller extends Core {
      * Display the specified resource
      *
      * @param array $id Resource ID
-     * @return string Response
+     * @return array Response
      */
     public function show ($id = null) {
 
@@ -126,7 +126,7 @@ class Controller extends Core {
      * Update the specified resource in storage
      *
      * @param array $id Resource ID
-     * @return string Response
+     * @return array Response
      */
     public function update ($id = null, $attributes = []) {
 
@@ -153,7 +153,7 @@ class Controller extends Core {
      * Remove the specified resource from storage
      *
      * @param array $id Resource ID
-     * @return string Response
+     * @return array Response
      */
     public function destroy ($id = null) {
 
