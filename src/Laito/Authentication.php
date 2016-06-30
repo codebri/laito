@@ -31,9 +31,9 @@ class Authentication extends Model
     protected $passwordColumn = 'password';
 
     /**
-     * @var Array TTL for tokens and reminders
+     * @var Array TTL for reminder
      */
-    protected $ttl = ['token' => 3600, 'reminder' => 3600];
+    protected $ttl = ['reminder' => 3600];
 
     /**
      * @var Array Folder paths for tokens and reminders
@@ -269,12 +269,6 @@ class Authentication extends Model
 
         // Get session data
         $sessionData = json_decode(file_get_contents($path), true);
-
-        // Abort if the token has expired
-        $expiringDate = $sessionData['ctime'] + $this->ttl['token'];
-        if (time() > $expiringDate) {
-            throw new \InvalidArgumentException('Expired token', 401);
-        }
 
         // Return session
         return $sessionData;
