@@ -97,7 +97,7 @@ class Response extends Core
      * @param array $response Response data
      * @return string HTTP Response
      */
-    public function output ($response = []) {
+    public function output ($response) {
 
         // Set format
         switch ($this->format) {
