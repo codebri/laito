@@ -76,12 +76,9 @@ class Response extends Core
      * @return object Response instance
      */
     public function format ($format) {
-        if (in_array($format, $this->allowedFormats)) {
-            $this->format = $format;
-        }
+        $this->format = $format;
         return $this;
     }
-
 
     /**
      * Sets extra data for the response
@@ -93,7 +90,6 @@ class Response extends Core
         $this->extra = array_merge_recursive($this->extra, $extra);
         return $this;
     }
-
 
     /**
      * Echoes out the response
@@ -169,24 +165,5 @@ class Response extends Core
             $return .= '<li>' . $key . ': ' . (is_array($value) ? $this->html($value) : $value) . '</li>';
         }
         return '<ul>' . $return . '</ul>';
-    }
-
-    /**
-     * Groups elements with similar keys into an object
-     * 
-     * @param string $collection The collection to convert
-     * @param string $keys Name of keys to objectify
-     * @return array The resulting array
-     */
-    public function objectify ($collection, $indexes) {
-        foreach ($collection as $k => $v) {
-            if (is_array($v)) {
-                $collection[$k] = self::objectify($v, $indexes);
-            } else if (($key = current(explode('_', $k))) && in_array($key, $indexes) ) {
-                $collection[$key][str_replace($key.'_', '', $k)] = $v;
-                unset($collection[$k]);
-            }
-        }
-        return $collection;
     }
 }
