@@ -51,7 +51,7 @@ class Http extends Core
         }
 
         // Make call
-        $result = file_get_contents($url, false, stream_context_create([
+        $result = @file_get_contents($url, false, stream_context_create([
             'http' => [
                 'method'  => $method,
                 'header'  => 'Content-type: application/x-www-form-urlencoded',
