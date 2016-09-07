@@ -309,7 +309,7 @@ class Database extends Core {
 
         // Debug
         if ($this->app->config('debug.queries')) {
-            $this->app->file->append($this->app->config('debug.queries'), date('Y-m-d h:i:s') . ' - ' . $this->query . "\r\n");
+            file_put_contents($this->app->config('debug.queries'), date('Y-m-d h:i:s') . ' - ' . $this->query . "\r\n", FILE_APPEND);
         }
 
         // Prepare statement

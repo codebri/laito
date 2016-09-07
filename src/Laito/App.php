@@ -41,11 +41,6 @@ class App extends Container
             return new Authentication($this);
         });
 
-        // Share a lang instance
-        $this->container['lang'] = $this->share(function ($container) {
-            return new Lang($this);
-        });
-
         // Share a request instance
         $this->container['request'] = $this->share(function ($container) {
             return new Request($this);
@@ -95,11 +90,6 @@ class App extends Container
         // Share an HTTP instance
         $this->container['http'] = $this->share(function ($container) {
             return new Http ($this);
-        });
-
-        // Share a file instance
-        $this->container['file'] = $this->share(function ($container) {
-            return new File ($this);
         });
 
         // Share a mailing instance
