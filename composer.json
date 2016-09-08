@@ -1,6 +1,7 @@
 {
   "name": "codebri/laito",
   "description": "A PHP microframework for creating quick and powerful REST APIs",
+  "license": "MIT",
   "keywords": ["Framework", "API", "REST"],
   "minimum-stability": "dev",
   "require": {
