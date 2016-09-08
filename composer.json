@@ -1,5 +1,5 @@
 {
-  "name": "mangolabs/laito",
+  "name": "codebri/laito",
   "description": "A PHP microframework for creating quick and powerful REST APIs",
   "keywords": ["Framework", "API", "REST"],
   "minimum-stability": "dev",
