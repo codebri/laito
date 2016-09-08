@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<html lang='en-US'>
+<head>
+<meta charset='utf-8'>
+
+<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
+
+<title>Laito</title>
+
+<!-- Twitter Bootstrap -->
+<link href='//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css' rel='stylesheet'>
+
+<!-- Font Awesome -->
+<link href='//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' rel='stylesheet'>
+
+<!-- Site -->
+<style type="text/css">
+
+    a, a:hover, a:active, a:focus {
+        text-decoration: none;
+    }
+
+    table {
+        width: 100%;
+        border: 1px solid #DDD;
+        margin-top: 20px;
+    }
+
+    table th {
+        background: #EEE;
+        border-bottom: 1px solid #DDD;
+    }
+
+    table td, table th {
+        padding: 10px;
+    }
+
+</style>
+
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">
+                Laito
+            </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="list-unstyled">
+    <li>
+        <a href="installation.html">Installation</a>
+    </li>
+    <li>
+        <a href="routing.html">Routing</a>
+    </li>
+    <li>
+        <a href="controllers.html">Controllers</a>
+    </li>
+    <li>
+        <a href="models.html">Models</a>
+    </li>
+    <li>
+        <a href="database.html">Database</a>
+    </li>
+    <li>
+        <a href="request.html">Request</a>
+    </li>
+</ul>        </div>
+        <div class="col-md-10">
+            <h1>Routing</h1>
+<p>With a route, you can bind an HTTP request of a certain type to a controller.</p>
+<pre><code>$app-&gt;route-&gt;register('GET', '/hello/world', ['HelloController', 'world'], 'MyFilter');
+</code></pre>
+<p>The parameters are:</p>
+<ul>
+<li>The HTTP method (GET, POST, PUT or DELETE)</li>
+<li>The route to match (For example, '/posts')</li>
+<li>An array containing the controller name and method to execute</li>
+<li>Optionally, a filter to execute before executing this action</li>
+</ul>
+<hr />
+<h2>Simple route</h2>
+<p>For example, this route will match the GET requests to <code>/posts</code> and execute the method <code>index</code> in the <code>PostsController</code> class:</p>
+<pre><code>$app-&gt;router-&gt;register('GET', '/posts', ['PostsController', 'index']);
+</code></pre>
+<hr />
+<h2>Route placeholders</h2>
+<p>You can use wildcards to match variable pieces of the URL to your route. Define them in curly braces:</p>
+<pre><code>$app-&gt;router-&gt;register('GET', '/posts/{id}', ['PostsController', 'show']);
+</code></pre>
+<p>The matched values will be passed to the executed controller's method. So, if the following URL is requested:</p>
+<pre><code>GET /posts/14
+</code></pre>
+<p>The <code>show</code> method in <code>PostsController</code> can make use of the <code>id</code> value:</p>
+<pre><code>function show ($id) {
+    echo $id; // 14
+}
+</code></pre>
+<hr />
+<h2>Resources</h2>
+<p>A lot of times you'll find yourself declaring common routes for all your CRUD operations. In those cases, the resource method is a nice shortcut.</p>
+<pre><code>$app-&gt;router-&gt;resource('/users', 'UsersController', 'MyFilter');
+</code></pre>
+<p>The parameters are:</p>
+<ul>
+<li>The route to match (for example, '/posts')</li>
+<li>The controller name</li>
+<li>Optionally, the name of the filter to execute before this actions</li>
+</ul>
+<p>It binds the following routes to the corresponding <code>UsersController</code> methods:</p>
+<table>
+<thead>
+<tr><th>HTTP method  </th><th>Route </th><th>Controller </th><th>Method</th></tr>
+</thead>
+<tbody>
+<tr><td>GET </td><td>/users </td><td>UsersController </td><td>index</td></tr>
+<tr><td>GET </td><td>/users/{id} </td><td>UsersController </td><td>show</td></tr>
+<tr><td>POST </td><td>/users </td><td>UsersController </td><td>store</td></tr>
+<tr><td>PUT </td><td>/users/{id} </td><td>UsersController </td><td>update</td></tr>
+<tr><td>DELETE </td><td>/users/{id} </td><td>UsersController </td><td>destroy</td></tr>
+</tbody>
+</table>
+<hr />
+<h2>Filters</h2>
+<p>You can bind filters to be performed before the actions you declare in your routes.</p>
+<pre><code>$app-&gt;router-&gt;filter('auth', ['UsersController', 'auth']);
+</code></pre>
+<p>The parameters are:</p>
+<ul>
+<li>The filter name (for example, 'auth'), that will be used to reference it in the route declarations</li>
+<li>An array containing the class (usually, a controller) and method to execute</li>
+</ul>
+<p>Instead of a class and method, you can use an anonymous function (closure):</p>
+<pre><code>$app-&gt;router-&gt;filter('disabled', function () use ($app) {
+    $auth = $app-&gt;auth-&gt;check($app-&gt;request-&gt;token());
+    if ($auth['user']['disabled']) {
+        throw new Exception('Your user is disabled', 401);
+    }
+});
+</code></pre>
+<p>You can perform any actions any conditions in your filters, like checking the user's session and permissions or the request format. If the conditions are not met, you can stop the execution of the route's action by throwing an exception like is shown in the example above.</p>
+<hr />
+<h2>Run</h2>
+<p>After you declared all your application routes, you can start listening for requests:</p>
+<pre><code>$app-&gt;run();
+</code></pre>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <hr>
+            <p>Laito by <a href="http://mangolabs.com.ar">MangoLabs</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
+
+<!-- Bootstrap -->
+<script src='//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
+
+</body>
+</html>

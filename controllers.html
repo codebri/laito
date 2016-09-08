@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<html lang='en-US'>
+<head>
+<meta charset='utf-8'>
+
+<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
+
+<title>Laito</title>
+
+<!-- Twitter Bootstrap -->
+<link href='//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css' rel='stylesheet'>
+
+<!-- Font Awesome -->
+<link href='//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' rel='stylesheet'>
+
+<!-- Site -->
+<style type="text/css">
+
+    a, a:hover, a:active, a:focus {
+        text-decoration: none;
+    }
+
+    table {
+        width: 100%;
+        border: 1px solid #DDD;
+        margin-top: 20px;
+    }
+
+    table th {
+        background: #EEE;
+        border-bottom: 1px solid #DDD;
+    }
+
+    table td, table th {
+        padding: 10px;
+    }
+
+</style>
+
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">
+                Laito
+            </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="list-unstyled">
+    <li>
+        <a href="installation.html">Installation</a>
+    </li>
+    <li>
+        <a href="routing.html">Routing</a>
+    </li>
+    <li>
+        <a href="controllers.html">Controllers</a>
+    </li>
+    <li>
+        <a href="models.html">Models</a>
+    </li>
+    <li>
+        <a href="database.html">Database</a>
+    </li>
+    <li>
+        <a href="request.html">Request</a>
+    </li>
+</ul>        </div>
+        <div class="col-md-10">
+            <h1>Controllers</h1>
+<p>The controllers are called by the application when a route asociated with them is called. The controllers are normal classes, and can have as many functions you want.</p>
+<pre><code>class SomeController {
+
+    function hello () {
+        echo 'Hello!';
+    }
+
+}
+</code></pre>
+<hr />
+<h2>Model injection</h2>
+<p>Many times, your controllers will make use of a model. But creating an instance of the model in the controller breaks the controller isolation. To follow the dependency injection patterns, those models can be injected into the controller just by requiring the model's in the controller's constructor function.</p>
+<p>Let's see an example of a PostController that requires a Post model:</p>
+<pre><code>class PostsController
+{
+
+    public function __construct (Posts $model) {
+        $this-&gt;model = $model;
+    }
+
+}
+</code></pre>
+<p>You can make use of the injected model inside your controllers using <code>$this-&gt;model</code> like this:</p>
+<pre><code>public function activePosts () {
+    return $this-&gt;model-&gt;where('active', 1)-&gt;get();
+}
+</code></pre>
+<hr />
+<h2>Base controller</h2>
+<p>If you want to have a solid fundation for your controllers, you can create them extending the default <code>Controller</code> class and requiring a model:</p>
+<pre><code>class PostsController extends ApiFramework\Controller
+{
+
+    public function __construct (ApiFramework\App $app, Posts $model) {
+        parent::__construct($app);
+        $this-&gt;model = $model;
+    }
+
+}
+</code></pre>
+<ul>
+<li><p>The first parameter in the constructor is the application instance, that is saved as <code>$this-&gt;app</code> by the parent constructor. It's required to give the controller access to the application goodies like <code>$this-&gt;app-&gt;request</code>, <code>$this-&gt;app-&gt;file</code> and all the others singletons.</p>
+</li>
+<li><p>After that first parameter, you can request a model (in this case is <code>Posts</code>) that will be stored as <code>$this-&gt;model</code>.</p>
+</li>
+</ul>
+<p>That extended controller will inherit some handy default methods:</p>
+<ul>
+<li><strong>index</strong> to return a listing of the resource</li>
+<li><strong>show</strong> to return a single resource item</li>
+<li><strong>create</strong> to save a new resource item in storage</li>
+<li><strong>update</strong> to update a resource item in storage</li>
+<li><strong>destroy</strong> to destroy a resource item in storage</li>
+</ul>
+<p>As you can see, those are the expected methods names when you declare resource routes, so you can get a full bootstraped CRUD resource by combining the <code>PostController</code> controller, the injected <code>Posts</code> model and the <code>/posts</code> route.</p>
+<pre><code>$app-&gt;router-&gt;resource('/posts', 'PostsController');
+</code></pre>
+<p>All methods (except <code>index</code>) receive the first wildcard found in the URL as the <code>$id</code> parameter.</p>
+<pre><code>public function destroy ($id = null) { ... };
+</code></pre>
+<hr />
+<h2>Additional models</h2>
+<p>You can require more of one model in the controller's constructor, but the default CRUD actions inherited from the base controller (index, show, store, update, destroy) will always use <code>$this-&gt;model</code>, so be careful to choose other names for the additional models. For example:</p>
+<pre><code>class PostsController extends ApiFramework\Controller
+{
+
+    public function __construct (ApiFramework\App $app, Posts $model, Tags $tags) {
+        parent::__construct($app);
+        $this-&gt;model = $model;
+        $this-&gt;tags = $tags;
+    }
+
+}
+</code></pre>
+<hr />
+<h2>Responses and errors</h2>
+<p>In the most common scenario, your controllers will return and array that will be output by the application in the default format (JSON).</p>
+<pre><code>public function send ($id) {
+    ...
+    return ['success' =&gt; true, 'id' =&gt; $id];
+};
+</code></pre>
+<p>In case of errors, you can return early throwing an exception:</p>
+<pre><code>public function invite ($age) {
+    if ($age &lt; 18) {
+        throw new Exception('You must be older to get to the party', 401);
+    }
+    ...
+};
+</code></pre>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <hr>
+            <p>Laito by <a href="http://mangolabs.com.ar">MangoLabs</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
+
+<!-- Bootstrap -->
+<script src='//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
+
+</body>
+</html>

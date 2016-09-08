@@ -72,8 +72,32 @@
     </li>
 </ul>        </div>
         <div class="col-md-10">
-            <h1>Welcome!</h1>
-<p>Laito is a PHP microframework for creating quick and powerful REST APIs.</p>
+            <h1>Request</h1>
+<p>You may to need to obtain data from the query string of a GET call, or the parameters of a POST request. You can do it trought the <code>Request</code> class. You don't have to instantiate it, is available trought <code>$this-&gt;app-&gt;request</code>. So you can use it in any controller class:</p>
+<p>class UsersController extends ApiFramework\Controller {</p>
+<pre><code>public function index ($filters = []) {
+    $inputs = $this-&gt;app-&gt;request-&gt;input();
+    ...
+}
+</code></pre>
+<p>}</p>
+<h2>Methods</h2>
+<hr />
+<p><strong> Get all inputs </strong></p>
+<pre><code>$this-&gt;app-&gt;request-&gt;input();
+</code></pre>
+<p><strong> Get a single input </strong></p>
+<pre><code>$this-&gt;app-&gt;request-&gt;input('age');
+</code></pre>
+<p><strong> Check if an input is defined </strong></p>
+<pre><code>$this-&gt;app-&gt;request-&gt;hasInput('age');
+</code></pre>
+<p><strong> Get the requested URL </strong></p>
+<pre><code>$this-&gt;app-&gt;request-&gt;url();
+</code></pre>
+<p><strong> Get the access token </strong></p>
+<pre><code>$this-&gt;app-&gt;request-&gt;token();
+</code></pre>
         </div>
     </div>
     <div class="row">

@@ -1,3 +1,27 @@
+<?php
+
+// Show errors
+error_reporting(E_ALL | E_ERROR | E_PARSE);
+
+// Load dependencies
+require_once __DIR__ . '/vendor/autoload.php';
+
+// Instance parser
+$parser = new \cebe\markdown\GithubMarkdown();
+
+// Get route
+$route = (filter_input(INPUT_GET, 'route') !== null)? filter_input(INPUT_GET, 'route') : 'index.html';
+$route = str_replace('.html', '', $route);
+
+// Get markdown file
+if (isset($route) && ($route !== '') && file_exists('docs/' . $route . '.md')) {
+    $markdown = file_get_contents('docs/' . $route . '.md');
+}
+
+// Render page
+$html = $parser->parse($markdown);
+
+?>
 <!DOCTYPE HTML>
 <html lang='en-US'>
 <head>
@@ -51,29 +75,10 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            <ul class="list-unstyled">
-    <li>
-        <a href="installation.html">Installation</a>
-    </li>
-    <li>
-        <a href="routing.html">Routing</a>
-    </li>
-    <li>
-        <a href="controllers.html">Controllers</a>
-    </li>
-    <li>
-        <a href="models.html">Models</a>
-    </li>
-    <li>
-        <a href="database.html">Database</a>
-    </li>
-    <li>
-        <a href="request.html">Request</a>
-    </li>
-</ul>        </div>
+            <?php include 'sidebar.php' ?>
+        </div>
         <div class="col-md-10">
-            <h1>Welcome!</h1>
-<p>Laito is a PHP microframework for creating quick and powerful REST APIs.</p>
+            <?=$html?>
         </div>
     </div>
     <div class="row">

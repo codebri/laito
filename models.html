@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+<html lang='en-US'>
+<head>
+<meta charset='utf-8'>
+
+<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
+
+<title>Laito</title>
+
+<!-- Twitter Bootstrap -->
+<link href='//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css' rel='stylesheet'>
+
+<!-- Font Awesome -->
+<link href='//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' rel='stylesheet'>
+
+<!-- Site -->
+<style type="text/css">
+
+    a, a:hover, a:active, a:focus {
+        text-decoration: none;
+    }
+
+    table {
+        width: 100%;
+        border: 1px solid #DDD;
+        margin-top: 20px;
+    }
+
+    table th {
+        background: #EEE;
+        border-bottom: 1px solid #DDD;
+    }
+
+    table td, table th {
+        padding: 10px;
+    }
+
+</style>
+
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">
+                Laito
+            </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="list-unstyled">
+    <li>
+        <a href="installation.html">Installation</a>
+    </li>
+    <li>
+        <a href="routing.html">Routing</a>
+    </li>
+    <li>
+        <a href="controllers.html">Controllers</a>
+    </li>
+    <li>
+        <a href="models.html">Models</a>
+    </li>
+    <li>
+        <a href="database.html">Database</a>
+    </li>
+    <li>
+        <a href="request.html">Request</a>
+    </li>
+</ul>        </div>
+        <div class="col-md-10">
+            <h1>Models</h1>
+<p>The models are the classes that manage a certain resource. Following the MVC pattern, the models are the only ones that should talk to the storage system in your application.</p>
+<p>The storage may vary. For example, you can have some logs in a text file and access them like this:</p>
+<pre><code>class Logs {
+
+    function get () {
+        return file_get_contents('./logs.txt');
+    }
+
+}
+</code></pre>
+<hr />
+<h2>Base model</h2>
+<p>But, in the most common scenario, you'll have the records in a database and some common methods to list, create, update and destroy records.</p>
+<p>That's where the base model enters in action. You can easily create your models by extending the default <code>Model</code> class and defining some basic configuration:</p>
+<pre><code>class Posts extends ApiFramework\Model {
+
+    /**
+     * @var string Table name
+     */
+    protected $table = 'posts';
+
+    /**
+     * @var array Readable columns
+     */
+    protected $columns = ['id', 'name', 'text', 'date'];
+
+    /**
+     * @var array Writable columns
+     */
+    protected $fillable = ['name', 'text'];
+
+}
+</code></pre>
+<p>And that's all! Now you can use your model as follows.</p>
+<hr />
+<h2>Methods</h2>
+<p><strong>Get a list of posts</strong></p>
+<pre><code>$model-&gt;get();
+</code></pre>
+<p><strong>Get a list of active posts</strong></p>
+<pre><code>$model-&gt;where('active', 1)-&gt;get();
+</code></pre>
+<p><strong>Get a single post by ID</strong></p>
+<pre><code>$model-&gt;find(4);
+</code></pre>
+<p><strong>Create a new post</strong></p>
+<pre><code>$model-&gt;create(['name' =&gt; 'Hello, World!', 'text' =&gt; 'Some nice text']);
+</code></pre>
+<p><strong>Update a post by ID</strong></p>
+<pre><code>$model-&gt;update(4, ['name' =&gt; 'New title', 'text' =&gt; 'New text']);
+</code></pre>
+<p><strong>Delete a post by ID</strong></p>
+<pre><code>$model-&gt;destroy(28);
+</code></pre>
+<hr />
+<h2>Model relationships</h2>
+<p>When your model is related to others, you can declare a model relationship in the <code>$relationships</code> array.</p>
+<p>You can define relationships of various types:</p>
+<p><strong> One to one </strong></p>
+<pre><code>protected $relationships = [
+    'hasOne' =&gt; [
+        [
+            'table' =&gt; 'roles',
+            'localKey' =&gt; 'role_id',
+            'foreignKey' =&gt; 'id',
+            'columns' =&gt; ['id', 'name'],
+            'alias' =&gt; 'role'
+        ]
+    ]
+];
+</code></pre>
+<p><strong> One to many </strong></p>
+<pre><code>protected $relationships = [
+    'hasMany' =&gt; [
+        [
+            'table' =&gt; 'messages',
+            'localKey' =&gt; 'id',
+            'foreignKey' =&gt; 'user_id',
+            'columns' =&gt; ['text', 'public'],
+            'alias' =&gt; 'messages',
+            'limit' =&gt; 100,
+            'sync' =&gt; ['insert', 'update'] // false, 'insert', 'update', 'overwrite'
+        ]
+    ]
+];
+</code></pre>
+<p><strong> Many to many </strong></p>
+<pre><code>protected $relationships = [
+    'belongsToMany' =&gt; [
+        [
+            'table' =&gt; 'permissions',
+            'pivot' =&gt; 'user_permission',
+            'localKey' =&gt; 'user_id',
+            'foreignKey' =&gt; 'permission_id',
+            'alias' =&gt; 'permissions',
+            'sync' =&gt; true // true, false
+        ]
+    ]
+];
+</code></pre>
+<p>Of course, if a model have more than one relationship you can define them all at once.</p>
+<hr />
+<h2>Overriding base controller methods</h2>
+<p>You can extend of override the default methods. For example, if you want to process a list of results before returning them:</p>
+<pre><code>class Posts extends ApiFramework\Model {
+
+    protected $table = 'posts';
+
+    // Override get method
+    function get () {
+
+        // Call parent
+        $records = parent::get();
+
+        // Iterate and process records
+        $records = array_map(function ($element) {
+            $element['settings'] = json_decode($element['settings'], true);
+            return $element;
+        }, $records);
+
+        // Return the new set
+        return $records;
+    }
+
+}
+
+</code></pre>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <hr>
+            <p>Laito by <a href="http://mangolabs.com.ar">MangoLabs</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
+
+<!-- Bootstrap -->
+<script src='//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
+
+</body>
+</html>

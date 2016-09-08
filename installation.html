@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<html lang='en-US'>
+<head>
+<meta charset='utf-8'>
+
+<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
+
+<title>Laito</title>
+
+<!-- Twitter Bootstrap -->
+<link href='//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css' rel='stylesheet'>
+
+<!-- Font Awesome -->
+<link href='//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' rel='stylesheet'>
+
+<!-- Site -->
+<style type="text/css">
+
+    a, a:hover, a:active, a:focus {
+        text-decoration: none;
+    }
+
+    table {
+        width: 100%;
+        border: 1px solid #DDD;
+        margin-top: 20px;
+    }
+
+    table th {
+        background: #EEE;
+        border-bottom: 1px solid #DDD;
+    }
+
+    table td, table th {
+        padding: 10px;
+    }
+
+</style>
+
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">
+                Laito
+            </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="list-unstyled">
+    <li>
+        <a href="installation.html">Installation</a>
+    </li>
+    <li>
+        <a href="routing.html">Routing</a>
+    </li>
+    <li>
+        <a href="controllers.html">Controllers</a>
+    </li>
+    <li>
+        <a href="models.html">Models</a>
+    </li>
+    <li>
+        <a href="database.html">Database</a>
+    </li>
+    <li>
+        <a href="request.html">Request</a>
+    </li>
+</ul>        </div>
+        <div class="col-md-10">
+            <h1>Installation</h1>
+<p>Require ApiFramework in your <code>composer.json</code> file:</p>
+<pre><code>{
+    "require": {
+      "mangolabs/apiframework": "dev-master"
+    }
+}
+</code></pre>
+<p>And run <code>composer install</code>. This will fetch and save the package and its dependencies into the <code>vendor</code> folder.</p>
+<p>Once you installed it, create an <code>index.php</code> file in the route of your project and include the Composer's autoload file:</p>
+<pre><code>require_once __DIR__ . '/vendor/autoload.php';
+</code></pre>
+<p>All requests have to be pointed to that <code>index.php</code> file. In Apache, you can do so by creating an <code>.htaccess</code> file with this rules:</p>
+<pre><code>RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
+</code></pre>
+<hr />
+<h2>Usage and configuration</h2>
+<p>Now you're ready to start using the framework. Create an app instance in your <code>index.php</code> file:</p>
+<pre><code>$app = new ApiFramework\App();
+</code></pre>
+<p>You can pass an array of configuration options:</p>
+<pre><code>$app = new ApiFramework\App([
+    'database.name' =&gt; 'app',
+    'database.username' =&gt; 'root',
+    'database.password' =&gt; 'root',
+]);
+</code></pre>
+<p>Or set them after initialization:</p>
+<pre><code>$app-&gt;config('database.name', 'test');
+</code></pre>
+<p>The complete list of options is below.</p>
+<pre><code>$defaultSettings = [
+    'debug.queries'     =&gt; false,
+    'auth.table'        =&gt; 'users',
+    'auth.username'     =&gt; 'email',
+    'auth.password'     =&gt; 'password',
+    'sessions.folder'   =&gt; 'storage/sessions/',
+    'sessions.ttl'      =&gt; 3600,
+    'sessions.cookie'   =&gt; 'token',
+    'reminders.folder'  =&gt; 'storage/reminders/',
+    'reminders.ttl'     =&gt; 3600,
+    'reminders.suffix'  =&gt; 'reminders_',
+    'lang.folder'       =&gt; 'static/languages/',
+    'request.emulate'   =&gt; true,
+    'database.type'     =&gt; 'mysql',
+    'database.server'   =&gt; 'localhost',
+    'database.name'     =&gt; 'test',
+    'database.username' =&gt; 'root',
+    'database.password' =&gt; 'root',
+    'public.url'        =&gt; 'localhost'
+];
+</code></pre>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <hr>
+            <p>Laito by <a href="http://mangolabs.com.ar">MangoLabs</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
+
+<!-- Bootstrap -->
+<script src='//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
+
+</body>
+</html>
