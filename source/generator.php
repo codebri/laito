@@ -12,5 +12,5 @@ $pages = [
 ];
 
 foreach ($pages as $page) {
-    file_put_contents('../' . $page, file_get_contents($url . $page));
+    echo file_put_contents('../' . $page, file_get_contents($url . $page));
 }

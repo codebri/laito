@@ -84,7 +84,7 @@ $html = $parser->parse($markdown);
     <div class="row">
         <div class="col-md-12">
             <hr>
-            <p>Laito by <a href="http://mangolabs.com.ar">MangoLabs</a></p>
+            <p>Laito by <a href="http://codebri.com">Codebri</a></p>
         </div>
     </div>
 </div>
