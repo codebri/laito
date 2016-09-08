@@ -1,12 +1,10 @@
 {
   "name": "mangolabs/laito",
-  "description": "A light PHP framework",
+  "description": "A PHP microframework for creating quick and powerful REST APIs",
   "keywords": ["Framework", "API", "REST"],
   "minimum-stability": "dev",
   "require": {
-    "php": ">=5.4.0",
-    "ircmaxell/password-compat": "1.0.*",
-    "ramsey/array_column": "~1.1"
+    "php": ">=5.6.0"
   },
   "autoload": {
     "psr-0": {
