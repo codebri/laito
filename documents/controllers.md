@@ -2,7 +2,7 @@
 
 The controllers are called by the application when a route asociated with them is called. The controllers are normal classes, and can have as many functions you want.
 
-```
+```php
 class SomeController {
 
     function hello () {
@@ -20,7 +20,7 @@ Many times, your controllers will make use of a model. But creating an instance 
 
 Let's see an example of a PostController that requires a Post model:
 
-```
+```php
 class PostsController
 {
 
@@ -33,7 +33,7 @@ class PostsController
 
 You can make use of the injected model inside your controllers using `$this->model` like this:
 
-```
+```php
 public function activePosts () {
     return $this->model->where('active', 1)->get();
 }
@@ -45,7 +45,7 @@ public function activePosts () {
 
 If you want to have a solid fundation for your controllers, you can create them extending the default `Controller` class and requiring a model:
 
-```
+```php
 class PostsController extends ApiFramework\Controller
 {
 
@@ -71,13 +71,13 @@ That extended controller will inherit some handy default methods:
 
 As you can see, those are the expected methods names when you declare resource routes, so you can get a full bootstraped CRUD resource by combining the `PostController` controller, the injected `Posts` model and the `/posts` route.
 
-```
+```php
 $app->router->resource('/posts', 'PostsController');
 ```
 
 All methods (except `index`) receive the first wildcard found in the URL as the `$id` parameter.
 
-```
+```php
 public function destroy ($id = null) { ... };
 ```
 
@@ -87,7 +87,7 @@ public function destroy ($id = null) { ... };
 
 You can require more of one model in the controller's constructor, but the default CRUD actions inherited from the base controller (index, show, store, update, destroy) will always use `$this->model`, so be careful to choose other names for the additional models. For example:
 
-```
+```php
 class PostsController extends ApiFramework\Controller
 {
 
@@ -106,7 +106,7 @@ class PostsController extends ApiFramework\Controller
 
 In the most common scenario, your controllers will return and array that will be output by the application in the default format (JSON).
 
-```
+```php
 public function send ($id) {
     ...
     return ['success' => true, 'id' => $id];
@@ -115,7 +115,7 @@ public function send ($id) {
 
 In case of errors, you can return early throwing an exception:
 
-```
+```php
 public function invite ($age) {
     if ($age < 18) {
         throw new Exception('You must be older to get to the party', 401);

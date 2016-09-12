@@ -2,14 +2,14 @@
 
 You may to need to obtain data from the query string of a GET call, or the parameters of a POST request. You can do it trought the `Request` class. You don't have to instantiate it, is available trought `$this->app->request`. So you can use it in any controller class:
 
+```
 class UsersController extends ApiFramework\Controller {
-
     public function index ($filters = []) {
         $inputs = $this->app->request->input();
         ...
     }
-
 }
+```
 
 ## Methods
 

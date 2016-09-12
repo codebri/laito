@@ -1,0 +1,57 @@
+body {
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+a, a:hover, a:active, a:focus {
+    text-decoration: none;
+}
+
+table {
+    width: 100%;
+    border: 1px solid #DDD;
+    margin-top: 20px;
+}
+
+table th {
+    background: #EEE;
+    border-bottom: 1px solid #DDD;
+}
+
+table td, table th {
+    padding: 10px;
+}
+
+code, kbd, pre, samp {
+    font-family: Menlo, Monaco, Consolas, monospace;
+}
+
+.site-header {
+    color: #fff;
+    text-align: center;
+    background-color: #16a085;
+    padding: 3em;
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 4em;
+}
+
+.site-header h2 {
+    margin-bottom: 0;
+    font-weight: normal;
+    opacity: 0.7;
+}
+
+.sidebar {
+    margin-top: 25px;
+}
+
+.sidebar .list-group .active {
+    background-color: #16a085;
+    border: transparent;
+}
+
+.hljs {
+    padding: 0;
+}

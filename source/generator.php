@@ -1,16 +1,7 @@
 <?php
 
-$url = 'http://laito.dev/source/';
-$pages = [
-    'index.html',
-    'installation.html',
-    'routing.html',
-    'controllers.html',
-    'models.html',
-    'database.html',
-    'request.html'
-];
+include 'config.php';
 
 foreach ($pages as $page) {
-    echo file_put_contents('../' . $page, file_get_contents($url . $page));
+    echo file_put_contents('../' . $page . '.html', file_get_contents($url . $page . '.html'));
 }

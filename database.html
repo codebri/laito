@@ -10,67 +10,45 @@
 <title>Laito</title>
 
 <!-- Twitter Bootstrap -->
-<link href='//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css' rel='stylesheet'>
+<link href='//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet'>
 
 <!-- Font Awesome -->
 <link href='//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' rel='stylesheet'>
 
+<!-- Google Fonts -->
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet" href="//highlightjs.org/static/demo/styles/github.css">
+
 <!-- Site -->
-<style type="text/css">
-
-    a, a:hover, a:active, a:focus {
-        text-decoration: none;
-    }
-
-    table {
-        width: 100%;
-        border: 1px solid #DDD;
-        margin-top: 20px;
-    }
-
-    table th {
-        background: #EEE;
-        border-bottom: 1px solid #DDD;
-    }
-
-    table td, table th {
-        padding: 10px;
-    }
-
-</style>
+<link href='../assets/css/style.css' rel='stylesheet'>
 
 </head>
 
+<div class="site-header">
+    <h1>
+        Laito
+    </h1>
+    <h2>
+        Powerful PHP REST APIs in a breeze
+    </h2>
+</div>
+
 <div class="container">
     <div class="row">
-        <div class="col-md-12">
-            <h1 class="page-header">
-                Laito
-            </h1>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-md-2">
-            <ul class="list-unstyled">
-    <li>
-        <a href="installation.html">Installation</a>
-    </li>
-    <li>
-        <a href="routing.html">Routing</a>
-    </li>
-    <li>
-        <a href="controllers.html">Controllers</a>
-    </li>
-    <li>
-        <a href="models.html">Models</a>
-    </li>
-    <li>
-        <a href="database.html">Database</a>
-    </li>
-    <li>
-        <a href="request.html">Request</a>
-    </li>
-</ul>        </div>
+            <div class="sidebar">
+    <div class="list-group">
+                    <a class="list-group-item " href="home.html">Home</a>
+                    <a class="list-group-item " href="installation.html">Installation</a>
+                    <a class="list-group-item " href="routing.html">Routing</a>
+                    <a class="list-group-item " href="controllers.html">Controllers</a>
+                    <a class="list-group-item " href="models.html">Models</a>
+                    <a class="list-group-item active" href="database.html">Database</a>
+                    <a class="list-group-item " href="request.html">Request</a>
+            </div>
+</div>        </div>
         <div class="col-md-10">
             <h1>Database</h1>
 <p>Most of your interaction with the database is handled by the models. But if you need to query the database directly, you can do it with the <code>Database</code> class. In your <code>Models</code>, <code>Controllers</code> or any other class extending from <code>Core</code>, you don't need to instanciate it: you can use the singleton <code>$this-&gt;app-&gt;db</code>. The method names follow the SQL function names, so - if you are familiar with SQL - you already know how to use it.</p>
@@ -140,6 +118,12 @@ $this-&gt;app-&gt;db-&gt;table('users')-&gt;where('active', 0)-&gt;delete();
 
 <!-- Bootstrap -->
 <script src='//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
+
+<!-- Syntax Highlighter -->
+<script src="//highlightjs.org/static/highlight.pack.js"></script>
+
+<!-- Site -->
+<script src="../assets/js/site.js"></script>
 
 </body>
 </html>
