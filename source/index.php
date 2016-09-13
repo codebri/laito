@@ -11,7 +11,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 $parser = new \cebe\markdown\GithubMarkdown();
 
 // Check if is local
-$local = ($_SERVER['REMOTE_ADDR'] === '127.0.0.1')? 1 : 0;
+$local = false;
 
 // Get route
 $route = (filter_input(INPUT_GET, 'route') !== null)? filter_input(INPUT_GET, 'route') : 'index.html';
