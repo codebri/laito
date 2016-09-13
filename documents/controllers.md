@@ -3,7 +3,8 @@
 The controllers are called by the application when a route asociated with them is called. The controllers are normal classes, and can have as many functions you want.
 
 ```php
-class SomeController {
+class SomeController
+{
 
     function hello () {
         echo 'Hello!';

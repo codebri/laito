@@ -1,9 +1,10 @@
 body {
-    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 a, a:hover, a:active, a:focus {
     text-decoration: none;
+    color: #16a085;
 }
 
 table {
@@ -23,6 +24,12 @@ table td, table th {
 
 code, kbd, pre, samp {
     font-family: Menlo, Monaco, Consolas, monospace;
+    white-space: pre;
+}
+
+hr {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
 }
 
 .site-header {
@@ -43,7 +50,8 @@ code, kbd, pre, samp {
     opacity: 0.7;
 }
 
-.sidebar {
+.sidebar,
+.content {
     margin-top: 25px;
 }
 
@@ -54,4 +62,18 @@ code, kbd, pre, samp {
 
 .hljs {
     padding: 0;
+    background: transparent;
+}
+
+pre {
+    padding: 20px;
+    border: none;
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+    background: #eee;
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 940px;
+    }
 }

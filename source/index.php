@@ -37,8 +37,8 @@ $html = $parser->parse($markdown);
 
 <title>Laito</title>
 
-<!-- Twitter Bootstrap -->
-<link href='//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet'>
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
 
 <!-- Font Awesome -->
 <link href='//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' rel='stylesheet'>
@@ -47,7 +47,7 @@ $html = $parser->parse($markdown);
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
 
 <!-- Syntax Highlighter -->
-<link rel="stylesheet" href="//highlightjs.org/static/demo/styles/github.css">
+<link rel="stylesheet" href="//highlightjs.org/static/demo/styles/github-gist.css">
 
 <!-- Site -->
 <link href='<?php if ($local): ?>../<?php endif; ?>assets/css/style.css' rel='stylesheet'>
@@ -65,11 +65,13 @@ $html = $parser->parse($markdown);
 
 <div class="container">
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-3">
             <?php include 'sidebar.php' ?>
         </div>
-        <div class="col-md-10">
-            <?=$html?>
+        <div class="col-md-9">
+            <div class="content">
+                <?=$html?>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -80,11 +82,10 @@ $html = $parser->parse($markdown);
     </div>
 </div>
 
-<!-- jQuery -->
-<script src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
-
 <!-- Bootstrap -->
-<script src='//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
 
 <!-- Syntax Highlighter -->
 <script src="//highlightjs.org/static/highlight.pack.js"></script>

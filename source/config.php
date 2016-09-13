@@ -1,12 +1,13 @@
 <?php
 
 $url = 'http://laito.dev/docs/source/';
+
 $pages = [
-    'home',
-    'installation',
-    'routing',
-    'controllers',
-    'models',
-    'database',
-    'request'
+    'index' => 'Home',
+    'installation' => 'Installation',
+    'router' => 'Router',
+    'controllers' => 'controllers',
+    'models' => 'Models',
+    'database' => 'Database',
+    'request' => 'Request'
 ];

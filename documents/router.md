@@ -1,4 +1,4 @@
-# Routing
+# Router
 
 With a route, you can bind an HTTP request of a certain type to a controller.
 

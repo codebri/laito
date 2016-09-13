@@ -11,9 +11,9 @@ class UsersController extends ApiFramework\Controller {
 }
 ```
 
-## Methods
-
 ---
+
+## Methods
 
 ** Get all inputs **
 
