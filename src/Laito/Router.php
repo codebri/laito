@@ -32,8 +32,8 @@ class Router extends Core
 
     /**
      * Register a url
-     * 
-     * @param string $method Method 
+     *
+     * @param string $method Method
      * @param string $path Route to match
      * @param array $action Controller and method to execute
      * @param array $filter Optional filter to execute
@@ -47,12 +47,12 @@ class Router extends Core
         $method = strtolower($method);
 
         // Replace placeholders
-        if (preg_match_all('/\{([\w-]+)\}/i', $path, $matches)) {
+        if (preg_match_all('/\{([\w-\.]+)\}/i', $path, $matches)) {
             $params = end($matches);
         }
         $pattern = preg_replace(
-            ['/(\{[\w-]+\})/i', '/\\//'],
-            ['([\w-]+)', '\\/'],
+            ['/(\{[\w-\.]+\})/i', '/\\//'],
+            ['([\w-\.]+)', '\\/'],
             $path
         );
 
@@ -69,7 +69,7 @@ class Router extends Core
 
     /**
      * Retrieve registered routes
-     * 
+     *
      * @param string $method (Optional) Method specific routes.
      * @return array Array of routes
      */
@@ -82,7 +82,7 @@ class Router extends Core
 
     /**
      * Retrieve model and method to execute
-     * 
+     *
      * @param string $route Route to match
      * @return array Action and parameters
      */
@@ -122,7 +122,7 @@ class Router extends Core
 
     /**
      * Register a resource
-     * 
+     *
      * @param string $route Route for the resource
      * @param string $controller Controller name
      * @param string $filter Optional filter to execute
@@ -139,7 +139,7 @@ class Router extends Core
 
     /**
      * Sets a route filter
-     * 
+     *
      * @param string $filterName Filter name
      * @param array $callback Callback to exectue
      * @return boolean Success or failure of registration
@@ -150,7 +150,7 @@ class Router extends Core
 
     /**
      * Returns a route filter
-     * 
+     *
      * @param string $filterName Filter name
      * @return mixed Registered filter
      */
@@ -160,7 +160,7 @@ class Router extends Core
 
     /**
      * Sets an applied filter
-     * 
+     *
      * @param string $filterName Filter name
      * @return mixed Registered filter
      */
@@ -170,7 +170,7 @@ class Router extends Core
 
     /**
      * Sets an applied filter
-     * 
+     *
      * @param string $filterName Filter name
      * @return mixed Registered filter
      */
@@ -211,7 +211,7 @@ class Router extends Core
 
     /**
      * Register a group of routers with a common filter
-     * 
+     *
      * @param string $filter Filter name
      * @param string $prefix Prefix for all routes
      * @param array $routers Routes
@@ -239,7 +239,7 @@ class Router extends Core
 
     /**
      * Captures non existing functions
-     * 
+     *
      * @param string $function Function requested to execute
      * @param array $params Params requested for function execution
      * @return boolean
