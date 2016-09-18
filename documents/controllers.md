@@ -47,10 +47,10 @@ public function activePosts () {
 If you want to have a solid fundation for your controllers, you can create them extending the default `Controller` class and requiring a model:
 
 ```php
-class PostsController extends ApiFramework\Controller
+class PostsController extends Laito\Controller
 {
 
-    public function __construct (ApiFramework\App $app, Posts $model) {
+    public function __construct (Laito\App $app, Posts $model) {
         parent::__construct($app);
         $this->model = $model;
     }
@@ -89,10 +89,10 @@ public function destroy ($id = null) { ... };
 You can require more of one model in the controller's constructor, but the default CRUD actions inherited from the base controller (index, show, store, update, destroy) will always use `$this->model`, so be careful to choose other names for the additional models. For example:
 
 ```php
-class PostsController extends ApiFramework\Controller
+class PostsController extends Laito\Controller
 {
 
-    public function __construct (ApiFramework\App $app, Posts $model, Tags $tags) {
+    public function __construct (Laito\App $app, Posts $model, Tags $tags) {
         parent::__construct($app);
         $this->model = $model;
         $this->tags = $tags;

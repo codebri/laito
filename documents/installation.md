@@ -1,6 +1,6 @@
 # Installation
 
-Require ApiFramework in your `composer.json` file:
+Require Laito in your `composer.json` file:
 
 ```
 {
@@ -34,13 +34,13 @@ RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
 Now you're ready to start using the framework. Create an app instance in your `index.php` file:
 
 ```
-$app = new ApiFramework\App();
+$app = new Laito\App();
 ```
 
 You can pass an array of configuration options:
 
 ```
-$app = new ApiFramework\App([
+$app = new Laito\App([
     'database.name' => 'app',
     'database.username' => 'root',
     'database.password' => 'root',

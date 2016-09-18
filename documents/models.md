@@ -23,7 +23,7 @@ But, in the most common scenario, you'll have the records in a database and some
 That's where the base model enters in action. You can easily create your models by extending the default `Model` class and defining some basic configuration:
 
 ```
-class Posts extends ApiFramework\Model {
+class Posts extends Laito\Model {
 
     /**
      * @var string Table name
@@ -153,7 +153,7 @@ Of course, if a model have more than one relationship you can define them all at
 You can extend of override the default methods. For example, if you want to process a list of results before returning them:
 
 ```
-class Posts extends ApiFramework\Model {
+class Posts extends Laito\Model {
 
     protected $table = 'posts';
 
