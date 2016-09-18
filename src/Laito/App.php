@@ -22,7 +22,6 @@ class App extends Container
         'database.username' => 'root',
         'database.password' => 'root',
         'database.file'     => '',
-        'public.url'        => 'localhost',
         'templates.path'    => 'templates'
     ];
 
@@ -61,6 +60,8 @@ class App extends Container
 
             // Share a PDO instance
             $this->container['pdo'] = $this->share(function ($container) {
+
+                // Setup MySQL
                 if ($this->config('database.type') === 'mysql') {
                     return new \PDO(
                         'mysql:dbname=' . $this->config('database.name') . ';host=' . $this->config('database.server'),
@@ -68,6 +69,8 @@ class App extends Container
                         $this->config('database.password')
                     );
                 }
+
+                // Setup SQLite
                 if ($this->config('database.type') === 'sqlite') {
                     return new \PDO('sqlite:' . $this->config('database.file'), '', '', [\PDO::ATTR_PERSISTENT => true]);
                 }
@@ -91,13 +94,6 @@ class App extends Container
         $this->container['http'] = $this->share(function ($container) {
             return new Http ($this);
         });
-
-        // Share a mailing instance
-        if (class_exists('\\PHPMailer')) {
-            $this->container['mail'] = $this->share(function ($container) {
-                return new \PHPMailer;
-            });
-        }
     }
 
     /**

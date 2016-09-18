@@ -52,8 +52,7 @@ class Container
     /**
      * Ensure a value or service will remain globally unique
      *
-     * @param string $key Value or object name
-     * @param Closure Closure that defines the object
+     * @param closure $callable Closure that defines the object
      * @return mixed Instance of the object
      */
     function share ($callable) {
