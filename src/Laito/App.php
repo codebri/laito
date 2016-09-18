@@ -14,15 +14,39 @@ class App extends Container
      * @var array Default settings
      */
     private $defaultSettings = [
-        'debug.queries'     => false,
-        'request.emulate'   => true,
-        'database.type'     => false,
-        'database.server'   => 'localhost',
-        'database.name'     => 'test',
+
+        // If set to true, shows the SQL errors information in the response
+        'debug.queries' => true,
+
+        // If set to true, shows the backtrace on PHP errors in the response
+        'debug.backtrace' => true,
+
+        // Path of the queries log, or false if disabled
+        'queries.log' => false,
+
+        // Accepts '_method' parameter to emulate requests
+        'request.emulate' => true,
+
+        // Database type ('mysql', 'slqite' or false)
+        'database.type' => false,
+
+        // MySQL database server
+        'database.server' => 'localhost',
+
+        // MySQL database name
+        'database.name' => 'test',
+
+        // MySQL database username
         'database.username' => 'root',
+
+        // MySQL database password
         'database.password' => 'root',
-        'database.file'     => '',
-        'templates.path'    => 'templates'
+
+        // SQLite database file path
+        'database.file' => '',
+
+        // Path of the templates folder
+        'templates.path' => 'templates'
     ];
 
     /**
@@ -178,49 +202,74 @@ class App extends Container
      * @return string Response
      */
     public function run () {
-
-        // Encapsulate to catch errors
         try {
-
-            // Get URL
-            $url = $this->request->url();
-
-            // Get route action
-            $action = $this->router->getAction($url);
-
-            // Perform the filter
-            if ($action['filter']) {
-                $filter = $this->router->performFilter($action['filter']);
-            }
-
-            // Check if the controller exists
-            if (!isset($action) || !is_string($action['class']) || !class_exists($action['class'])) {
-                throw new \Exception('Controller not found', 404);
-            }
-
-            // Create the required controller
-            $controller = $this->make($action['class']);
-
-            // Execute the required method and return the response
-            return $this->response->output(call_user_func_array([$controller, $action['method']], $action['params']? : []));
-
-        // Return validation errors
+            $this->runAction();
         } catch (Exceptions\ValidationException $e) {
-            return $this->response->error($e->getCode(), $e->getMessage(), ['error' => ['errors' => $e->getErrors()]]);
-
-        // Return database errors
+            return $this->returnValidationErrorResponse($e);
         } catch (\PDOException $e) {
-
-            // Show the invalid query
-            echo '<pre>';
-            print_r($this->db->statement->errorInfo());
-            echo $this->db->lastQuery();
-            exit;
-
-        // Return generic error
+            return $this->returnDatabaseErrorResponse($e);
         } catch (\Exception $e) {
-            return $this->response->error($e->getCode(), $e->getMessage() . ': ' . $e->getTraceAsString());
+            return $this->returnGeneralErrorResponse($e);
         }
+    }
+
+    /**
+     * Setups a database connection for models
+     *
+     * @return void
+     */
+    private function runAction () {
+
+        // Get URL
+        $url = $this->request->url();
+
+        // Get route action
+        $action = $this->router->getAction($url);
+
+        // Perform the filter
+        if ($action['filter']) {
+            $filter = $this->router->performFilter($action['filter']);
+        }
+
+        // Check if the controller exists
+        if (!isset($action) || !is_string($action['class']) || !class_exists($action['class'])) {
+            throw new \Exception('Controller not found', 404);
+        }
+
+        // Create the required controller
+        $controller = $this->make($action['class']);
+
+        // Execute the required method and return the response
+        return $this->response->output(call_user_func_array([$controller, $action['method']], $action['params']? : []));
+    }
+
+    /**
+     * Returns a validation error response
+     *
+     * @return array Response
+     */
+    private function returnValidationErrorResponse ($e) {
+        return $this->response->error($e->getCode(), $e->getMessage(), ['error' => ['errors' => $e->getErrors()]]);
+    }
+
+    /**
+     * Returns a database error response
+     *
+     * @return array Response
+     */
+    private function returnDatabaseErrorResponse ($e) {
+        $info = $this->config('debug.queries')? ['error' => ['errors' => $this->db->statement->errorInfo(), 'last_query' => $this->db->lastQuery()]] : [];
+        return $this->response->error(500, 'Database error', $info);
+    }
+
+    /**
+     * Returns a generic error response
+     *
+     * @return array Response
+     */
+    private function returnGeneralErrorResponse ($e) {
+        $backtrace = $this->config('debug.backtrace')? ['error' => ['backtrace' => $e->getTrace()]] : [];
+        return $this->response->error($e->getCode(), $e->getMessage(), $backtrace);
     }
 
     /**

@@ -15,7 +15,6 @@ class Container
      */
     protected $container = [];
 
-
     /**
      * Store a value or service into the container
      *
@@ -25,7 +24,6 @@ class Container
     function __set ($id, $value) {
         $this->container[$id] = $value;
     }
-
 
     /**
      * Get a value or service from the container
@@ -48,7 +46,6 @@ class Container
         }
     }
 
-
     /**
      * Ensure a value or service will remain globally unique
      *
@@ -64,5 +61,4 @@ class Container
             return $object;
         };
     }
-
 }

@@ -308,8 +308,8 @@ class Database extends Core {
         $this->query = implode(' ', [$root, $joins, $where, $whereIn, $groupBy, $orderBy, $limit]);
 
         // Debug
-        if ($this->app->config('debug.queries')) {
-            file_put_contents($this->app->config('debug.queries'), date('Y-m-d h:i:s') . ' - ' . $this->query . "\r\n", FILE_APPEND);
+        if ($this->app->config('queries.log')) {
+            file_put_contents($this->app->config('queries.log'), date('Y-m-d h:i:s') . ' - ' . $this->query . "\r\n", FILE_APPEND);
         }
 
         // Prepare statement
