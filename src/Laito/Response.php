@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * Response class
- *
- * @package default
- * @author Mangolabs
- */
-
 class Response extends Core
 {
 

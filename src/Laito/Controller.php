@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * Controller class
- *
- * @package default
- * @author Mangolabs
- */
-
 class Controller extends Core {
 
     /**

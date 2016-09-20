@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * Database class
- *
- * @package default
- * @author Mangolabs
- */
-
 class Database extends Core {
 
     /**

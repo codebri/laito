@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * View class
- *
- * @package default
- * @author Mangolabs
- */
-
 class View extends Core {
 
     /**

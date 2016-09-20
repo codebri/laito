@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * Model class
- *
- * @package default
- * @author Mangolabs
- */
-
 abstract class Model {
 
     /**

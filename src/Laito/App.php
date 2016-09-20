@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * App class
- *
- * @package default
- * @author Mangolabs
- */
-
 class App extends Container
 {
 
@@ -79,6 +72,16 @@ class App extends Container
             return new Router($this);
         });
 
+        // Share a view instance
+        $this->container['view'] = $this->share(function ($container) {
+            return new View ($this);
+        });
+
+        // Share an HTTP instance
+        $this->container['http'] = $this->share(function ($container) {
+            return new Http ($this);
+        });
+
         // If the app uses a database
         if ($this->config('database.type')) {
 
@@ -108,16 +111,6 @@ class App extends Container
             // Inject database connection to models
             $this->setupDatabaseConnection();
         }
-
-        // Share a view instance
-        $this->container['view'] = $this->share(function ($container) {
-            return new View ($this);
-        });
-
-        // Share an HTTP instance
-        $this->container['http'] = $this->share(function ($container) {
-            return new Http ($this);
-        });
     }
 
     /**

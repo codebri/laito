@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * Container class
- *
- * @package default
- * @author Mangolabs
- */
-
 class Container
 {
 

@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * Http class
- *
- * @package default
- * @author Mangolabs
- */
-
 class Http extends Core
 {
 

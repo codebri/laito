@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * Authentication class
- *
- * @package default
- * @author Mangolabs
- */
-
 class Authentication extends Model
 {
 
@@ -306,7 +299,7 @@ class Authentication extends Model
      * @return mixed User password, of false if the user does not exist
      */
     private function getStoredPassword ($username) {
-        $user = $this->db()->reset()->table($this->table)->select($user[$this->passwordColumn])->limit(1)->where($this->usernameColumn, $username)->getOne();
+        $user = $this->db()->reset()->table($this->table)->select($this->passwordColumn)->limit(1)->where($this->usernameColumn, $username)->getOne();
         if (is_array($user) && isset($user[$this->passwordColumn])) {
             return $user[$this->passwordColumn];
         }

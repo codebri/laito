@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * Request class
- *
- * @package default
- * @author Mangolabs
- */
-
 class Request extends Core
 {
 
