@@ -66,7 +66,7 @@
 <h2>Base model</h2>
 <p>But, in the most common scenario, you'll have the records in a database and some common methods to list, create, update and destroy records.</p>
 <p>That's where the base model enters in action. You can easily create your models by extending the default <code>Model</code> class and defining some basic configuration:</p>
-<pre><code>class Posts extends ApiFramework\Model {
+<pre><code>class Posts extends Laito\Model {
 
     /**
      * @var string Table name
@@ -156,7 +156,7 @@
 <hr />
 <h2>Overriding base controller methods</h2>
 <p>You can extend of override the default methods. For example, if you want to process a list of results before returning them:</p>
-<pre><code>class Posts extends ApiFramework\Model {
+<pre><code>class Posts extends Laito\Model {
 
     protected $table = 'posts';
 

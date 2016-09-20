@@ -83,10 +83,10 @@
 <hr />
 <h2>Base controller</h2>
 <p>If you want to have a solid fundation for your controllers, you can create them extending the default <code>Controller</code> class and requiring a model:</p>
-<pre><code class="language-php">class PostsController extends ApiFramework\Controller
+<pre><code class="language-php">class PostsController extends Laito\Controller
 {
 
-    public function __construct (ApiFramework\App $app, Posts $model) {
+    public function __construct (Laito\App $app, Posts $model) {
         parent::__construct($app);
         $this-&gt;model = $model;
     }
@@ -116,10 +116,10 @@
 <hr />
 <h2>Additional models</h2>
 <p>You can require more of one model in the controller's constructor, but the default CRUD actions inherited from the base controller (index, show, store, update, destroy) will always use <code>$this-&gt;model</code>, so be careful to choose other names for the additional models. For example:</p>
-<pre><code class="language-php">class PostsController extends ApiFramework\Controller
+<pre><code class="language-php">class PostsController extends Laito\Controller
 {
 
-    public function __construct (ApiFramework\App $app, Posts $model, Tags $tags) {
+    public function __construct (Laito\App $app, Posts $model, Tags $tags) {
         parent::__construct($app);
         $this-&gt;model = $model;
         $this-&gt;tags = $tags;

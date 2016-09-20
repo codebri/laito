@@ -5,7 +5,7 @@ Require Laito in your `composer.json` file:
 ```
 {
     "require": {
-      "mangolabs/apiframework": "dev-master"
+      "codebri/laito": "dev-master"
     }
 }
 ```

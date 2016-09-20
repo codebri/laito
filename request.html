@@ -53,7 +53,7 @@
             <div class="content">
                 <h1>Request</h1>
 <p>You may to need to obtain data from the query string of a GET call, or the parameters of a POST request. You can do it trought the <code>Request</code> class. You don't have to instantiate it, is available trought <code>$this-&gt;app-&gt;request</code>. So you can use it in any controller class:</p>
-<pre><code>class UsersController extends ApiFramework\Controller {
+<pre><code>class UsersController extends Laito\Controller {
     public function index ($filters = []) {
         $inputs = $this-&gt;app-&gt;request-&gt;input();
         ...

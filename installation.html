@@ -52,10 +52,10 @@
         <div class="col-md-9">
             <div class="content">
                 <h1>Installation</h1>
-<p>Require ApiFramework in your <code>composer.json</code> file:</p>
+<p>Require Laito in your <code>composer.json</code> file:</p>
 <pre><code>{
     "require": {
-      "mangolabs/apiframework": "dev-master"
+      "codebri/laito": "dev-master"
     }
 }
 </code></pre>
@@ -72,10 +72,10 @@ RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
 <hr />
 <h2>Usage and configuration</h2>
 <p>Now you're ready to start using the framework. Create an app instance in your <code>index.php</code> file:</p>
-<pre><code>$app = new ApiFramework\App();
+<pre><code>$app = new Laito\App();
 </code></pre>
 <p>You can pass an array of configuration options:</p>
-<pre><code>$app = new ApiFramework\App([
+<pre><code>$app = new Laito\App([
     'database.name' =&gt; 'app',
     'database.username' =&gt; 'root',
     'database.password' =&gt; 'root',
