@@ -39,7 +39,10 @@ class App extends Container
         'database.file' => '',
 
         // Path of the templates folder
-        'templates.path' => 'templates'
+        'templates.path' => 'templates',
+
+        // Path of the tokens folder
+        'tokens.storage' => 'storage/tokens'
     ];
 
     /**
@@ -55,6 +58,11 @@ class App extends Container
         // Share an auth instance
         $this->container['auth'] = $this->share(function ($container) {
             return new Authentication($this);
+        });
+
+        // Share an token instance
+        $this->container['tokens'] = $this->share(function ($container) {
+            return new Tokens($this);
         });
 
         // Share a request instance
