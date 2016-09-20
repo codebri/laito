@@ -65,6 +65,11 @@ class App extends Container
             return new Tokens($this);
         });
 
+        // Share an token instance
+        $this->container['session'] = $this->share(function ($container) {
+            return new Session($this);
+        });
+
         // Share a request instance
         $this->container['request'] = $this->share(function ($container) {
             return new Request($this);
