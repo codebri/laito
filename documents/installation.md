@@ -57,23 +57,37 @@ The complete list of options is below.
 
 ```
 $defaultSettings = [
-    'debug.queries'     => false,
-    'auth.table'        => 'users',
-    'auth.username'     => 'email',
-    'auth.password'     => 'password',
-    'sessions.folder'   => 'storage/sessions/',
-    'sessions.ttl'      => 3600,
-    'sessions.cookie'   => 'token',
-    'reminders.folder'  => 'storage/reminders/',
-    'reminders.ttl'     => 3600,
-    'reminders.suffix'  => 'reminders_',
-    'lang.folder'       => 'static/languages/',
-    'request.emulate'   => true,
-    'database.type'     => 'mysql',
-    'database.server'   => 'localhost',
-    'database.name'     => 'test',
+    // If set to true, shows the SQL errors information in the response
+    'debug.queries' => true,
+
+    // If set to true, shows the backtrace on PHP errors in the response
+    'debug.backtrace' => true,
+
+    // Path of the queries log, or false if disabled
+    'queries.log' => false,
+
+    // Accepts '_method' parameter to emulate requests
+    'request.emulate' => true,
+
+    // Database type ('mysql', 'slqite' or false)
+    'database.type' => false,
+
+    // MySQL database server
+    'database.server' => 'localhost',
+
+    // MySQL database name
+    'database.name' => 'test',
+
+    // MySQL database username
     'database.username' => 'root',
+
+    // MySQL database password
     'database.password' => 'root',
-    'public.url'        => 'localhost'
+
+    // SQLite database file path
+    'database.file' => '',
+
+    // Path of the templates folder
+    'templates.path' => 'templates'
 ];
 ```

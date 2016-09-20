@@ -86,24 +86,38 @@ RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
 </code></pre>
 <p>The complete list of options is below.</p>
 <pre><code>$defaultSettings = [
-    'debug.queries'     =&gt; false,
-    'auth.table'        =&gt; 'users',
-    'auth.username'     =&gt; 'email',
-    'auth.password'     =&gt; 'password',
-    'sessions.folder'   =&gt; 'storage/sessions/',
-    'sessions.ttl'      =&gt; 3600,
-    'sessions.cookie'   =&gt; 'token',
-    'reminders.folder'  =&gt; 'storage/reminders/',
-    'reminders.ttl'     =&gt; 3600,
-    'reminders.suffix'  =&gt; 'reminders_',
-    'lang.folder'       =&gt; 'static/languages/',
-    'request.emulate'   =&gt; true,
-    'database.type'     =&gt; 'mysql',
-    'database.server'   =&gt; 'localhost',
-    'database.name'     =&gt; 'test',
+    // If set to true, shows the SQL errors information in the response
+    'debug.queries' =&gt; true,
+
+    // If set to true, shows the backtrace on PHP errors in the response
+    'debug.backtrace' =&gt; true,
+
+    // Path of the queries log, or false if disabled
+    'queries.log' =&gt; false,
+
+    // Accepts '_method' parameter to emulate requests
+    'request.emulate' =&gt; true,
+
+    // Database type ('mysql', 'slqite' or false)
+    'database.type' =&gt; false,
+
+    // MySQL database server
+    'database.server' =&gt; 'localhost',
+
+    // MySQL database name
+    'database.name' =&gt; 'test',
+
+    // MySQL database username
     'database.username' =&gt; 'root',
+
+    // MySQL database password
     'database.password' =&gt; 'root',
-    'public.url'        =&gt; 'localhost'
+
+    // SQLite database file path
+    'database.file' =&gt; '',
+
+    // Path of the templates folder
+    'templates.path' =&gt; 'templates'
 ];
 </code></pre>
             </div>
