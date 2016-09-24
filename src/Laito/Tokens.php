@@ -35,7 +35,7 @@ class Tokens extends Core
 
         // Abort if the session does not exist
         if (!file_exists($path)) {
-            throw new Exception("Invalid token", 401);
+            return false;
         }
 
         // Get session data

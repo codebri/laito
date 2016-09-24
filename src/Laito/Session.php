@@ -58,6 +58,18 @@ class Session extends Core
     }
 
     /**
+     * Gets a session field
+     *
+     * @param string $field Field name
+     * @param string $token Token hash
+     * @return array|bool Session data or false
+     */
+    public function getField ($field, $token = null) {
+        $session = $this->app->tokens->get($token);
+        return ($session && isset($session[$field]))? $session[$field] : null;
+    }
+
+    /**
      * Updates a session
      *
      * @param string $token Token hash
