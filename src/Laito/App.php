@@ -55,70 +55,8 @@ class App extends Container
         // Setup settings
         $this->container['settings'] = array_merge($this->defaultSettings, $userSettings);
 
-        // Share an token instance
-        $this->container['tokens'] = $this->share(function ($container) {
-            return new Tokens($this);
-        });
-
-        // Share an token instance
-        $this->container['session'] = $this->share(function ($container) {
-            return new Session($this);
-        });
-
-        // Share a request instance
-        $this->container['request'] = $this->share(function ($container) {
-            return new Request($this);
-        });
-
-        // Share a response instance
-        $this->container['response'] = $this->share(function ($container) {
-            return new Response($this);
-        });
-
-        // Share a router instance
-        $this->container['router'] = $this->share(function ($container) {
-            return new Router($this);
-        });
-
-        // Share a view instance
-        $this->container['view'] = $this->share(function ($container) {
-            return new View ($this);
-        });
-
-        // Share an HTTP instance
-        $this->container['http'] = $this->share(function ($container) {
-            return new Http ($this);
-        });
-
-        // If the app uses a database
-        if ($this->config('database.type')) {
-
-            // Share a PDO instance
-            $this->container['pdo'] = $this->share(function ($container) {
-
-                // Setup MySQL
-                if ($this->config('database.type') === 'mysql') {
-                    return new \PDO(
-                        'mysql:dbname=' . $this->config('database.name') . ';host=' . $this->config('database.server'),
-                        $this->config('database.username'),
-                        $this->config('database.password')
-                    );
-                }
-
-                // Setup SQLite
-                if ($this->config('database.type') === 'sqlite') {
-                    return new \PDO('sqlite:' . $this->config('database.file'), '', '', [\PDO::ATTR_PERSISTENT => true]);
-                }
-            });
-
-            // Share a database instance
-            $this->container['db'] = $this->share(function ($container) {
-                return new Database ($this);
-            });
-
-            // Inject database connection to models
-            $this->setupDatabaseConnection();
-        }
+        // Register service providers
+        $this->registerServiceProviders();
     }
 
     /**
@@ -188,9 +126,9 @@ class App extends Container
         // Return the class instance
         $instance = $reflection->newInstanceArgs($dependencies);
 
-        // If the class has a boot method, run it
-        if (method_exists($instance, 'boot')) {
-            $instance->boot();
+        // If the class has a register method, run it
+        if (method_exists($instance, 'register')) {
+            $instance->register();
         }
 
         // Return instance
@@ -211,6 +149,79 @@ class App extends Container
             return $this->returnDatabaseErrorResponse($e);
         } catch (\Exception $e) {
             return $this->returnGeneralErrorResponse($e);
+        }
+    }
+
+    /**
+     * Registers the service providers
+     *
+     * @return void
+     */
+    private function registerServiceProviders () {
+
+        // Share an token instance
+        $this->container['tokens'] = $this->share(function ($container) {
+            return new Tokens\FileTokens($this);
+        });
+
+        // Share an token instance
+        $this->container['session'] = $this->share(function ($container) {
+            return new Session($this);
+        });
+
+        // Share a request instance
+        $this->container['request'] = $this->share(function ($container) {
+            return new Request($this);
+        });
+
+        // Share a response instance
+        $this->container['response'] = $this->share(function ($container) {
+            return new Response($this);
+        });
+
+        // Share a router instance
+        $this->container['router'] = $this->share(function ($container) {
+            return new Router($this);
+        });
+
+        // Share a view instance
+        $this->container['view'] = $this->share(function ($container) {
+            return new View ($this);
+        });
+
+        // Share an HTTP instance
+        $this->container['http'] = $this->share(function ($container) {
+            return new Http ($this);
+        });
+
+        // If the app uses a database
+        if ($this->config('database.type')) {
+
+            // Share a PDO instance
+            $this->container['pdo'] = $this->share(function ($container) {
+
+                // Setup MySQL
+                if ($this->config('database.type') === 'mysql') {
+                    return new \PDO(
+                        'mysql:dbname=' . $this->config('database.name') . ';host=' . $this->config('database.server'),
+                        $this->config('database.username'),
+                        $this->config('database.password')
+                    );
+                }
+
+                // Setup SQLite
+                if ($this->config('database.type') === 'sqlite') {
+                    return new \PDO('sqlite:' . $this->config('database.file'), '', '', [\PDO::ATTR_PERSISTENT => true]);
+                }
+            });
+
+            // Share a database instance
+            $this->container['db'] = $this->share(function ($container) {
+                return new Database ($this);
+            });
+
+            // Inject database connection to models
+            $this->setupDatabaseConnection();
         }
     }
 

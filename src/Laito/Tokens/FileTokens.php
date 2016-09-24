@@ -1,6 +1,10 @@
-<?php namespace Laito;
+<?php namespace Laito\Tokens;
 
-class Tokens extends Core
+use Laito\App;
+use Laito\Core;
+use Laito\Tokens\TokensInterface;
+
+class FileTokens extends Core implements TokensInterface
 {
 
     /**
@@ -113,6 +117,15 @@ class Tokens extends Core
     }
 
     /**
+     * Creates a random token hash
+     *
+     * @return string Token hash
+     */
+    public function hash () {
+        return md5(time() . rand(0, pow(10, 10)));
+    }
+
+    /**
      * Returns the session path for a given token
      *
      * @param string $hash Token
@@ -120,15 +133,6 @@ class Tokens extends Core
      */
     private function path ($hash) {
         return $this->app->config('tokens.storage') . '/' . $hash . '.json';
-    }
-
-    /**
-     * Creates a random token hash
-     *
-     * @return string Token hash
-     */
-    private function hash () {
-        return md5(time() . rand(0, pow(10, 10)));
     }
 
 }
