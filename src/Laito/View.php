@@ -1,6 +1,9 @@
 <?php namespace Laito;
 
-class View extends Core {
+use Laito\Core\Base;
+
+class View extends Base
+{
 
     /**
      * Renders a template with optional data

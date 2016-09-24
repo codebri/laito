@@ -1,13 +1,8 @@
 <?php namespace Laito;
 
-/**
- * Router class
- *
- * @package default
- * @author Mangolabs
- */
+use Laito\Core\Base;
 
-class Router extends Core
+class Router extends Base
 {
 
     /**

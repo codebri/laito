@@ -1,6 +1,8 @@
 <?php namespace Laito;
 
-class Database extends Core {
+use Laito\Core\Base;
+
+class Database extends Base {
 
     /**
      * @var PDO PDO Instance

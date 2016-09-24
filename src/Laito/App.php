@@ -1,5 +1,7 @@
 <?php namespace Laito;
 
+use Laito\Core\Container;
+
 class App extends Container
 {
 
@@ -46,6 +48,25 @@ class App extends Container
     ];
 
     /**
+     * @var array Service providers
+     */
+    private $serviceProviders;
+
+    /**
+     * @var array Deafault service providers
+     */
+    private $deafultServiceProviders = [
+        'http' => 'Laito\Http',
+        'tokens' => 'Laito\Session\Tokens\FileTokens',
+        'session' => 'Laito\Session\Session',
+        'request' => 'Laito\Http\Request',
+        'response' => 'Laito\Http\Response',
+        'router' => 'Laito\Router',
+        'view' => 'Laito\View',
+        'http' => 'Laito\Http'
+    ];
+
+    /**
      * Constructor
      *
      * @param array $userSettings Array of user defined options
@@ -55,8 +76,14 @@ class App extends Container
         // Setup settings
         $this->container['settings'] = array_merge($this->defaultSettings, $userSettings);
 
+        // Setup service providers
+        $this->serviceProviders = array_merge($this->deafultServiceProviders, isset($userSettings['providers'])? $userSettings['providers'] : []);
+
         // Register service providers
         $this->registerServiceProviders();
+
+        // Register database connection
+        $this->registerDatabaseConnection();
     }
 
     /**
@@ -126,9 +153,9 @@ class App extends Container
         // Return the class instance
         $instance = $reflection->newInstanceArgs($dependencies);
 
-        // If the class has a register method, run it
-        if (method_exists($instance, 'register')) {
-            $instance->register();
+        // If the class has a boot method, run it
+        if (method_exists($instance, 'boot')) {
+            $instance->boot();
         }
 
         // Return instance
@@ -158,47 +185,25 @@ class App extends Container
      * @return void
      */
     private function registerServiceProviders () {
+        foreach ($this->serviceProviders as $key => $serviceClass) {
+            $this->container[$key] = $this->share(function () use ($serviceClass) {
+                return $this->make($serviceClass);
+            });
+        }
+    }
 
-        // Share an token instance
-        $this->container['tokens'] = $this->share(function ($container) {
-            return new Tokens\FileTokens($this);
-        });
-
-        // Share an token instance
-        $this->container['session'] = $this->share(function ($container) {
-            return new Session($this);
-        });
-
-        // Share a request instance
-        $this->container['request'] = $this->share(function ($container) {
-            return new Request($this);
-        });
-
-        // Share a response instance
-        $this->container['response'] = $this->share(function ($container) {
-            return new Response($this);
-        });
-
-        // Share a router instance
-        $this->container['router'] = $this->share(function ($container) {
-            return new Router($this);
-        });
-
-        // Share a view instance
-        $this->container['view'] = $this->share(function ($container) {
-            return new View ($this);
-        });
-
-        // Share an HTTP instance
-        $this->container['http'] = $this->share(function ($container) {
-            return new Http ($this);
-        });
+    /**
+     * Registers the service providers
+     *
+     * @return void
+     */
+    private function registerDatabaseConnection () {
 
         // If the app uses a database
         if ($this->config('database.type')) {
 
             // Share a PDO instance
-            $this->container['pdo'] = $this->share(function ($container) {
+            $this->container['pdo'] = $this->share(function () {
 
                 // Setup MySQL
                 if ($this->config('database.type') === 'mysql') {
@@ -216,12 +221,12 @@ class App extends Container
             });
 
             // Share a database instance
-            $this->container['db'] = $this->share(function ($container) {
-                return new Database ($this);
+            $this->container['db'] = $this->share(function () {
+                return $this->make('Laito\Database');
             });
 
             // Inject database connection to models
-            $this->setupDatabaseConnection();
+            Model::setupConnection($this->db);
         }
     }
 
@@ -282,15 +287,6 @@ class App extends Container
     private function returnGeneralErrorResponse ($e) {
         $backtrace = $this->config('debug.backtrace')? ['error' => ['backtrace' => $e->getTrace()]] : [];
         return $this->response->error($e->getCode(), $e->getMessage(), $backtrace);
-    }
-
-    /**
-     * Setups a database connection for models
-     *
-     * @return void
-     */
-    private function setupDatabaseConnection () {
-        Model::setupConnection($this->db);
     }
 
 }

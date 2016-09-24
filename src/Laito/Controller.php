@@ -1,6 +1,8 @@
 <?php namespace Laito;
 
-class Controller extends Core {
+use Laito\Core\Base;
+
+class Controller extends Base {
 
     /**
      * @var Model repository
