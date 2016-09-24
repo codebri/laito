@@ -56,7 +56,7 @@ class App extends Container
      * @var array Deafault service providers
      */
     private $deafultServiceProviders = [
-        'http' => 'Laito\Http',
+        'http' => 'Laito\Http\Client',
         'tokens' => 'Laito\Session\Tokens\FileTokens',
         'session' => 'Laito\Session\Session',
         'request' => 'Laito\Http\Request',
