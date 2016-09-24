@@ -55,11 +55,6 @@ class App extends Container
         // Setup settings
         $this->container['settings'] = array_merge($this->defaultSettings, $userSettings);
 
-        // Share an auth instance
-        $this->container['auth'] = $this->share(function ($container) {
-            return new Authentication($this);
-        });
-
         // Share an token instance
         $this->container['tokens'] = $this->share(function ($container) {
             return new Tokens($this);

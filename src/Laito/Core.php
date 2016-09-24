@@ -1,12 +1,5 @@
 <?php namespace Laito;
 
-/**
- * Core class
- *
- * @package default
- * @author Mangolabs
- */
-
 class Core
 {
 
