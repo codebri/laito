@@ -41,9 +41,12 @@ You can pass an array of configuration options:
 
 ```
 $app = new Laito\App([
+    'database.type' => 'mysql',
+    'database.server' => 'localhost',
     'database.name' => 'app',
     'database.username' => 'root',
     'database.password' => 'root',
+    'queries.log' => 'storage/queries.log'
 ]);
 ```
 
@@ -88,6 +91,9 @@ $defaultSettings = [
     'database.file' => '',
 
     // Path of the templates folder
-    'templates.path' => 'templates'
+    'templates.path' => 'templates',
+
+    // Path of the tokens folder
+    'tokens.storage' => 'storage/tokens'
 ];
 ```

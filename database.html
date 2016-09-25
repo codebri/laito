@@ -80,6 +80,9 @@
 <p><strong> Limit and offset </strong></p>
 <pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;limit(10)-&gt;offset(20)-&gt;get();
 </code></pre>
+<p><strong> Clean up the instance </strong></p>
+<pre><code>$this-&gt;app-&gt;db-&gt;reset();
+</code></pre>
 <h4>Inserts</h4>
 <p><strong> Insert a record </strong></p>
 <pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;insert(['username' =&gt; 'John', 'lastName' =&gt; 'Doe']);

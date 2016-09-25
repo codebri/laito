@@ -54,19 +54,19 @@
                 <h1>Models</h1>
 <p>The models are the classes that manage a certain resource. Following the MVC pattern, the models are the only ones that should talk to the storage system in your application.</p>
 <p>The storage may vary. For example, you can have some logs in a text file and access them like this:</p>
-<pre><code>class Logs {
-
+<pre><code>class Logs
+{
     function get () {
         return file_get_contents('./logs.txt');
     }
-
 }
 </code></pre>
 <hr />
 <h2>Base model</h2>
 <p>But, in the most common scenario, you'll have the records in a database and some common methods to list, create, update and destroy records.</p>
 <p>That's where the base model enters in action. You can easily create your models by extending the default <code>Model</code> class and defining some basic configuration:</p>
-<pre><code>class Posts extends Laito\Model {
+<pre><code>class Posts extends Laito\Model
+{
 
     /**
      * @var string Table name
@@ -156,12 +156,13 @@
 <hr />
 <h2>Overriding base controller methods</h2>
 <p>You can extend of override the default methods. For example, if you want to process a list of results before returning them:</p>
-<pre><code>class Posts extends Laito\Model {
+<pre><code>class Posts extends Laito\Model
+{
 
     protected $table = 'posts';
 
     // Override get method
-    function get () {
+    public function get () {
 
         // Call parent
         $records = parent::get();

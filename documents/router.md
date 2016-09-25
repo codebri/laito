@@ -3,7 +3,7 @@
 With a route, you can bind an HTTP request of a certain type to a controller.
 
 ```
-$app->route->register('GET', '/hello/world', ['HelloController', 'world'], 'MyFilter');
+$app->route->register('GET', '/posts', ['PostsController', 'index']);
 ```
 
 The parameters are:
@@ -11,17 +11,6 @@ The parameters are:
 - The HTTP method (GET, POST, PUT or DELETE)
 - The route to match (For example, '/posts')
 - An array containing the controller name and method to execute
-- Optionally, a filter to execute before executing this action
-
----
-
-## Simple route
-
-For example, this route will match the GET requests to `/posts` and execute the method `index` in the `PostsController` class:
-
-```
-$app->router->register('GET', '/posts', ['PostsController', 'index']);
-```
 
 ---
 

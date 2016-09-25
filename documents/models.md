@@ -5,12 +5,11 @@ The models are the classes that manage a certain resource. Following the MVC pat
 The storage may vary. For example, you can have some logs in a text file and access them like this:
 
 ```
-class Logs {
-
+class Logs
+{
     function get () {
         return file_get_contents('./logs.txt');
     }
-
 }
 ```
 
@@ -23,7 +22,8 @@ But, in the most common scenario, you'll have the records in a database and some
 That's where the base model enters in action. You can easily create your models by extending the default `Model` class and defining some basic configuration:
 
 ```
-class Posts extends Laito\Model {
+class Posts extends Laito\Model
+{
 
     /**
      * @var string Table name
@@ -153,12 +153,13 @@ Of course, if a model have more than one relationship you can define them all at
 You can extend of override the default methods. For example, if you want to process a list of results before returning them:
 
 ```
-class Posts extends Laito\Model {
+class Posts extends Laito\Model
+{
 
     protected $table = 'posts';
 
     // Override get method
-    function get () {
+    public function get () {
 
         // Call parent
         $records = parent::get();

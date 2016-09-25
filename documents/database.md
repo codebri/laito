@@ -56,6 +56,12 @@ $this->app->db->table('users')->count();
 $this->app->db->table('users')->limit(10)->offset(20)->get();
 ```
 
+** Clean up the instance **
+
+```
+$this->app->db->reset();
+```
+
 #### Inserts
 
 ** Insert a record **

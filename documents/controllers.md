@@ -5,11 +5,9 @@ The controllers are called by the application when a route asociated with them i
 ```php
 class SomeController
 {
-
     function hello () {
         echo 'Hello!';
     }
-
 }
 ```
 

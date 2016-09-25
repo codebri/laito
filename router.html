@@ -53,20 +53,14 @@
             <div class="content">
                 <h1>Router</h1>
 <p>With a route, you can bind an HTTP request of a certain type to a controller.</p>
-<pre><code>$app-&gt;route-&gt;register('GET', '/hello/world', ['HelloController', 'world'], 'MyFilter');
+<pre><code>$app-&gt;route-&gt;register('GET', '/posts', ['PostsController', 'index']);
 </code></pre>
 <p>The parameters are:</p>
 <ul>
 <li>The HTTP method (GET, POST, PUT or DELETE)</li>
 <li>The route to match (For example, '/posts')</li>
 <li>An array containing the controller name and method to execute</li>
-<li>Optionally, a filter to execute before executing this action</li>
 </ul>
-<hr />
-<h2>Simple route</h2>
-<p>For example, this route will match the GET requests to <code>/posts</code> and execute the method <code>index</code> in the <code>PostsController</code> class:</p>
-<pre><code>$app-&gt;router-&gt;register('GET', '/posts', ['PostsController', 'index']);
-</code></pre>
 <hr />
 <h2>Route placeholders</h2>
 <p>You can use wildcards to match variable pieces of the URL to your route. Define them in curly braces:</p>

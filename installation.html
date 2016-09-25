@@ -76,9 +76,12 @@ RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
 </code></pre>
 <p>You can pass an array of configuration options:</p>
 <pre><code>$app = new Laito\App([
+    'database.type' =&gt; 'mysql',
+    'database.server' =&gt; 'localhost',
     'database.name' =&gt; 'app',
     'database.username' =&gt; 'root',
     'database.password' =&gt; 'root',
+    'queries.log' =&gt; 'storage/queries.log'
 ]);
 </code></pre>
 <p>Or set them after initialization:</p>
@@ -117,7 +120,10 @@ RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
     'database.file' =&gt; '',
 
     // Path of the templates folder
-    'templates.path' =&gt; 'templates'
+    'templates.path' =&gt; 'templates',
+
+    // Path of the tokens folder
+    'tokens.storage' =&gt; 'storage/tokens'
 ];
 </code></pre>
             </div>

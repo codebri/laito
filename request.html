@@ -53,7 +53,8 @@
             <div class="content">
                 <h1>Request</h1>
 <p>You may to need to obtain data from the query string of a GET call, or the parameters of a POST request. You can do it trought the <code>Request</code> class. You don't have to instantiate it, is available trought <code>$this-&gt;app-&gt;request</code>. So you can use it in any controller class:</p>
-<pre><code>class UsersController extends Laito\Controller {
+<pre><code>class UsersController extends Laito\Controller
+{
     public function index ($filters = []) {
         $inputs = $this-&gt;app-&gt;request-&gt;input();
         ...
@@ -68,8 +69,14 @@
 <p><strong> Get a single input </strong></p>
 <pre><code>$this-&gt;app-&gt;request-&gt;input('age');
 </code></pre>
-<p><strong> Check if an input is defined </strong></p>
-<pre><code>$this-&gt;app-&gt;request-&gt;hasInput('age');
+<pre><code>
+** Check if an input is defined **
+
+</code></pre>
+<p>$this-&gt;app-&gt;request-&gt;hasInput('age');
+<code>`</code></p>
+<p><strong> Get a single input with a default value </strong></p>
+<pre><code>$this-&gt;app-&gt;request-&gt;input('page', 'home');
 </code></pre>
 <p><strong> Get the requested URL </strong></p>
 <pre><code>$this-&gt;app-&gt;request-&gt;url();
