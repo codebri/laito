@@ -62,8 +62,7 @@ class App extends Container
         'request' => 'Laito\Http\Request',
         'response' => 'Laito\Http\Response',
         'router' => 'Laito\Router',
-        'view' => 'Laito\View',
-        'http' => 'Laito\Http'
+        'view' => 'Laito\View'
     ];
 
     /**
