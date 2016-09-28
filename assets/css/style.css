@@ -66,14 +66,100 @@ hr {
 }
 
 pre {
-    padding: 20px;
-    border: none;
-    box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+    padding: 10px;
+    margin: 0;
+    font-size: 13px;
     background: #eee;
+    margin-bottom: 1em;
+}
+
+.app-window pre {
+    border: 1px solid #bbb;
+    border-top: none;
+    background: #fff;
+    margin-bottom: 0;
 }
 
 @media (min-width: 1200px) {
     .container {
         max-width: 940px;
     }
+}
+
+/* WIP */
+
+.app-window {
+    padding: 0.5em;
+    background: #DDD;
+    border-top-right-radius: 0.5em;
+    border-top-left-radius: 0.5em;
+    margin: 2em 0;
+}
+
+.nav-chrome-tabs {
+    border-bottom: 1px solid #bbb;
+}
+
+.nav-chrome-tabs .nav-link {
+    font-size: 0.8em;
+    border: 1px solid #bbb;
+    background: #D0D0D0;
+    min-width: 20em;
+    padding: .35em 1em;
+    border-top-right-radius: .5rem;
+    border-top-left-radius: .5rem;
+    color: #222;
+}
+
+.nav-chrome-tabs .nav-link:hover {
+    border: 1px solid #bbb;
+}
+
+.nav-tabs .nav-link.active, .nav-tabs .nav-link.active:focus, .nav-tabs .nav-link.active:hover {
+    border-color: #bbb #bbb transparent;
+    color: #222;
+}
+
+.tab-content {
+    background: #FFF;
+}
+
+
+ul.chrome-tabs-window-controls {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    float: left;
+    overflow: hidden;
+    margin: 0 1em;
+}
+
+ul.chrome-tabs-window-controls li {
+    display: inline-block;
+    background: red;
+    border-radius: 30px;
+    height: 10px;
+    width: 10px;
+    margin-right: 2px;
+}
+
+ul.chrome-tabs-window-controls li.window-close {
+    background: #EE5E59;
+}
+
+ul.chrome-tabs-window-controls li.window-restore {
+    background: #F4BF31;
+}
+
+ul.chrome-tabs-window-controls li.window-maximize {
+    background: #61C948;
+}
+
+footer {
+    text-align: center;
+}
+
+.btn.btn-primary {
+    background-color: #16a085;
+    border: 0;
 }

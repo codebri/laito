@@ -64,23 +64,30 @@ $html = $parser->parse($markdown);
 </div>
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-3">
-            <?php include 'sidebar.php' ?>
+    <?php if ($route === 'index'): ?>
+        <div class="content">
+            <?=$html?>
         </div>
-        <div class="col-md-9">
-            <div class="content">
-                <?=$html?>
+    <?php else: ?>
+        <div class="row">
+            <div class="col-md-3">
+                <?php include 'sidebar.php' ?>
+            </div>
+            <div class="col-md-9">
+                <div class="content">
+                    <?=$html?>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <hr>
-            <p>Laito by <a href="http://codebri.com">Codebri</a></p>
-        </div>
-    </div>
+    <?php endif; ?>
 </div>
+
+<footer>
+    <div class="container">
+        <hr>
+        <p>Laito by <a href="http://codebri.com">Codebri</a></p>
+    </div>
+</footer>
 
 <!-- Bootstrap -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
