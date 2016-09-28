@@ -68,15 +68,16 @@ class App extends Container
     /**
      * Constructor
      *
-     * @param array $userSettings Array of user defined options
+     * @param array $settings Array of user defined options
+     * @param array $providers Array of user providers
      */
-    public function __construct ($userSettings = []) {
+    public function __construct ($settings = [], $providers = []) {
 
         // Setup settings
-        $this->container['settings'] = array_merge($this->defaultSettings, $userSettings);
+        $this->container['settings'] = array_merge($this->defaultSettings, $settings);
 
         // Setup service providers
-        $this->serviceProviders = array_merge($this->deafultServiceProviders, isset($userSettings['providers'])? $userSettings['providers'] : []);
+        $this->serviceProviders = array_merge($this->deafultServiceProviders, $providers);
 
         // Register service providers
         $this->registerServiceProviders();
