@@ -661,6 +661,7 @@ abstract class Model {
 
             // Or get relationship results by database
             if (!isset($join['model'])) {
+                $join['orderBy'] = isset($join['orderBy'])? $join['orderBy'] : 'id';
                 $childs = $this->db()->table($join['table'])->select(array_merge([$join['foreignKey']], $join['columns']))->whereIn($join['foreignKey'], $ids)->limit($join['limit'])->orderBy($join['orderBy'])->get();
             }
 
