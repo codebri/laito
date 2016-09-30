@@ -24,133 +24,313 @@
 <!-- Site -->
 <link href='assets/css/style.css' rel='stylesheet'>
 
+<!-- JSON -->
+<link href='assets/css/jquery.jsonview.min.css' rel='stylesheet'>
+
 </head>
 
-<div class="site-header">
-    <h1>
-        Laito
-    </h1>
+<nav class="navbar navbar-dark navbar-fixed-top" style="background: #16a085">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fa fa-leaf fa-flip-horizontal" aria-hidden="true"></i>
+            Laito
+        </a>
+        <ul class="nav navbar-nav pull-md-right">
+            <li class="nav-item">
+                <a class="nav-link" href="installation.html">Docs</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://github.com/codebri/laito" target="_blank">GitHub</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+    <div class="site-header">
     <h2>
-        Powerful PHP REST APIs in a breeze
+        Laito is a PHP microframework that helps you create quick and powerful REST APIs.
     </h2>
 </div>
 
 <div class="container">
-            <div class="content">
-            <div class="text-md-center">
-    <p class="lead">
-        Laito is a PHP microframework for creating quick and powerful REST APIs.
-    </p>
-</div>
-<div class="app-window">
 
-    <ul class="chrome-tabs-window-controls">
-        <li class="window-close"></li>
-        <li class="window-restore"></li>
-        <li class="window-maximize"></li>
-    </ul>
+    <h2 class="home-title">
+        <span class="text-muted">&mdash;</span> Your code <span class="text-muted">&mdash;</span>
+    </h2>
 
-    <ul class="nav nav-tabs nav-chrome-tabs">
-      <li class="nav-item">
-        <a class="nav-link active" data-toggle="tab" href="#home">index.php</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#profile">PostsController.php</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#messages">Posts.php</a>
-      </li>
-    </ul>
+    <div class="app-window">
 
-    <div class="tab-content">
-      <div class="tab-pane active" id="home">
-<pre><code class="php">&lt;?php
+        <ul class="chrome-tabs-window-controls">
+            <li class="window-close"></li>
+            <li class="window-restore"></li>
+            <li class="window-maximize"></li>
+        </ul>
 
-// Require the package
-require(__DIR__ . '/vendor/autoload.php');
+        <ul class="nav nav-tabs nav-chrome-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#home">
+                index.php
+                <span>&times;</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#profile">
+                PostsController.php
+                <span>&times;</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#messages">
+                Posts.php
+                <span>&times;</span>
+            </a>
+          </li>
+        </ul>
 
-// Create a new app
-$app = new Laito\App([
-  'database.type' => 'mysql',
-  'database.server' => 'localhost',
-  'database.name' => 'app',
-  'database.username' => 'root',
-  'database.password' => 'root'
-]);
+        <div class="tab-content">
+          <div class="tab-pane active" id="home">
+    <pre><code class="php">&lt;?php
 
-// Register your routes
-$app->router->resource('/posts', 'PostsController');
+    // Require the package
+    require(__DIR__ . '/vendor/autoload.php');
 
-// Start listening requests
-$app->run();</code></pre>
-      </div>
-      <div class="tab-pane" id="profile">
-<pre><code class="php">&lt;?php
+    // Create a new app
+    $app = new Laito\App([
+      'database.type' => 'mysql',
+      'database.server' => 'localhost',
+      'database.name' => 'app',
+      'database.username' => 'root',
+      'database.password' => 'root'
+    ]);
 
-class PostsController extends Laito\Controller
-{
+    // Register your routes
+    $app->router->resource('/posts', 'PostsController');
 
-    /**
-     * @var string Model name
-     */
-    public $modelName = 'Posts';
+    // Start listening requests
+    $app->run();</code></pre>
+          </div>
+          <div class="tab-pane" id="profile">
+    <pre><code class="php">&lt;?php
 
-}</code></pre>
-      </div>
-      <div class="tab-pane" id="messages">
-<pre><code class="php">&lt;?php
+    class PostsController extends Laito\Controller
+    {
 
-class Posts extends Laito\Model
-{
+        /**
+         * @var string Model name
+         */
+        public $modelName = 'Posts';
 
-    /**
-     * @var string Table name
-     */
-    protected $table = 'posts';
+    }</code></pre>
+          </div>
+          <div class="tab-pane" id="messages">
+    <pre><code class="php">&lt;?php
 
-    /**
-     * @var array Readable columns
-     */
-    protected $columns = ['id', 'title', 'body', 'date'];
+    class Posts extends Laito\Model
+    {
 
-    /**
-     * @var array Writable columns
-     */
-    protected $fillable = ['title', 'body'];
+        /**
+         * @var string Table name
+         */
+        protected $table = 'posts';
 
-    /**
-     * @var array Relationships
-     */
-    protected $relationships = [
-        'hasMany' => [
-            [
-                'table' => 'comments',
-                'localKey' => 'id',
-                'foreignKey' => 'post_id',
-                'columns' => ['comment', 'author'],
-                'alias' => 'comments',
-                'limit' => 100,
-                'sync' => ['insert', 'update']
+        /**
+         * @var array Readable columns
+         */
+        protected $columns = ['id', 'title', 'body', 'date'];
+
+        /**
+         * @var array Writable columns
+         */
+        protected $fillable = ['title', 'body'];
+
+        /**
+         * @var array Relationships
+         */
+        protected $relationships = [
+            'hasMany' => [
+                [
+                    'table' => 'comments',
+                    'localKey' => 'id',
+                    'foreignKey' => 'post_id',
+                    'columns' => ['comment', 'author'],
+                    'alias' => 'comments',
+                    'limit' => 100,
+                    'sync' => ['insert', 'update']
+                ]
             ]
-        ]
-    ];
+        ];
 
-}</code></pre>
-      </div>
-    </div>
-</div>
-<div class="text-md-center">
-  <a href="installation" class="btn btn-primary btn-lg">
-    Get started
-  </a>
-</div>
+    }</code></pre>
+          </div>
         </div>
     </div>
 
+                        <div class="row">
+                <div class="col-md-12">
+                    <h2 class="home-title">
+                        <span class="text-muted">&mdash;</span> Your API <span class="text-muted">&mdash;</span>
+                    </h2>
+                    <div class="cards" id="posts">
+                                                    <div class="card" data-call="listDummy">
+                                <div class="card-header collapsed" data-toggle="collapse" data-parent="#posts" data-target="#listDummy">
+                                    <span class="tag tag-GET">
+                                        GET                                    </span>
+                                    <code data-base="http://sample.dev/blog" data-url="/posts/">/posts/</code>
+                                </div>
+                                <div id="listDummy" class="collapse">
+                                    <div class="card-block">
+                                        <form method="GET" action="http://sample.dev/blog/posts/" target="_blank">
+                                                                                                                                                                                                                                <button type="submit" class="btn btn-primary" data-loading-text="Loading...">Submit</button>
+                                            <div class="result">
+                                                <div>
+                                                    <p>
+                                                        <i class="fa text-muted status-icon"></i> <span class="status"></span>
+                                                    </p>
+                                                </div>
+                                                <pre class="plain"></pre>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                                                    <div class="card" data-call="showDummy">
+                                <div class="card-header collapsed" data-toggle="collapse" data-parent="#posts" data-target="#showDummy">
+                                    <span class="tag tag-GET">
+                                        GET                                    </span>
+                                    <code data-base="http://sample.dev/blog" data-url="/posts/:id/">/posts/:id/</code>
+                                </div>
+                                <div id="showDummy" class="collapse">
+                                    <div class="card-block">
+                                        <form method="GET" action="http://sample.dev/blog/posts/:id/" target="_blank">
+                                                                                                                                                <div class="form-group">
+                                                        <label class="strong">id</label>
+                                                        <input type="" name="id" class="form-control" placeholder="id" data-urlParam="id" autocomplete="off">
+                                                    </div>
+                                                                                                                                                                                                                                                                                <button type="submit" class="btn btn-primary" data-loading-text="Loading...">Submit</button>
+                                            <div class="result">
+                                                <div>
+                                                    <p>
+                                                        <i class="fa text-muted status-icon"></i> <span class="status"></span>
+                                                    </p>
+                                                </div>
+                                                <pre class="plain"></pre>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                                                    <div class="card" data-call="createDummy">
+                                <div class="card-header collapsed" data-toggle="collapse" data-parent="#posts" data-target="#createDummy">
+                                    <span class="tag tag-POST">
+                                        POST                                    </span>
+                                    <code data-base="http://sample.dev/blog" data-url="/posts/">/posts/</code>
+                                </div>
+                                <div id="createDummy" class="collapse">
+                                    <div class="card-block">
+                                        <form method="POST" action="http://sample.dev/blog/posts/" target="_blank">
+                                                                                                                                                                                            <div class="form-group">
+                                                        <label class="strong">title</label>
+                                                        <input type="" name="title" class="form-control" placeholder="title" autocomplete="off">
+                                                    </div>
+                                                                                                    <div class="form-group">
+                                                        <label class="strong">body</label>
+                                                        <input type="" name="body" class="form-control" placeholder="body" autocomplete="off">
+                                                    </div>
+                                                                                                    <div class="form-group">
+                                                        <label class="strong">category_id</label>
+                                                        <input type="" name="category_id" class="form-control" placeholder="category_id" autocomplete="off">
+                                                    </div>
+                                                                                                                                        <button type="submit" class="btn btn-primary" data-loading-text="Loading...">Submit</button>
+                                            <div class="result">
+                                                <div>
+                                                    <p>
+                                                        <i class="fa text-muted status-icon"></i> <span class="status"></span>
+                                                    </p>
+                                                </div>
+                                                <pre class="plain"></pre>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                                                    <div class="card" data-call="updateDummy">
+                                <div class="card-header collapsed" data-toggle="collapse" data-parent="#posts" data-target="#updateDummy">
+                                    <span class="tag tag-PUT">
+                                        PUT                                    </span>
+                                    <code data-base="http://sample.dev/blog" data-url="/posts/:id/">/posts/:id/</code>
+                                </div>
+                                <div id="updateDummy" class="collapse">
+                                    <div class="card-block">
+                                        <form method="PUT" action="http://sample.dev/blog/posts/:id/" target="_blank">
+                                                                                                                                                <div class="form-group">
+                                                        <label class="strong">id</label>
+                                                        <input type="" name="id" class="form-control" placeholder="id" data-urlParam="id" autocomplete="off">
+                                                    </div>
+                                                                                                                                                                                                                                            <div class="form-group">
+                                                        <label class="strong">title</label>
+                                                        <input type="" name="title" class="form-control" placeholder="title" autocomplete="off">
+                                                    </div>
+                                                                                                    <div class="form-group">
+                                                        <label class="strong">body</label>
+                                                        <input type="" name="body" class="form-control" placeholder="body" autocomplete="off">
+                                                    </div>
+                                                                                                    <div class="form-group">
+                                                        <label class="strong">category_id</label>
+                                                        <input type="" name="category_id" class="form-control" placeholder="category_id" autocomplete="off">
+                                                    </div>
+                                                                                                                                        <button type="submit" class="btn btn-primary" data-loading-text="Loading...">Submit</button>
+                                            <div class="result">
+                                                <div>
+                                                    <p>
+                                                        <i class="fa text-muted status-icon"></i> <span class="status"></span>
+                                                    </p>
+                                                </div>
+                                                <pre class="plain"></pre>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                                                    <div class="card" data-call="deleteDummy">
+                                <div class="card-header collapsed" data-toggle="collapse" data-parent="#posts" data-target="#deleteDummy">
+                                    <span class="tag tag-DELETE">
+                                        DELETE                                    </span>
+                                    <code data-base="http://sample.dev/blog" data-url="/posts/:id/">/posts/:id/</code>
+                                </div>
+                                <div id="deleteDummy" class="collapse">
+                                    <div class="card-block">
+                                        <form method="DELETE" action="http://sample.dev/blog/posts/:id/" target="_blank">
+                                                                                                                                                <div class="form-group">
+                                                        <label class="strong">id</label>
+                                                        <input type="" name="id" class="form-control" placeholder="id" data-urlParam="id" autocomplete="off">
+                                                    </div>
+                                                                                                                                                                                                                                                                                <button type="submit" class="btn btn-primary" data-loading-text="Loading...">Submit</button>
+                                            <div class="result">
+                                                <div>
+                                                    <p>
+                                                        <i class="fa text-muted status-icon"></i> <span class="status"></span>
+                                                    </p>
+                                                </div>
+                                                <pre class="plain"></pre>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                                            </div>
+                </div>
+            </div>
+            
+    <div class="get-started">
+        <a href="installation.html" class="btn btn-l btn-primary">
+            Get started
+        </a>
+    </div>
+
+</div>
 <footer>
     <div class="container">
-        <hr>
-        <p>Laito by <a href="http://codebri.com">Codebri</a></p>
+        <span>Laito by <a href="http://codebri.com">Codebri</a></span>
     </div>
 </footer>
 
@@ -164,6 +344,9 @@ class Posts extends Laito\Model
 
 <!-- Site -->
 <script src="assets/js/site.js"></script>
+
+<!-- JSON -->
+<script src="assets/js/jquery.jsonview.min.js"></script>
 
 </body>
 </html>

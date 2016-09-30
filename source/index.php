@@ -17,13 +17,22 @@ $local = false;
 $route = (filter_input(INPUT_GET, 'route') !== null)? filter_input(INPUT_GET, 'route') : 'index.html';
 $route = str_replace('.html', '', $route);
 
-// Get markdown file
-if (isset($route) && ($route !== '') && file_exists('../documents/' . $route . '.md')) {
-    $markdown = file_get_contents('../documents/' . $route . '.md');
+// Get page contents
+if ($route === 'index') {
+
+    // Get API
+    $api = json_decode(file_get_contents('posts.json'), true);
+} else {
+
+    // Get markdown file
+    if (isset($route) && ($route !== '') && file_exists('../documents/' . $route . '.md')) {
+        $markdown = file_get_contents('../documents/' . $route . '.md');
+    }
+
+    // Render page
+    $html = $parser->parse($markdown);
 }
 
-// Render page
-$html = $parser->parse($markdown);
 
 ?>
 <!DOCTYPE HTML>
@@ -52,23 +61,32 @@ $html = $parser->parse($markdown);
 <!-- Site -->
 <link href='<?php if ($local): ?>../<?php endif; ?>assets/css/style.css' rel='stylesheet'>
 
+<!-- JSON -->
+<link href='<?php if ($local): ?>../<?php endif; ?>assets/css/jquery.jsonview.min.css' rel='stylesheet'>
+
 </head>
 
-<div class="site-header">
-    <h1>
-        Laito
-    </h1>
-    <h2>
-        Powerful PHP REST APIs in a breeze
-    </h2>
-</div>
+<nav class="navbar navbar-dark navbar-fixed-top" style="background: #16a085">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fa fa-leaf fa-flip-horizontal" aria-hidden="true"></i>
+            Laito
+        </a>
+        <ul class="nav navbar-nav pull-md-right">
+            <li class="nav-item">
+                <a class="nav-link" href="installation.html">Docs</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://github.com/codebri/laito" target="_blank">GitHub</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-<div class="container">
-    <?php if ($route === 'index'): ?>
-        <div class="content">
-            <?=$html?>
-        </div>
-    <?php else: ?>
+<?php if ($route === 'index'): ?>
+    <?php include 'home.php' ?>
+<?php else: ?>
+    <div class="container">
         <div class="row">
             <div class="col-md-3">
                 <?php include 'sidebar.php' ?>
@@ -79,13 +97,12 @@ $html = $parser->parse($markdown);
                 </div>
             </div>
         </div>
-    <?php endif; ?>
-</div>
+    </div>
+<?php endif; ?>
 
 <footer>
     <div class="container">
-        <hr>
-        <p>Laito by <a href="http://codebri.com">Codebri</a></p>
+        <span>Laito by <a href="http://codebri.com">Codebri</a></span>
     </div>
 </footer>
 
@@ -99,6 +116,9 @@ $html = $parser->parse($markdown);
 
 <!-- Site -->
 <script src="<?php if ($local): ?>../<?php endif; ?>assets/js/site.js"></script>
+
+<!-- JSON -->
+<script src="<?php if ($local): ?>../<?php endif; ?>assets/js/jquery.jsonview.min.js"></script>
 
 </body>
 </html>

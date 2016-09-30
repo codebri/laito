@@ -1,10 +1,19 @@
 body {
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding-top: 3rem;
 }
 
 a, a:hover, a:active, a:focus {
     text-decoration: none;
     color: #16a085;
+}
+
+h1, h2, h3 {
+    font-weight: lighter;
+}
+
+.strong {
+    font-weight: bold;
 }
 
 table {
@@ -39,15 +48,29 @@ hr {
     padding: 3em;
 }
 
-.site-header h1 {
-    margin: 0;
-    font-size: 4em;
-}
-
 .site-header h2 {
     margin-bottom: 0;
-    font-weight: normal;
-    opacity: 0.7;
+    max-width: 60%;
+    margin: 0 auto;
+    font-size: 2.5em;
+}
+
+.home-title {
+    text-align: center;
+    margin: 2rem 0;
+    font-weight: lighter;
+}
+
+.get-started {
+    margin: 2rem auto;
+    text-align: center;
+}
+
+.get-started .btn {
+    font-size: 2.5rem;
+    padding: 1.5rem 3rem;
+    border-radius: 10rem;
+    font-weight: lighter;
 }
 
 .sidebar,
@@ -86,14 +109,13 @@ pre {
     }
 }
 
-/* WIP */
+/* Home Code Editor Window */
 
 .app-window {
     padding: 0.5em;
     background: #DDD;
     border-top-right-radius: 0.5em;
     border-top-left-radius: 0.5em;
-    margin: 2em 0;
 }
 
 .nav-chrome-tabs {
@@ -118,6 +140,10 @@ pre {
 .nav-tabs .nav-link.active, .nav-tabs .nav-link.active:focus, .nav-tabs .nav-link.active:hover {
     border-color: #bbb #bbb transparent;
     color: #222;
+}
+
+.nav-chrome-tabs .nav-link span {
+    float: right;
 }
 
 .tab-content {
@@ -157,9 +183,42 @@ ul.chrome-tabs-window-controls li.window-maximize {
 
 footer {
     text-align: center;
+    background: #eee;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 1rem;
 }
 
 .btn.btn-primary {
     background-color: #16a085;
     border: 0;
+}
+
+/* Apiground */
+
+.tag-GET {
+    background-color: #46A546;
+}
+
+.tag-POST {
+    background-color: #1C669B;
+}
+
+.tag-PUT {
+    background-color: #8C0093;
+}
+
+.tag-DELETE {
+    background-color: #E24200;
+}
+
+.result {
+    margin-bottom: 0;
+    margin-top: 20px;
+    display: none;
+}
+
+.new-tab {
+    display: block;
+    margin-top: -30px;
 }
