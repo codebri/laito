@@ -68,7 +68,7 @@ if ($route === 'index') {
 
 <nav class="navbar navbar-dark navbar-fixed-top" style="background: #16a085">
     <div class="container">
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand" href="/laito">
             <i class="fa fa-leaf fa-flip-horizontal" aria-hidden="true"></i>
             Laito
         </a>

@@ -1,0 +1,83 @@
+{
+  "name": "Blog",
+  "baseUrl": "http://sample.dev/blog",
+  "modules": [
+    {
+      "module": "posts",
+      "title": "Posts",
+      "description": "Posts resource",
+      "calls": [
+        {
+          "id": "listDummy",
+          "method": "GET",
+          "url": "/posts/",
+          "description": "Lists the posts",
+          "params": []
+        },
+        {
+          "id": "showDummy",
+          "method": "GET",
+          "url": "/posts/:id/",
+          "description": "Shows an post",
+          "urlParams": [
+            {
+              "name": "id"
+            }
+          ],
+          "params": []
+        },
+        {
+          "id": "createDummy",
+          "method": "POST",
+          "url": "/posts/",
+          "description": "Creates a new post",
+          "params": [
+            {
+              "name": "title"
+            },
+            {
+              "name": "body"
+            },
+            {
+              "name": "category_id"
+            }
+          ]
+        },
+        {
+          "id": "updateDummy",
+          "method": "PUT",
+          "url": "/posts/:id/",
+          "description": "Updates an post",
+          "urlParams": [
+            {
+              "name": "id"
+            }
+          ],
+          "params": [
+            {
+              "name": "title"
+            },
+            {
+              "name": "body"
+            },
+            {
+              "name": "category_id"
+            }
+          ]
+        },
+        {
+          "id": "deleteDummy",
+          "method": "DELETE",
+          "url": "/posts/:id/",
+          "description": "Deletes an post",
+          "urlParams": [
+            {
+              "name": "id"
+            }
+          ],
+          "params": []
+        }
+      ]
+    }
+  ]
+}
