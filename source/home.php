@@ -43,76 +43,76 @@
           <div class="tab-pane active" id="home">
     <pre><code class="php">&lt;?php
 
-    // Require the package
-    require(__DIR__ . '/vendor/autoload.php');
+// Require the package
+require(__DIR__ . '/vendor/autoload.php');
 
-    // Create a new app
-    $app = new Laito\App([
-      'database.type' => 'mysql',
-      'database.server' => 'localhost',
-      'database.name' => 'app',
-      'database.username' => 'root',
-      'database.password' => 'root'
-    ]);
+// Create a new app
+$app = new Laito\App([
+  'database.type' => 'mysql',
+  'database.server' => 'localhost',
+  'database.name' => 'app',
+  'database.username' => 'root',
+  'database.password' => 'root'
+]);
 
-    // Register your routes
-    $app->router->resource('/posts', 'PostsController');
+// Register your routes
+$app->router->resource('/posts', 'PostsController');
 
-    // Start listening requests
-    $app->run();</code></pre>
+// Start listening requests
+$app->run();</code></pre>
           </div>
           <div class="tab-pane" id="profile">
     <pre><code class="php">&lt;?php
 
-    class PostsController extends Laito\Controller
-    {
+class PostsController extends Laito\Controller
+{
 
-        /**
-         * @var string Model name
-         */
-        public $modelName = 'Posts';
+    /**
+     * @var string Model name
+     */
+    public $modelName = 'Posts';
 
-    }</code></pre>
+}</code></pre>
           </div>
           <div class="tab-pane" id="messages">
     <pre><code class="php">&lt;?php
 
-    class Posts extends Laito\Model
-    {
+class Posts extends Laito\Model
+{
 
-        /**
-         * @var string Table name
-         */
-        protected $table = 'posts';
+    /**
+     * @var string Table name
+     */
+    protected $table = 'posts';
 
-        /**
-         * @var array Readable columns
-         */
-        protected $columns = ['id', 'title', 'body', 'date'];
+    /**
+     * @var array Readable columns
+     */
+    protected $columns = ['id', 'title', 'body', 'date'];
 
-        /**
-         * @var array Writable columns
-         */
-        protected $fillable = ['title', 'body'];
+    /**
+     * @var array Writable columns
+     */
+    protected $fillable = ['title', 'body'];
 
-        /**
-         * @var array Relationships
-         */
-        protected $relationships = [
-            'hasMany' => [
-                [
-                    'table' => 'comments',
-                    'localKey' => 'id',
-                    'foreignKey' => 'post_id',
-                    'columns' => ['comment', 'author'],
-                    'alias' => 'comments',
-                    'limit' => 100,
-                    'sync' => ['insert', 'update']
-                ]
+    /**
+     * @var array Relationships
+     */
+    protected $relationships = [
+        'hasMany' => [
+            [
+                'table' => 'comments',
+                'localKey' => 'id',
+                'foreignKey' => 'post_id',
+                'columns' => ['comment', 'author'],
+                'alias' => 'comments',
+                'limit' => 100,
+                'sync' => ['insert', 'update']
             ]
-        ];
+        ]
+    ];
 
-    }</code></pre>
+}</code></pre>
           </div>
         </div>
     </div>
