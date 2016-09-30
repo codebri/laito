@@ -10,7 +10,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 // Instance parser
 $parser = new \cebe\markdown\GithubMarkdown();
 
-// Check if is local
+// Set to false before generating the static pages
 $local = false;
 
 // Get route

@@ -78,9 +78,12 @@ hr {
     margin-top: 25px;
 }
 
-.sidebar .list-group .active {
-    background-color: #16a085;
-    border: transparent;
+.sidebar .active {
+    font-weight: bold;
+}
+
+.sidebar > div {
+    margin-bottom: 2rem;
 }
 
 .hljs {
@@ -218,7 +221,10 @@ footer {
     display: none;
 }
 
-.new-tab {
-    display: block;
-    margin-top: -30px;
+.menu-label {
+    color: #7a7a7a;
+    font-size: 0.8em;
+    letter-spacing: 1px;
+    margin-bottom: 0.5em;
+    text-transform: uppercase;
 }

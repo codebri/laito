@@ -55,7 +55,7 @@
                 General            </h6>
             <ul class="list-unstyled">
                                     <li>
-                                                    <a class="" href="getting-started.html">
+                                                    <a class="active" href="getting-started.html">
                                 Getting started                            </a>
                                             </li>
                                     <li>
@@ -81,7 +81,7 @@
                                 Models                            </a>
                                             </li>
                                     <li>
-                                                    <a class="active" href="database.html">
+                                                    <a class="" href="database.html">
                                 Database                            </a>
                                             </li>
                                     <li>
@@ -113,62 +113,7 @@
     </div>            </div>
             <div class="col-md-9">
                 <div class="content">
-                    <h1>Database</h1>
-<p>Most of your interaction with the database is handled by the models. But if you need to query the database directly, you can do it with the <code>Database</code> class. In your <code>Models</code>, <code>Controllers</code> or any other class extending from <code>Core</code>, you don't need to instanciate it: you can use the singleton <code>$this-&gt;app-&gt;db</code>. The method names follow the SQL function names, so - if you are familiar with SQL - you already know how to use it.</p>
-<hr />
-<h2>Methods</h2>
-<h4>Selects</h4>
-<p><strong> Use a table </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users');
-</code></pre>
-<p><strong> Get records </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;get();
-</code></pre>
-<p><strong> Get specific columns </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;select(['id', 'name'])-&gt;get();
-</code></pre>
-<p><strong> Get records using a where condition </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;where('active', 1)-&gt;get();
-</code></pre>
-<p><strong> Get records using a where condition </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;where('active', 1)-&gt;get();
-</code></pre>
-<p><strong> Join with other table </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;join('users_roles', 'users.id', '=', 'users_roles.user_id')-&gt;get();
-</code></pre>
-<p><strong> Count records </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;count();
-</code></pre>
-<p><strong> Limit and offset </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;limit(10)-&gt;offset(20)-&gt;get();
-</code></pre>
-<p><strong> Clean up the instance </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;reset();
-</code></pre>
-<h4>Inserts</h4>
-<p><strong> Insert a record </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;insert(['username' =&gt; 'John', 'lastName' =&gt; 'Doe']);
-</code></pre>
-<p><strong> Insert a record and get its ID </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;insertGetId(['username' =&gt; 'Walter', 'lastName' =&gt; 'White']);
-</code></pre>
-<h4>Update</h4>
-<p><strong> Update a record </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;where('id', 1)-&gt;update(['language' =&gt; 'fr']);
-</code></pre>
-<h4>Delete</h4>
-<p><strong> Delete a record </strong></p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;where('id', 1)-&gt;delete();
-</code></pre>
-<hr />
-<h2>Chaining methods</h2>
-<p>Every method returns the database instance, so you can chain them. For example, you can include many where conditions and a limit condition in any order:</p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;where('active', 1)-&gt;limit(10)-&gt;where('age', 18, '&gt;');
-</code></pre>
-<p>The TABLE, LIMIT, JOIN and WHERE settings are accumulable, but are reseted every time you perform a write action (<code>insert</code>, <code>update</code> or <code>delete</code>) or change the table in use (with <code>table</code>). So, if you made an insert, you have to specify the table name again.</p>
-<pre><code>$this-&gt;app-&gt;db-&gt;table('users')-&gt;insert(['name' =&gt; 'John']);
-$this-&gt;app-&gt;db-&gt;table('users')-&gt;where('active', 0)-&gt;delete();
-</code></pre>
+                    <h1>Getting started</h1>
                 </div>
             </div>
         </div>
