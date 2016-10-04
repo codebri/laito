@@ -42,6 +42,9 @@ class FileTokens extends Base implements TokensInterface
             return false;
         }
 
+        // Update token file modification time
+        touch($path);
+
         // Get session data
         $data = json_decode(file_get_contents($path), true);
 
