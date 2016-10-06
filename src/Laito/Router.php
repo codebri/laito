@@ -36,6 +36,14 @@ class Router extends Base
      */
     public function register ($method, $path, $action, $filter = null) {
 
+        // Add leading slash if not present
+        if (strncmp($path, '/', 1) !== 0) {
+            $path = '/' . $path;
+        }
+
+        // Add API base url to the path
+        $path = $this->app->config('url.root') . $path;
+
         // Create arrays
         $params = [];
         $matches = [];
@@ -219,6 +227,16 @@ class Router extends Base
             $filter = null;
         } elseif (func_num_args() === 3) {
             list($filter, $prefix, $routes) = func_get_args();
+        }
+
+        // Add leading slash to prefix if not present
+        if (strncmp($prefix, '/', 1) !== 0) {
+            $prefix = '/' . $prefix;
+        }
+
+        // Add trailing slash to prefix if not present
+        if (substr($prefix, -1) !== '/') {
+            $prefix .= '/';
         }
 
         // Register routes

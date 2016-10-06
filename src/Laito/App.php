@@ -44,7 +44,10 @@ class App extends Container
         'templates.path' => 'templates',
 
         // Path of the tokens folder
-        'tokens.storage' => 'storage/tokens'
+        'tokens.storage' => 'storage/tokens',
+
+        // Base URL root for the API
+        'url.root' => ''
     ];
 
     /**
