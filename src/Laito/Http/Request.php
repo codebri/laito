@@ -1,4 +1,5 @@
-<?php namespace Laito\Http;
+<?php
+namespace Laito\Http;
 
 use Laito\Core\Base;
 
@@ -29,8 +30,8 @@ class Request extends Base
      *
      * @return string Method
      */
-    public function method () {
-
+    public function method()
+    {
         // Return the emulated method from GET
         $emulated = filter_input(INPUT_GET, '_method', FILTER_SANITIZE_STRING);
 
@@ -53,7 +54,8 @@ class Request extends Base
      *
      * @return string URL
      */
-    public function url () {
+    public function url()
+    {
         $parts = explode('?', $_SERVER['REQUEST_URI']);
         return reset($parts);
     }
@@ -63,7 +65,8 @@ class Request extends Base
      *
      * @return mixed Token or false
      */
-    public function token () {
+    public function token()
+    {
         $inputs = $this->getInputs();
         $headers = $this->headers();
 
@@ -86,7 +89,8 @@ class Request extends Base
      *
      * @return mixed Locale or false
      */
-    public function locale () {
+    public function locale()
+    {
         $inputs = $this->getInputs();
         return isset($inputs['locale']) ? $inputs['token'] : false;
     }
@@ -96,7 +100,8 @@ class Request extends Base
      *
      * @return array|boolean Headers array or false
      */
-    public function headers () {
+    public function headers()
+    {
         $headers = '';
         foreach ($_SERVER as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
@@ -113,8 +118,8 @@ class Request extends Base
      * @param string $default Default value to return
      * @return mixed Array of inputs, or single input if a key is specified
      */
-    public function input ($input = null, $default = null) {
-
+    public function input($input = null, $default = null)
+    {
         // Get all inputs
         $inputs = array_merge($this->getInputs(), $this->additionalInputs);
 
@@ -140,7 +145,8 @@ class Request extends Base
      * @param string $input Input key
      * @return boolean Has the desired input or not
      */
-    public function hasInput ($input) {
+    public function hasInput($input)
+    {
         $inputs = $this->input();
         return isset($inputs[$input]);
     }
@@ -152,7 +158,8 @@ class Request extends Base
      * @param string $value Input value
      * @return string Added input
      */
-    public function addInput ($input, $value) {
+    public function addInput($input, $value)
+    {
         $this->additionalInputs[$input] = $value;
         return $input;
     }
@@ -163,8 +170,8 @@ class Request extends Base
      * @param string $input Input key
      * @return mixed File info, or false
      */
-    public function file ($input = null) {
-
+    public function file($input = null)
+    {
         // The input name must be defined
         if (!isset($input) || !isset($_FILES[$input])) {
             throw new \InvalidArgumentException('Invalid file', 400);
@@ -180,7 +187,8 @@ class Request extends Base
      * @param string $input Input key
      * @return boolean Has the desired input or not
      */
-    public function hasFile ($input = null) {
+    public function hasFile($input = null)
+    {
 
         // The input name must be defined
         if (!isset($input)) {
@@ -198,8 +206,8 @@ class Request extends Base
      * @param string $target Target path
      * @return boolean Success or fail of the store operation
      */
-    public function storeFile ($input = null, $target) {
-
+    public function storeFile($input = null, $target)
+    {
         // The input name and target path must be defined
         if (!isset($input) || !isset($target)) {
             throw new \InvalidArgumentException('Undefined input name or target', 400);
@@ -222,8 +230,8 @@ class Request extends Base
      *
      * @return array Array of inputs
      */
-    private function getInputs () {
-
+    private function getInputs()
+    {
         // If defined, return the inputs array
         if ($this->inputs) {
             return $this->inputs;

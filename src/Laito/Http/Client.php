@@ -1,4 +1,5 @@
-<?php namespace Laito\Http;
+<?php
+namespace Laito\Http;
 
 use Laito\Core\Base;
 
@@ -16,7 +17,8 @@ class Client extends Base
      * @param array $params Parameters
      * @return object Http instance
      */
-    public function setupParams ($params = []) {
+    public function setupParams($params = [])
+    {
         if (is_array($params)) {
             $this->params = array_merge($this->params, $params);
         }
@@ -31,8 +33,8 @@ class Client extends Base
      * @param array $params Parameters
      * @return object Http instance
      */
-    public function call ($url, $method = 'GET', $params = []) {
-
+    public function call($url, $method = 'GET', $params = [])
+    {
         // Set call parameters
         $params = array_merge($this->params, is_array($params)? $params : []);
 

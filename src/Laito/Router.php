@@ -1,4 +1,5 @@
-<?php namespace Laito;
+<?php
+namespace Laito;
 
 use Laito\Core\Base;
 
@@ -34,8 +35,8 @@ class Router extends Base
      * @param array $filter Optional filter to execute
      * @return boolean Success or fail of registration
      */
-    public function register ($method, $path, $action, $filter = null) {
-
+    public function register($method, $path, $action, $filter = null)
+    {
         // Add leading slash if not present
         if (strncmp($path, '/', 1) !== 0) {
             $path = '/' . $path;
@@ -76,7 +77,8 @@ class Router extends Base
      * @param string $method (Optional) Method specific routes.
      * @return array Array of routes
      */
-    public function routes ($method = null) {
+    public function routes($method = null)
+    {
         if ($method && isset($this->methods[$method])) {
             return $this->routes[$method];
         }
@@ -89,8 +91,8 @@ class Router extends Base
      * @param string $route Route to match
      * @return array Action and parameters
      */
-    public function getAction ($url) {
-
+    public function getAction($url)
+    {
         // Current route holder
         $current =  false;
 
@@ -131,7 +133,8 @@ class Router extends Base
      * @param string $filter Optional filter to execute
      * @return boolean Success or fail of registration
      */
-    public function resource ($route, $controller, $filter = null) {
+    public function resource($route, $controller, $filter = null)
+    {
         $this->register('get', $route, [$controller, 'index'], $filter);
         $this->register('get', $route . '/{id}', [$controller, 'show'], $filter);
         $this->register('post', $route, [$controller, 'store'], $filter);
@@ -147,7 +150,8 @@ class Router extends Base
      * @param array $callback Callback to exectue
      * @return boolean Success or failure of registration
      */
-    public function filter ($filterName, $callback) {
+    public function filter($filterName, $callback)
+    {
         return $this->filters[$filterName] = $callback;
     }
 
@@ -157,7 +161,8 @@ class Router extends Base
      * @param string $filterName Filter name
      * @return mixed Registered filter
      */
-    public function getFilter ($filterName = null) {
+    public function getFilter($filterName = null)
+    {
         return isset($this->filters[$filterName])? $this->filters[$filterName] : false;
     }
 
@@ -167,7 +172,8 @@ class Router extends Base
      * @param string $filterName Filter name
      * @return mixed Registered filter
      */
-    public function setAppliedFilter ($filterName = null) {
+    public function setAppliedFilter($filterName = null)
+    {
         return $this->appliedFilters[] = $filterName;
     }
 
@@ -177,7 +183,8 @@ class Router extends Base
      * @param string $filterName Filter name
      * @return mixed Registered filter
      */
-    public function filtered ($filterName = null) {
+    public function filtered($filterName = null)
+    {
         return in_array($filterName, $this->appliedFilters);
     }
 
@@ -186,7 +193,8 @@ class Router extends Base
      *
      * @param string $filter Filter name
      */
-    public function performFilter ($filter) {
+    public function performFilter($filter)
+    {
         $filter = $this->getFilter($filter);
 
         if (!$filter) {
@@ -219,8 +227,8 @@ class Router extends Base
      * @param string $prefix Prefix for all routes
      * @param array $routers Routes
      */
-    public function group () {
-
+    public function group()
+    {
         // Get arguments
         if (func_num_args() === 2) {
             list($prefix, $routes) = func_get_args();
@@ -254,10 +262,10 @@ class Router extends Base
      * Captures non existing functions
      *
      * @param string $function Function requested to execute
-     * @param array $params Params requested for function execution
+     * @param array $params Params requested
      * @return boolean
      */
-    public function __call ($function, $params)
+    public function __call($function, $param)
     {
         if (isset($this->routes[$function])) {
             if (isset($params[2])) {

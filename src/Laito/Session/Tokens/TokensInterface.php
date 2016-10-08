@@ -1,4 +1,5 @@
-<?php namespace Laito\Session\Tokens;
+<?php
+namespace Laito\Session\Tokens;
 
 interface TokensInterface
 {

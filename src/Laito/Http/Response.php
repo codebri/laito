@@ -1,4 +1,5 @@
-<?php namespace Laito\Http;
+<?php
+namespace Laito\Http;
 
 use Laito\Core\Base;
 
@@ -47,7 +48,8 @@ class Response extends Base
      * @param string $header Header to set
      * @return object Response instance
      */
-    public function header ($header) {
+    public function header($header)
+    {
         $this->headers[] = $header;
         return $this;
     }
@@ -59,7 +61,8 @@ class Response extends Base
      * @param string $value Cookie value
      * @return object Response instance
      */
-    public function cookie ($key, $value) {
+    public function cookie($key, $value)
+    {
         $this->cookies[$key] = $value;
         return $this;
     }
@@ -70,7 +73,8 @@ class Response extends Base
      * @param string $format
      * @return object Response instance
      */
-    public function format ($format) {
+    public function format($format)
+    {
         $this->format = $format;
         return $this;
     }
@@ -81,7 +85,8 @@ class Response extends Base
      * @param array $extra Extra data
      * @return object Response instance
      */
-    public function extra ($extra) {
+    public function extra($extra)
+    {
         $this->extra = array_merge_recursive($this->extra, $extra);
         return $this;
     }
@@ -92,8 +97,8 @@ class Response extends Base
      * @param array $response Response data
      * @return string HTTP Response
      */
-    public function output ($response) {
-
+    public function output($response)
+    {
         // Set format
         switch ($this->format) {
             case 'json':
@@ -132,7 +137,8 @@ class Response extends Base
      * @param string $message Error message
      * @return string HTTP Response
      */
-    public function error ($code, $message, $extra = []) {
+    public function error($code, $message, $extra = [])
+    {
         $response['success'] = false;
         $this->extra($extra);
         if (!in_array($code, array_keys($this->errors))) {
@@ -151,7 +157,8 @@ class Response extends Base
      * @param array $data Array of data to transform
      * @return string HTML list
      */
-    private function html ($data) {
+    private function html($data)
+    {
         if (!is_array($data)) {
             return $data;
         }

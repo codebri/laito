@@ -1,6 +1,8 @@
-<?php namespace Laito;
+<?php
+namespace Laito;
 
-abstract class Model {
+abstract class Model
+{
 
     /**
      * @var object Database query builder
@@ -90,8 +92,8 @@ abstract class Model {
      * Class constructor
      *
      */
-    public function __construct () {
-
+    public function __construct()
+    {
         // Assign attributes
     }
 
@@ -101,7 +103,8 @@ abstract class Model {
      * @param Database $database Database connection
      * @return object Connection
      */
-    public static function setupConnection (Database $database) {
+    public static function setupConnection(Database $database)
+    {
         return self::$database = $database;
     }
 
@@ -110,7 +113,8 @@ abstract class Model {
      *
      * @return object Database connection
      */
-    public function db () {
+    public function db()
+    {
         return self::$database;
     }
 
@@ -120,7 +124,8 @@ abstract class Model {
      * @param int $offset Offset number
      * @return object Model instance
      */
-    public function offset ($offset) {
+    public function offset($offset)
+    {
         if (is_numeric($offset)) {
             $this->offset = $offset;
         }
@@ -133,7 +138,8 @@ abstract class Model {
      * @param int $limit Limit number
      * @return object Model instance
      */
-    public function limit ($limit) {
+    public function limit($limit)
+    {
         if (is_numeric($limit)) {
             $this->limit = $limit;
         }
@@ -146,7 +152,8 @@ abstract class Model {
      * @param int $orderBy Order column
      * @return object Model instance
      */
-    public function orderBy ($orderBy) {
+    public function orderBy($orderBy)
+    {
         if (is_string($orderBy)) {
             $this->orderBy = $orderBy;
         }
@@ -159,7 +166,8 @@ abstract class Model {
      * @param array $columns Columns to retrieve
      * @return object Model instance
      */
-    public function columns ($columns) {
+    public function columns($columns)
+    {
         if (is_array($columns)) {
             $this->columns = $columns;
         }
@@ -174,7 +182,8 @@ abstract class Model {
      * @param string $operator Operator to compare with
      * @return object Database instance
      */
-    public function where ($column, $value, $operator = '=', $table = null) {
+    public function where($column, $value, $operator = '=', $table = null)
+    {
         $table = $table? $table : $this->table;
         $this->db()->where($column, $value, $operator, $table);
         return $this;
@@ -187,7 +196,8 @@ abstract class Model {
      * @param string $values Values to match
      * @return object Database instance
      */
-    public function whereIn ($column, $values, $table = null) {
+    public function whereIn($column, $values, $table = null)
+    {
         $this->db()->whereIn($column, $values, $table);
         return $this;
     }
@@ -197,7 +207,8 @@ abstract class Model {
      *
      * @return string Primary key column name
      */
-    public function getPrimaryKey () {
+    public function getPrimaryKey()
+    {
         return $this->primaryKey;
     }
 
@@ -206,7 +217,8 @@ abstract class Model {
      *
      * @return string Table name
      */
-    public function getTable () {
+    public function getTable()
+    {
         return $this->table;
     }
 
@@ -216,8 +228,8 @@ abstract class Model {
      * @param array $params Search parameters
      * @return bool|array Array of results, or false
      */
-    function search ($filters = []) {
-
+    public function search($filters = [])
+    {
         // Set resolved
         $resolved = [];
 
@@ -285,8 +297,8 @@ abstract class Model {
      *
      * @return bool|array Array of models, or false
      */
-    function get () {
-
+    public function get()
+    {
         // Perform before hook
         $this->beforeGet();
 
@@ -318,7 +330,8 @@ abstract class Model {
      * @param string $column Column to count by
      * @return int Total number of models
      */
-    function count () {
+    public function count()
+    {
         $this->db()->table($this->table)->groupBy($this->table . '.' . $this->primaryKey);
         $this->hasOne()->belongsToMany();
         $count = $this->db()->count($this->primaryKey);
@@ -331,8 +344,8 @@ abstract class Model {
      * @param string $id Primary key value
      * @return bool|array Model attributes, or false
      */
-    function find ($id = null) {
-
+    public function find($id = null)
+    {
         // ID has to be defined
         if (!isset($id)) {
             throw new \InvalidArgumentException('Undefined ID to find', 400);
@@ -350,8 +363,8 @@ abstract class Model {
      *
      * @return bool|array Model attributes, or false
      */
-    function first () {
-
+    public function first()
+    {
         // Perform query
         $result = $this->get();
 
@@ -370,8 +383,8 @@ abstract class Model {
      * @param $attributes Model attributes
      * @return bool|array Created model ID, or false
      */
-    function create ($attributes = []) {
-
+    public function create($attributes = [])
+    {
         // Attributes have to be array
         if (!(isset($attributes)) || !is_array($attributes)) {
             throw new \InvalidArgumentException('Undefined attributes', 400);
@@ -421,8 +434,8 @@ abstract class Model {
      * @param $attributes Model attributes
      * @return bool|array Updated model, or false
      */
-    function update ($id = null, $attributes = []) {
-
+    public function update($id = null, $attributes = [])
+    {
         // ID has to be defined
         if (!isset($id)) {
             throw new \InvalidArgumentException('Undefined ID to update', 400);
@@ -477,8 +490,8 @@ abstract class Model {
      *
      * @return bool|array Deleted model ID, or false
      */
-    function destroy ($id = null) {
-
+    public function destroy($id = null)
+    {
         // ID has to be defined
         if (!isset($id)) {
             throw new \InvalidArgumentException('Undefined ID to destroy', 400);
@@ -507,7 +520,8 @@ abstract class Model {
      *
      * @param bool Success or failure
      */
-    function beforeGet () {
+    public function beforeGet()
+    {
         return true;
     }
 
@@ -516,7 +530,8 @@ abstract class Model {
      *
      * @param bool Success or failure
      */
-    function afterGet () {
+    public function afterGet()
+    {
         return true;
     }
 
@@ -526,7 +541,8 @@ abstract class Model {
      * @param $attributes Original attributes
      * @return bool|array Customized attributes
      */
-    function beforeCreate ($attributes) {
+    public function beforeCreate($attributes)
+    {
         return $attributes;
     }
 
@@ -538,7 +554,8 @@ abstract class Model {
      * @param $model Created model
      * @return array Created model
      */
-    function afterCreate ($id, $attributes, $model) {
+    public function afterCreate($id, $attributes, $model)
+    {
         return $model;
     }
 
@@ -549,7 +566,8 @@ abstract class Model {
      * @param $attributes Original attributes
      * @return bool|array Customized attributes
      */
-    function beforeUpdate ($id, $attributes) {
+    public function beforeUpdate($id, $attributes)
+    {
         return $attributes;
     }
 
@@ -561,7 +579,8 @@ abstract class Model {
      * @param $model Updated model
      * @return array Updated model
      */
-    function afterUpdate ($id, $attributes, $model) {
+    public function afterUpdate($id, $attributes, $model)
+    {
         return $model;
     }
 
@@ -571,7 +590,8 @@ abstract class Model {
      * @param $id Model primary key
      * @return int Model primary key
      */
-    function beforeDestroy ($id) {
+    public function beforeDestroy($id)
+    {
         return $id;
     }
 
@@ -581,7 +601,8 @@ abstract class Model {
      * @param $id Model primary key
      * @return int Model primary key
      */
-    function afterDestroy ($id) {
+    public function afterDestroy($id)
+    {
         return $id;
     }
 
@@ -590,7 +611,8 @@ abstract class Model {
      *
      * @return array Pagination array
      */
-    function pagination () {
+    public function pagination()
+    {
         return ['offset' => (int) $this->offset, 'limit' => (int) $this->limit];
     }
 
@@ -599,8 +621,8 @@ abstract class Model {
      *
      * @return object Model instance
      */
-    private function hasOne () {
-
+    private function hasOne()
+    {
         // Return if there are no relationships of that type
         if (!isset($this->relationships['hasOne']) || empty($this->relationships['hasOne'])) {
             return $this;
@@ -628,8 +650,8 @@ abstract class Model {
      *
      * @return object Model instance
      */
-    private function hasMany () {
-
+    private function hasMany()
+    {
         // Return if there are no relationships of that type
         if (!isset($this->relationships['hasMany']) || empty($this->relationships['hasMany'])) {
             return $this;
@@ -700,8 +722,8 @@ abstract class Model {
      *
      * @return object Model instance
      */
-    private function belongsToMany () {
-
+    private function belongsToMany()
+    {
         // Return if there are no relationships of that type
         if (!isset($this->relationships['belongsToMany']) || empty($this->relationships['belongsToMany'])) {
             return $this;
@@ -731,8 +753,8 @@ abstract class Model {
      * @param $attributes Model attributes
      * @return object Model instance
      */
-    private function sync ($id, $attributes) {
-
+    private function sync($id, $attributes)
+    {
         // Return if the ID is invalid, or attributes is not an array
         if (!isset($id) || !isset($attributes) || empty($attributes)) {
             return $this;
@@ -769,8 +791,8 @@ abstract class Model {
      * @param $attributes Model attributes
      * @return object Model instance
      */
-    private function updateHasMany ($id, $attributes) {
-
+    private function updateHasMany($id, $attributes)
+    {
         // Return if the ID is invalid, or attributes is not an array
         if (!isset($id) || !isset($attributes) || empty($attributes)) {
             return $this;
@@ -882,8 +904,8 @@ abstract class Model {
      *
      * @return object Model instance
      */
-    private function formatBelongsToMany () {
-
+    private function formatBelongsToMany()
+    {
         // Return if there are no relationships of that type
         if (!isset($this->relationships['belongsToMany']) || empty($this->relationships['belongsToMany'])) {
             return $this;
@@ -911,8 +933,8 @@ abstract class Model {
      *
      * @return object Model instance
      */
-    private function formatHasOne () {
-
+    private function formatHasOne()
+    {
         // Return if there are no relationships of that type
         if (!isset($this->relationships['hasOne']) || empty($this->relationships['hasOne'])) {
             return $this;
@@ -941,7 +963,8 @@ abstract class Model {
      *
      * @return object Model instance
      */
-    private function setValidationRules () {
+    private function setValidationRules()
+    {
         return array_merge($this->defaultRules, $this->rules);
     }
 
@@ -952,7 +975,8 @@ abstract class Model {
      * @param $rules Rules to validate
      * @return array|bool Array of errors, or false if the model is valid
      */
-    function validationErrors ($attributes, $rules = null) {
+    public function validationErrors($attributes, $rules = null)
+    {
 
         // Rules container
         $this->rules = $this->setValidationRules();

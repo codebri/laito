@@ -1,8 +1,10 @@
-<?php namespace Laito;
+<?php
+namespace Laito;
 
 use Laito\Core\Base;
 
-class Controller extends Base {
+class Controller extends Base 
+{
 
     /**
      * @var Model repository
@@ -14,8 +16,8 @@ class Controller extends Base {
      *
      * @param App $app App instance
      */
-    public function __construct (App $app) {
-
+    public function __construct(App $app)
+    {
         // Construct from parent
         parent::__construct($app);
 
@@ -33,8 +35,8 @@ class Controller extends Base {
      *
      * @return object Controller instance
      */
-    public function initialize () {
-
+    public function initialize()
+    {
         // Return instance
         return $this;
     }
@@ -45,8 +47,8 @@ class Controller extends Base {
      * @param array $params Listing parameters
      * @return array Response
      */
-    public function index ($params = []) {
-
+    public function index($params = [])
+    {
         // Set the filters
         $params = (!empty($params))? $params : $this->app->request->input();
 
@@ -73,8 +75,8 @@ class Controller extends Base {
      * @param array $id Resource ID
      * @return array Response
      */
-    public function show ($id = null) {
-
+    public function show($id = null)
+    {
         // Check the ID
         if (!isset($id)) {
             throw new \InvalidArgumentException('Undefined ID', 400);
@@ -101,8 +103,8 @@ class Controller extends Base {
      * @param array $params Resource attributes
      * @return array Response
      */
-    public function store ($attributes = []) {
-
+    public function store($attributes = [])
+    {
         // Set the attributes
         $attributes = (!empty($attributes))? $attributes : $this->app->request->input();
 
@@ -123,8 +125,8 @@ class Controller extends Base {
      * @param array $id Resource ID
      * @return array Response
      */
-    public function update ($id = null, $attributes = []) {
-
+    public function update($id = null, $attributes = [])
+    {
         // Check the ID
         if (!isset($id)) {
             throw new \InvalidArgumentException('Undefined ID', 400);
@@ -150,8 +152,8 @@ class Controller extends Base {
      * @param array $id Resource ID
      * @return array Response
      */
-    public function destroy ($id = null) {
-
+    public function destroy($id = null)
+    {
         // Check the ID
         if (!isset($id)) {
             throw new \InvalidArgumentException('Undefined ID', 400);

@@ -1,8 +1,10 @@
-<?php namespace Laito;
+<?php
+namespace Laito;
 
 use Laito\Core\Base;
 
-class Database extends Base {
+class Database extends Base
+{
 
     /**
      * @var PDO PDO Instance
@@ -80,8 +82,8 @@ class Database extends Base {
      * @param App $app App instance
      * @param PDO $pdo PDO instance
      */
-    public function __construct (App $app) {
-
+    public function __construct(App $app)
+    {
         // Construct from parent
         parent::__construct($app);
 
@@ -97,8 +99,9 @@ class Database extends Base {
      *
      * @return object Database instance
      */
-    public function reset () {
-        $this->table = '';
+    public function reset()
+    {
+    $this->table = '';
         $this->columns = [];
         $this->joins = [];
         $this->wheres = [];
@@ -117,7 +120,8 @@ class Database extends Base {
      * @param array $columns Columns to select
      * @return object Database instance
      */
-    public function select ($columns) {
+    public function select($columns)
+    {
         if (is_array($columns)) {
             $this->columns = $columns;
         }
@@ -130,8 +134,9 @@ class Database extends Base {
      * @param string $column Column to select
      * @return object Database instance
      */
-    public function addSelect ($column) {
-        $this->columns[] = $column;
+    public function addSelect($column)
+    {
+    $this->columns[] = $column;
         return $this;
     }
 
@@ -141,8 +146,8 @@ class Database extends Base {
      * @param string $table Table to use
      * @return object Database instance
      */
-    public function table ($table) {
-
+    public function table($table)
+    {
         // User other table
         $this->table = $table;
 
@@ -160,7 +165,8 @@ class Database extends Base {
      * @param string $type Join type
      * @return object Database instance
      */
-    public function join ($table, $first, $operator, $second, $type = 'LEFT') {
+    public function join($table, $first, $operator, $second, $type = 'LEFT')
+    {
         $this->joins[] = [
             'table' => $table,
             'first' => $first,
@@ -180,7 +186,8 @@ class Database extends Base {
      * @param string $table Table
      * @return object Database instance
      */
-    public function where ($column, $value, $operator = '=', $table = null) {
+    public function where($column, $value, $operator = '=', $table = null)
+    {
         $table = $table? $table : $this->table;
         $this->wheres[] = [
             'table' => $table,
@@ -199,7 +206,8 @@ class Database extends Base {
      * @param string $table Table
      * @return object Database instance
      */
-    public function whereIn ($column, $values, $table = null) {
+    public function whereIn($column, $values, $table = null)
+    {
         $table = isset($table)? $table : $this->table;
         $this->whereIn[] = [
             'table' => $table,
@@ -215,7 +223,8 @@ class Database extends Base {
      * @param string $groupBy Column name
      * @return object Database instance
      */
-    public function groupBy ($groupBy) {
+    public function groupBy($groupBy)
+    {
         if (trim($groupBy) !== '') {
             $this->groupBy = $groupBy;
         }
@@ -228,7 +237,8 @@ class Database extends Base {
      * @param string $order Order column and type
      * @return object Database instance
      */
-    public function orderBy ($order) {
+    public function orderBy($order)
+    {
         if (trim($order) !== '') {
             $this->orderBy[] = $order;
         }
@@ -241,7 +251,8 @@ class Database extends Base {
      * @param int $offset Offset number
      * @return object Database instance
      */
-    public function offset ($offset) {
+    public function offset($offset)
+    {
         $this->offset = $offset;
         return $this;
     }
@@ -252,7 +263,8 @@ class Database extends Base {
      * @param int $limit Limit number
      * @return object Database instance
      */
-    public function limit ($limit) {
+    public function limit($limit)
+    {
         $this->limit = $limit;
         return $this;
     }
@@ -263,7 +275,8 @@ class Database extends Base {
      * @param array $fields Array of columns names and values
      * @return object Database instance
      */
-    public function fields ($fields) {
+    public function fields($fields)
+    {
         $this->fields = $fields;
         return $this;
     }
@@ -273,8 +286,8 @@ class Database extends Base {
      *
      * @return bool|array Array of results, or false
      */
-    public function get () {
-
+    public function get()
+    {
         // Define columns
         $columns = count($this->columns)? $this->getColumnsString() : $this->table . '.*';
 
@@ -335,8 +348,8 @@ class Database extends Base {
      *
      * @return bool|array Record data, or false
      */
-    function getOne () {
-
+    function getOne()
+    {
         // Perform query
         $result = $this->get();
 
@@ -350,8 +363,8 @@ class Database extends Base {
      * @param string $column Column to count by
      * @return int Number of rows matching the SELECT query
      */
-    public function count ($column) {
-
+    public function count($column)
+    {
         // Set a really hight limit
         $this->limit(pow(100, 3));
 
@@ -371,8 +384,8 @@ class Database extends Base {
      * @param array $fields Array of columns names and values to insert
      * @return bool Query success or fail
      */
-    public function insert ($fields) {
-
+    public function insert($fields)
+    {
         // Set fields
         $this->fields($fields);
 
@@ -404,8 +417,8 @@ class Database extends Base {
      * @param array $fields Array of columns names and values to insert
      * @return int Inserted record ID
      */
-    public function insertGetId ($fields) {
-
+    public function insertGetId($fields)
+    {
         // Internal call to insert
         if (!$this->insert($fields)) {
             throw new \PDOException('Error writing to database', 500);
@@ -421,8 +434,8 @@ class Database extends Base {
      * @param array $fields Array of columns names and values to insert
      * @return bool Query success or fail
      */
-    public function update ($fields) {
-
+    public function update($fields)
+    {
         // Set fields
         $this->fields($fields);
 
@@ -461,8 +474,8 @@ class Database extends Base {
      *
      * @return bool Query success or fail
      */
-    public function delete () {
-
+    public function delete()
+    {
         // Define wheres
         $where = $this->getWhereString();
 
@@ -495,7 +508,8 @@ class Database extends Base {
      *
      * @return string Query
      */
-    public function lastQuery () {
+    public function lastQuery()
+    {
         return $this->query;
     }
 
@@ -504,7 +518,8 @@ class Database extends Base {
      *
      * @return mixed Error
      */
-    public function lastError () {
+    public function lastError()
+    {
         return $this->statement->errorInfo();
     }
 
@@ -513,7 +528,8 @@ class Database extends Base {
      *
      * @return int Number of rows
      */
-    public function affectedRows() {
+    public function affectedRows()
+    {
         return $this->statement->rowCount();
     }
 
@@ -522,8 +538,8 @@ class Database extends Base {
      *
      * @return string WHERE string
      */
-    private function getWhereString () {
-
+    private function getWhereString()
+    {
         // If there are not where conditions, return empty
         if (!count($this->wheres)) {
             return 'WHERE 1=1 ';
@@ -543,8 +559,8 @@ class Database extends Base {
      *
      * @return string WHERE string
      */
-    private function getWhereInString () {
-
+    private function getWhereInString()
+    {
         // String holder
         $string = '';
 
@@ -567,7 +583,8 @@ class Database extends Base {
      *
      * @return string Field list string
      */
-    private function getColumnsString () {
+    private function getColumnsString()
+    {
         $columns = array_map(function ($column) {
             return (strpos($column, '.') === false)? $this->table . '.' . $column : $column;
         }, $this->columns);
@@ -579,8 +596,8 @@ class Database extends Base {
      *
      * @return string JOIN string
      */
-    private function getJoinString () {
-
+    private function getJoinString()
+    {
         // If there are not joins, return empty
         if (!count($this->orderBy)) {
             return '';
@@ -600,8 +617,8 @@ class Database extends Base {
      *
      * @return string ORDER BY string
      */
-    private function getOrderByString () {
-
+    private function getOrderByString()
+    {
         // If there are not order conditions, return empty
         if (!count($this->orderBy)) {
             return '';
@@ -616,8 +633,8 @@ class Database extends Base {
      *
      * @return string VALUES string for inserts
      */
-    private function getInsertFieldsString () {
-
+    private function getInsertFieldsString()
+    {
         // Get field keys
         $fieldKeys = array_keys($this->fields);
 
@@ -635,8 +652,8 @@ class Database extends Base {
      *
      * @return string String for updates
      */
-    private function getUpdateFieldsString () {
-
+    private function getUpdateFieldsString()
+    {
         // Create placeholders
         $fieldsPlaceholders = array_map(function ($field) {
             return $field . '=:' . $field;
@@ -650,7 +667,8 @@ class Database extends Base {
      * Binds the values of the WHERE conditions
      *
      */
-    private function bindWheres () {
+    private function bindWheres()
+    {
         foreach ($this->wheres as $where) {
             $this->statement->bindValue(':' . $where['table'] . $where['column'], $where['value']);
         }
@@ -660,7 +678,8 @@ class Database extends Base {
      * Binds the values of the fields to insert or update
      *
      */
-    private function bindFields () {
+    private function bindFields()
+    {
         foreach ($this->fields as $key => $value) {
             $this->statement->bindValue(':' . $key, $value);
         }

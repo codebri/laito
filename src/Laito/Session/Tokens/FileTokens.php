@@ -1,4 +1,5 @@
-<?php namespace Laito\Session\Tokens;
+<?php
+namespace Laito\Session\Tokens;
 
 use Laito\App;
 use Laito\Core\Base;
@@ -12,8 +13,8 @@ class FileTokens extends Base implements TokensInterface
      *
      * @param App $app App instance
      */
-    public function __construct (App $app) {
-
+    public function __construct(App $app)
+    {
         // Construct from parent
         parent::__construct($app);
 
@@ -29,8 +30,8 @@ class FileTokens extends Base implements TokensInterface
      * @param string $hash Token hash
      * @return array|bool Token data or false
      */
-    public function get ($hash = null) {
-
+    public function get($hash = null)
+    {
         // If the hash is not received, get it from the request
         $hash = $hash?: $this->app->request->token();
 
@@ -58,8 +59,8 @@ class FileTokens extends Base implements TokensInterface
      * @param array $data Data to store
      * @return Token data
      */
-    public function create ($data = []) {
-
+    public function create($data = [])
+    {
         // Create a random hash
         $hash = $this->hash();
 
@@ -78,8 +79,8 @@ class FileTokens extends Base implements TokensInterface
      * @param array $data Data to store
      * @return Token data
      */
-    public function update ($hash = null, $data) {
-
+    public function update($hash = null, $data)
+    {
         // If the hash is not received, get it from the request
         $hash = $hash?: $this->app->request->token();
 
@@ -98,8 +99,8 @@ class FileTokens extends Base implements TokensInterface
      * @param string $hash Token hash
      * @return bool Success or failure
      */
-    public function destroy ($hash = null) {
-
+    public function destroy($hash = null)
+    {
         // If the hash is not received, get it from the request
         $hash = $hash?: $this->app->request->token();
 
@@ -124,7 +125,8 @@ class FileTokens extends Base implements TokensInterface
      *
      * @return string Token hash
      */
-    public function hash () {
+    public function hash()
+    {
         return md5(time() . rand(0, pow(10, 10)));
     }
 
@@ -134,7 +136,8 @@ class FileTokens extends Base implements TokensInterface
      * @param string $hash Token
      * @return string Session path
      */
-    private function path ($hash) {
+    private function path($hash)
+    {
         return $this->app->config('tokens.storage') . '/' . $hash . '.json';
     }
 

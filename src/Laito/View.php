@@ -1,4 +1,5 @@
-<?php namespace Laito;
+<?php
+namespace Laito;
 
 use Laito\Core\Base;
 
@@ -12,8 +13,8 @@ class View extends Base
      * @param array $values Array of values to replace in the template
      * @return string Rendered HTML
      */
-    public function render ($view, $values = array()) {
-
+    public function render($view, $values = array())
+    {
         // Setup the template path
         $folder = $this->app->config('templates.path');
         $view = $folder . $view . '.php';

@@ -1,4 +1,5 @@
-<?php namespace Laito\Core;
+<?php
+namespace Laito\Core;
 
 class Container
 {
@@ -14,7 +15,8 @@ class Container
      * @param string $key Key name
      * @param mixed $value Value or service
      */
-    function __set ($id, $value) {
+    function __set($id, $value)
+    {
         $this->container[$id] = $value;
     }
 
@@ -24,8 +26,8 @@ class Container
      * @param string $key Key name
      * @param mixed $value Value or service
      */
-    function __get ($id) {
-
+    function __get ($id)
+    {
         // Abort if the element is not in the container
         if (!isset($this->container[$id])) {
             throw new \InvalidArgumentException($id . ' not defined in container', 500);
@@ -45,7 +47,8 @@ class Container
      * @param closure $callable Closure that defines the object
      * @return mixed Instance of the object
      */
-    function share ($callable) {
+    function share($callable)
+    {
         return function ($c) use ($callable) {
             static $object;
             if (is_null($object)) {

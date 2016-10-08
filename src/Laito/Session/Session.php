@@ -1,4 +1,5 @@
-<?php namespace Laito\Session;
+<?php
+namespace Laito\Session;
 
 use Laito\Core\Base;
 
@@ -28,8 +29,8 @@ class Session extends Base
      * @param array $data Data to store in the session
      * @return array|bool Session data or false
      */
-    public function login ($username, $password, $data) {
-
+    public function login($username, $password, $data)
+    {
         // Verify the password against the stored hash
         if (!password_verify($password, $this->getStoredPassword($username))) {
             throw new \Exception('Incorrect username or password', 401);
@@ -45,7 +46,8 @@ class Session extends Base
      * @param array $data Data to store in the session
      * @return string Token
      */
-    public function forceLogin ($data) {
+    public function forceLogin($data)
+    {
         return $this->app->tokens->create($data);
     }
 
@@ -55,7 +57,8 @@ class Session extends Base
      * @param string $token Token hash
      * @return array|bool Session data or false
      */
-    public function get ($token = null) {
+    public function get($token = null)
+    {
         return $this->app->tokens->get($token);
     }
 
@@ -66,7 +69,8 @@ class Session extends Base
      * @param string $token Token hash
      * @return array|bool Session data or false
      */
-    public function getField ($field, $token = null) {
+    public function getField($field, $token = null)
+    {
         $session = $this->app->tokens->get($token);
         return ($session && isset($session[$field]))? $session[$field] : null;
     }
@@ -78,7 +82,8 @@ class Session extends Base
      * @param array $data Data to store
      * @return array|bool Session data or false
      */
-    public function update ($token = null, $data = []) {
+    public function update($token = null, $data = [])
+    {
         return $this->app->tokens->update($token, $data);
     }
 
@@ -88,7 +93,8 @@ class Session extends Base
      * @param string $token Token hash
      * @return boolean Success or fail of file delete
      */
-    public function logout ($token = null) {
+    public function logout($token = null)
+    {
         return $this->app->tokens->destroy($token);
     }
 
@@ -98,8 +104,8 @@ class Session extends Base
      * @param string $username Username
      * @return mixed User password, of false if the user does not exist
      */
-    private function getStoredPassword ($username) {
-
+    private function getStoredPassword($username)
+    {
         // Get table object
         $db = $this->app->db->reset()->table($this->table);
 

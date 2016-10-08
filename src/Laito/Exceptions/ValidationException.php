@@ -1,8 +1,10 @@
-<?php namespace Laito\Exceptions;
+<?php
+namespace Laito\Exceptions;
 
 use \Exception as Exception;
 
-class ValidationException extends Exception {
+class ValidationException extends Exception
+{
 
     /**
      * Errors array
@@ -19,8 +21,8 @@ class ValidationException extends Exception {
      * @param Exception|null $previous Previous exception
      * @param array $errors Array of validation errors
      */
-    public function __construct ($message, $code = 0, array $errors = [], Exception $previous = null) {
-
+    public function __construct($message, $code = 0, array $errors = [], Exception $previous = null)
+    {
         // Save erors
         $this->errors = $errors;
 
@@ -33,7 +35,8 @@ class ValidationException extends Exception {
      *
      * @return array Validation errors
      */
-    public function getErrors () {
+    public function getErrors()
+    {
         return $this->errors;
     }
 }

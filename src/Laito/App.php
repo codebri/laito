@@ -1,4 +1,5 @@
-<?php namespace Laito;
+<?php
+namespace Laito;
 
 use Laito\Core\Container;
 
@@ -74,8 +75,8 @@ class App extends Container
      * @param array $settings Array of user defined options
      * @param array $providers Array of user providers
      */
-    public function __construct ($settings = [], $providers = []) {
-
+    public function __construct($settings = [], $providers = [])
+    {
         // Setup settings
         $this->container['settings'] = array_merge($this->defaultSettings, $settings);
 
@@ -96,8 +97,8 @@ class App extends Container
      * @param mixed $value If passed, value to apply on the setting
      * @return mixed Value of a setting
      */
-    public function config ($name, $value = null) {
-
+    public function config($name, $value = null)
+    {
         // Check for massive assignaments
         if (is_array($name)) {
             foreach ($name as $key => $value) {
@@ -126,8 +127,8 @@ class App extends Container
      * @param string $className Class name
      * @return object Class instance
      */
-    public function make ($className) {
-
+    public function make($className)
+    {
         // Create a reflection to access the class properties
         $reflection = new \ReflectionClass($className);
 
@@ -170,7 +171,8 @@ class App extends Container
      *
      * @return string Response
      */
-    public function run () {
+    public function run()
+    {
         try {
             $this->runAction();
         } catch (Exceptions\ValidationException $e) {
@@ -187,7 +189,8 @@ class App extends Container
      *
      * @return void
      */
-    private function registerServiceProviders () {
+    private function registerServiceProviders()
+    {
         foreach ($this->serviceProviders as $key => $serviceClass) {
             $this->container[$key] = $this->share(function () use ($serviceClass) {
                 return $this->make($serviceClass);
@@ -200,8 +203,8 @@ class App extends Container
      *
      * @return void
      */
-    private function registerDatabaseConnection () {
-
+    private function registerDatabaseConnection()
+    {
         // If the app uses a database
         if ($this->config('database.type')) {
 
@@ -238,8 +241,8 @@ class App extends Container
      *
      * @return void
      */
-    private function runAction () {
-
+    private function runAction()
+    {
         // Get URL
         $url = $this->request->url();
 
@@ -268,7 +271,8 @@ class App extends Container
      *
      * @return array Response
      */
-    private function returnValidationErrorResponse ($e) {
+    private function returnValidationErrorResponse($e)
+    {
         return $this->response->error($e->getCode(), $e->getMessage(), ['error' => ['errors' => $e->getErrors()]]);
     }
 
@@ -277,7 +281,8 @@ class App extends Container
      *
      * @return array Response
      */
-    private function returnDatabaseErrorResponse ($e) {
+    private function returnDatabaseErrorResponse($e)
+    {
         $info = $this->config('debug.queries')? ['error' => ['errors' => $this->db->statement->errorInfo(), 'last_query' => $this->db->lastQuery()]] : [];
         return $this->response->error(500, 'Database error', $info);
     }
@@ -287,7 +292,8 @@ class App extends Container
      *
      * @return array Response
      */
-    private function returnGeneralErrorResponse ($e) {
+    private function returnGeneralErrorResponse($e)
+    {
         $backtrace = $this->config('debug.backtrace')? ['error' => ['backtrace' => $e->getTrace()]] : [];
         return $this->response->error($e->getCode(), $e->getMessage(), $backtrace);
     }
