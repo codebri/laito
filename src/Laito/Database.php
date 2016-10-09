@@ -5,7 +5,6 @@ use Laito\Core\Base;
 
 class Database extends Base
 {
-
     /**
      * @var PDO PDO Instance
      */

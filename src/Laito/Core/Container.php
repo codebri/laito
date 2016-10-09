@@ -3,7 +3,6 @@ namespace Laito\Core;
 
 class Container
 {
-
     /**
      * @var array Container of settings and services
      */

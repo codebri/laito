@@ -7,7 +7,6 @@ use Laito\Session\Tokens\TokensInterface;
 
 class FileTokens extends Base implements TokensInterface
 {
-
     /**
      * Class constructor
      *

@@ -5,7 +5,6 @@ use Laito\Core\Base;
 
 class Client extends Base
 {
-
     /**
      * @var array Fixed parameters array
      */

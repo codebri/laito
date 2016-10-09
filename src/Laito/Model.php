@@ -3,7 +3,6 @@ namespace Laito;
 
 abstract class Model
 {
-
     /**
      * @var object Database query builder
      */

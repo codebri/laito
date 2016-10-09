@@ -5,7 +5,6 @@ use Laito\App;
 
 class Base
 {
-
     /**
      * @var App $app Application instance
      */

@@ -5,7 +5,6 @@ use Laito\Core\Base;
 
 class Router extends Base
 {
-
     /**
      * @var array Routes holder
      */

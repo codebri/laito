@@ -5,7 +5,6 @@ use \Exception as Exception;
 
 class ValidationException extends Exception
 {
-
     /**
      * Errors array
      *

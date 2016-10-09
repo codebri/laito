@@ -3,7 +3,6 @@ namespace Laito\Session\Tokens;
 
 interface TokensInterface
 {
-
     /**
      * Gets the token data
      *

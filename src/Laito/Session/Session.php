@@ -5,7 +5,6 @@ use Laito\Core\Base;
 
 class Session extends Base
 {
-
     /**
      * @var string Users table name
      */

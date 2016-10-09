@@ -5,7 +5,6 @@ use Laito\Core\Base;
 
 class Response extends Base
 {
-
     /**
      * @var string Allowed response formats
      */

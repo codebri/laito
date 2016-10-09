@@ -5,7 +5,6 @@ use Laito\Core\Container;
 
 class App extends Container
 {
-
     /**
      * @var array Default settings
      */

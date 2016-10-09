@@ -5,7 +5,6 @@ use Laito\Core\Base;
 
 class Controller extends Base 
 {
-
     /**
      * @var Model repository
      */

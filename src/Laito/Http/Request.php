@@ -5,7 +5,6 @@ use Laito\Core\Base;
 
 class Request extends Base
 {
-
     /**
      * @var array Reserved parameters
      */
