@@ -264,7 +264,7 @@ class Router extends Base
      * @param array $params Params requested
      * @return boolean
      */
-    public function __call($function, $param)
+    public function __call($function, $params)
     {
         if (isset($this->routes[$function])) {
             if (isset($params[2])) {
