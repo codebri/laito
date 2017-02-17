@@ -280,6 +280,10 @@ abstract class Model
                 if ($operator === 'LIKE') {
                     $value = '%' . $value . '%';
                 }
+                if ($operator === 'IS_NOT_EMPTY') {
+                    $operator = '<>';
+                    $value = '';
+                }
 
                 // Add condition
                 $table = isset($current[2])? $current[2] : $this->table;
