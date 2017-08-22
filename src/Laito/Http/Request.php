@@ -164,6 +164,18 @@ class Request extends Base
     }
 
     /**
+     * Removes an additional input
+     *
+     * @param string $input Input key
+     * @return string Removed input
+     */
+    public function removeInput($input)
+    {
+        unset($this->additionalInputs[$input]);
+        return $input;
+    }
+
+    /**
      * Gets a request file
      *
      * @param string $input Input key
