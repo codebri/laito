@@ -100,7 +100,7 @@ class Database extends Base
      */
     public function reset()
     {
-    $this->table = '';
+        $this->table = '';
         $this->columns = [];
         $this->joins = [];
         $this->wheres = [];
@@ -123,6 +123,8 @@ class Database extends Base
     {
         if (is_array($columns)) {
             $this->columns = $columns;
+        } elseif ($columns === '*') {
+            $this->columns = ['*'];
         }
         return $this;
     }
@@ -135,7 +137,7 @@ class Database extends Base
      */
     public function addSelect($column)
     {
-    $this->columns[] = $column;
+        $this->columns[] = $column;
         return $this;
     }
 
@@ -347,7 +349,7 @@ class Database extends Base
      *
      * @return bool|array Record data, or false
      */
-    function getOne()
+    public function getOne()
     {
         // Perform query
         $result = $this->get();
@@ -584,6 +586,9 @@ class Database extends Base
      */
     private function getColumnsString()
     {
+        if (count($this->columns) === 1 && $this->columns[0] === '*') {
+            return '*';
+        }
         $columns = array_map(function ($column) {
             return (strpos($column, '.') === false)? $this->table . '.' . $column : $column;
         }, $this->columns);
