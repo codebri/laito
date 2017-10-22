@@ -1,6 +1,6 @@
 # Laito
 
-A light PHP framework for creating quick and powerful REST APIs
+A light PHP framework for creating quick REST APIs
 
 ---
 
