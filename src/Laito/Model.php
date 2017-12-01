@@ -59,6 +59,11 @@ abstract class Model
     protected $validate = [];
 
     /**
+     * @var array Parameters received via request
+     */
+    protected $params = [];
+
+    /**
      * @var array Model relationships declaration
      */
     protected $relationships = [

@@ -3,7 +3,7 @@ namespace Laito;
 
 use Laito\Core\Base;
 
-class Controller extends Base 
+class Controller extends Base
 {
     /**
      * @var Model repository
@@ -52,6 +52,7 @@ class Controller extends Base
         $params = (!empty($params))? $params : $this->app->request->input();
 
         // Get records
+        $this->model->params = $params;
         $result = $this->model->search($params)->get();
 
         // Get pagination and number of records
