@@ -61,7 +61,7 @@ abstract class Model
     /**
      * @var array Parameters received via request
      */
-    protected $params = [];
+    public $params = [];
 
     /**
      * @var array Model relationships declaration
